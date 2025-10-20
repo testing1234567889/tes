@@ -9,7 +9,11 @@
     /* ===== Reset mini */
     *,*::before,*::after{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;background:#0b0f14;color:#e6edf3;-webkit-tap-highlight-color:transparent}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      background:#0b0f14;color:#e6edf3;-webkit-tap-highlight-color:transparent
+    }
     a{color:inherit;text-decoration:none}
     img,svg{display:block;max-width:100%}
 
@@ -17,7 +21,57 @@
       --bg:#0b0f14;--card:#0f1622;--line:#1a2331;--muted:#9fb1c3;
       --pri:#7c3aed;--ok:#19c37d;--r:16px; --shadow:0 6px 24px rgba(0,0,0,.28);
     }
-    @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+    /* ====== DARK FORCE OVERRIDE++ : semua teks & kontrol terang di atas gelap */
+    body,button,input,select,textarea{color:#e6edf3 !important}
+    .btn{color:#e6edf3 !important}
+    .chip{color:#e6edf3}
+
+    /* Input umum (kecuali tipe khusus di bawah) */
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+    select, textarea{
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      background:#0a0a0a !important;
+      color:#ffffff !important;
+      border:1px solid #30363d !important;
+      outline:none;
+      appearance:none;-webkit-appearance:none;-moz-appearance:none;
+    }
+    input::placeholder, textarea::placeholder{color:#9aa7b3}
+
+    /* Autofill Chrome/Edge/Brave */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus{
+      -webkit-text-fill-color:#ffffff !important;
+      box-shadow:0 0 0 1000px #0a0a0a inset !important;
+      border:1px solid #30363d !important;
+      caret-color:#ffffff;
+    }
+
+    /* Date/Time picker tetap putih */
+    input[type="date"], input[type="time"], input[type="datetime-local"],
+    input[type="month"], input[type="week"]{
+      color-scheme: dark;
+      background:#0a0a0a !important;
+      color:#ffffff !important;
+      border:1px solid #30363d !important;
+    }
+    input[type="date"]::-webkit-datetime-edit,
+    input[type="date"]::-webkit-datetime-edit-text,
+    input[type="date"]::-webkit-datetime-edit-month-field,
+    input[type="date"]::-webkit-datetime-edit-day-field,
+    input[type="date"]::-webkit-datetime-edit-year-field{
+      color:#ffffff;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator{ filter: invert(1) opacity(.85); }
+    input[type="search"]::-webkit-search-cancel-button{ filter: invert(1); }
+
+    @media (prefers-reduced-motion: reduce){
+      *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+    }
 
     /* ===== Topbar */
     .topbar{position:sticky;top:0;z-index:40;height:56px;display:flex;align-items:center;gap:12px;padding:0 14px;background:#0c111b;border-bottom:1px solid var(--line)}
@@ -44,44 +98,13 @@
     /* ===== App & pages */
     .app{min-height:calc(100dvh - 56px);padding:14px;display:flex;flex-direction:column;gap:14px}
     .page{display:none}
-    /* bikin konten dalam satu page punya jarak vertikal antar .card */
-    .page.show{display:grid;gap:16px}
+    .page.show{display:grid;gap:16px}  /* jarak antar card dalam satu halaman */
     .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:12px}
     .muted{color:var(--muted);font-size:.95rem}
     .grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
     @media (max-width:560px){.grid{grid-template-columns:1fr}}
     .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
     .row.between{justify-content:space-between;align-items:center}
-
-    /* ===== Inputs: DARK FORCE OVERRIDE (kecuali checkbox/radio/range/file) */
-    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
-    select, textarea{
-      width:100%;
-      padding:12px;
-      border-radius:12px;
-      background:#0a0a0a!important;   /* paksa gelap */
-      color:#ffffff!important;         /* teks putih */
-      border:1px solid #30363d!important;
-      outline:none;
-      appearance:none;
-      -webkit-appearance:none;
-      -moz-appearance:none;
-    }
-    input::placeholder, textarea::placeholder{color:#9aa7b3}
-    /* Autofill Chrome (biar gak kuning) */
-    input:-webkit-autofill{
-      -webkit-text-fill-color:#fff !important;
-      box-shadow:0 0 0 1000px #0a0a0a inset !important;
-      caret-color:#fff;
-      border:1px solid #30363d !important;
-    }
-    /* Date input in dark */
-    input[type="date"]{ color-scheme: dark; }
-    input[type="date"]::-webkit-calendar-picker-indicator{ filter: invert(1) opacity(.85); }
-    /* Search clear button */
-    input[type="search"]::-webkit-search-cancel-button{ filter: invert(1); }
-    /* Disabled look konsisten */
-    input:disabled, textarea:disabled{opacity:.6}
 
     /* ===== List Key */
     .list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden}
@@ -102,16 +125,13 @@
     .switch input:checked + .track{background:#12211a;border-color:#1f4e39}
     .switch input:checked + .track .thumb{left:20px;background:#9de7c4}
 
-    /* Lite mode (RAM 2GB) */
+    /* Lite & Reduce */
     .lite .btn{box-shadow:none}
     .lite .card{box-shadow:none}
-
-    /* Reduce mode (kurangi animasi/bayangan) */
     .reduce *{transition:none!important;animation:none!important}
     .reduce .btn,.reduce .card{box-shadow:none!important}
     .reduce .drawer,.reduce .backdrop{transition:none!important}
 
-    /* Utilities */
     .hide{display:none!important}
   </style>
 </head>
