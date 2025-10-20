@@ -29,6 +29,7 @@
     .btn.ghost{background:transparent}
     .btn.small{padding:8px 10px;border-radius:10px}
     .btn:active{transform:translateY(1px)}
+    .btn[disabled]{opacity:.6;pointer-events:none}
     .icon{width:20px;height:20px}
 
     /* ===== Drawer */
@@ -46,16 +47,24 @@
     .app{min-height:calc(100dvh - 56px);padding:14px;display:flex;flex-direction:column;gap:14px}
     .page{display:none}
     .page.show{display:block}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:10px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:12px}
     .muted{color:var(--muted);font-size:.95rem}
     .grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
     @media (max-width:560px){.grid{grid-template-columns:1fr}}
     .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-    input[type="text"],input[type="search"],input[type="email"],input[type="password"],input[type="date"]{width:100%;padding:12px;border-radius:12px;background:#0f1622;border:1px solid var(--line);color:#e6edf3}
+
+    /* ===== Inputs: HITAM PUTIH */
+    input[type="text"],input[type="search"],input[type="email"],input[type="password"],input[type="date"]{
+      width:100%;padding:12px;border-radius:12px;background:#000;border:1px solid #30363d;color:#fff;
+    }
+    input::placeholder{color:#9aa7b3}
+
+    /* List Key */
     .list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden}
-    .item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px;background:#0e1420;border-bottom:1px solid var(--line)}
+    .item{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:12px;background:#0e1420;border-bottom:1px solid var(--line)}
+    .item:nth-child(2n){background:#0d131e}
     .item:last-child{border-bottom:none}
-    .pill{padding:3px 8px;border-radius:999px;border:1px solid var(--line);font-size:.8rem}
+    .pill{padding:3px 8px;border-radius:999px;border:1px solid var(--line);font-size:.8rem;white-space:nowrap}
     .ok{background:#10221a;border-color:#1f4e39;color:#9de7c4}
     .exp{background:#2a1414;border-color:#5d2a2a;color:#ffc8c8}
     .footer{margin-top:auto;color:var(--muted);font-size:.85rem;text-align:center;opacity:.9}
@@ -64,6 +73,9 @@
     /* Lite mode (RAM 2GB) */
     .lite .btn{box-shadow:none}
     .lite .card{box-shadow:none}
+
+    /* Utilities */
+    .hide{display:none!important}
   </style>
 </head>
 <body>
@@ -75,25 +87,25 @@
     </button>
     <div class="title">GxMods Key Panel</div>
     <div class="grow"></div>
-    <button id="btnSignOut" class="btn ghost">Sign Out</button>
+    <button id="btnSignOut" class="btn ghost hide">Sign Out</button>
   </header>
 
   <!-- Drawer -->
   <aside id="drawer" class="drawer" aria-hidden="true">
     <div class="brand"><strong>Menu</strong></div>
-    <nav class="nav">
-      <a href="#dashboard" data-route="dashboard" class="active">Dashboard</a>
-      <a href="#keys" data-route="keys">Daftar Key</a>
-      <a href="#settings" data-route="settings">Pengaturan</a>
+    <nav class="nav" id="nav">
+      <a href="#dashboard" data-route="dashboard" class="active" data-auth="in">Dashboard</a>
+      <a href="#keys" data-route="keys" data-auth="in">Daftar Key</a>
+      <a href="#settings" data-route="settings" data-auth="in">Pengaturan</a>
       <a href="#about" data-route="about">Tentang</a>
-      <a href="#login" data-route="login" class="mobile-only">Login</a>
+      <a href="#login" data-route="login" id="navLogin" class="mobile-only" data-auth="out">Login</a>
     </nav>
   </aside>
   <div id="backdrop" class="backdrop"></div>
 
   <!-- App -->
   <main id="app" class="app">
-    <!-- Dashboard -->
+    <!-- Dashboard (tanpa Global Key) -->
     <section class="page show" data-page="dashboard">
       <div class="grid">
         <div class="card">
@@ -106,19 +118,28 @@
           </div>
           <p class="muted">Angka dari Firebase Realtime DB.</p>
         </div>
+
         <div class="card">
-          <h3>Global Key</h3>
-          <div class="row">
-            <input id="globalKey" placeholder="Kosongkan jika tidak pakai global key"/>
-            <button id="btnSaveGlobal" class="btn small">Simpan</button>
-            <button id="btnClearGlobal" class="btn small">Hapus</button>
-          </div>
+          <h3>Ringkasan</h3>
+          <p class="muted">Kelola Global Key dan daftar key ada di tab <strong>Daftar Key</strong>. UI dirapikan, input hitam/putih, dan menu Login otomatis disembunyikan saat login.</p>
         </div>
       </div>
     </section>
 
     <!-- Keys -->
     <section class="page" data-page="keys">
+      <!-- Global Key (dipindah ke sini) -->
+      <div class="card" id="globalKeyCard">
+        <h3>Global Key</h3>
+        <div class="row">
+          <input id="globalKey" placeholder="Kosongkan jika tidak pakai global key"/>
+          <button id="btnSaveGlobal" class="btn small">Simpan</button>
+          <button id="btnClearGlobal" class="btn small">Hapus</button>
+        </div>
+        <p class="muted">Nilai disimpan di <code>auth/globalKey</code>.</p>
+      </div>
+
+      <!-- Buat Key -->
       <div class="card">
         <h3>Buat Key</h3>
         <div class="row">
@@ -135,8 +156,9 @@
         </div>
       </div>
 
+      <!-- Daftar Key -->
       <div class="card">
-        <div class="row" style="justify-content:space-between">
+        <div class="row" style="justify-content:space-between;align-items:center">
           <h3 style="margin:0">Daftar Key</h3>
           <input id="search" type="search" placeholder="Cari key…" style="min-width:160px;max-width:260px">
         </div>
@@ -159,7 +181,7 @@
     <section class="page" data-page="about">
       <div class="card">
         <h3>Tentang</h3>
-        <p class="muted">UI ini pakai drawer seperti versi yang kamu suka, tapi tersambung ke Firebase. Optimasi RAM 2 GB: efek minimal, event delegation tunggal, dan <em>lite mode</em> otomatis.</p>
+        <p class="muted">UI ini pakai drawer, tersambung ke Firebase. Optimasi RAM 2 GB: efek minimal, event delegation tunggal, dan <em>lite mode</em> otomatis.</p>
       </div>
     </section>
 
@@ -169,7 +191,9 @@
         <h3>Login Admin</h3>
         <div class="row"><input id="email" type="email" placeholder="Email" autocomplete="username"></div>
         <div class="row"><input id="password" type="password" placeholder="Password" autocomplete="current-password"></div>
-        <div class="row" style="justify-content:flex-end"><button id="btnLogin" class="btn">Sign In</button></div>
+        <div class="row" style="justify-content:flex-end">
+          <button id="btnLogin" class="btn">Sign In</button>
+        </div>
         <p class="muted">Hanya UID admin yang diizinkan.</p>
       </div>
     </section>
@@ -178,7 +202,7 @@
   <div id="toast" style="position:fixed;right:10px;bottom:10px;background:#111827;border:1px solid #263248;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);display:none"></div>
 
   <script type="module">
-    /* ====== Firebase config (sama seperti file kamu) */
+    /* ====== Firebase config */
     const ADMIN_UID = "4CCiNyEyTvSUPnY6Ugd9PzAU1df2";
     const firebaseConfig = {
       apiKey: "AIzaSyAJ2YitGgxTI8k440TmWUHgntkTLSqkX3c",
@@ -224,6 +248,7 @@
     const dense=$("#dense"), reduce=$("#reduce");
     const email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin");
     const btnSignOut=$("#btnSignOut");
+    const nav=$("#nav");
 
     // Settings persist
     dense.checked = localStorage.getItem("gx:dense")==="1";
@@ -231,26 +256,56 @@
     dense.onchange = ()=>{ localStorage.setItem("gx:dense", dense.checked?"1":"0"); render(); };
     reduce.onchange = ()=>{ document.documentElement.style.scrollBehavior = reduce.checked?"auto":"smooth"; localStorage.setItem("gx:reduce", reduce.checked?"1":"0"); };
 
-    // Auth
+    // ===== Auth & Nav visibility
+    function updateNav(user){
+      // Tampilkan/hilangkan item dengan data-auth
+      $$(".nav a").forEach(a=>{
+        const need = a.dataset.auth; // "in" | "out" | undefined
+        if(need==="in"){ a.classList.toggle("hide", !user); }
+        else if(need==="out"){ a.classList.toggle("hide", !!user); }
+      });
+      // Tombol sign out
+      btnSignOut.classList.toggle("hide", !user);
+    }
+
     onAuthStateChanged(auth, (user)=>{
+      // Hanya izinkan ADMIN_UID
       if(user && user.uid===ADMIN_UID){
-        // authorized
-        ["dashboard","keys","settings","about"].includes(localStorage.getItem("gx:route")) || route("dashboard");
+        updateNav(true);
         startData();
+        // pastikan tidak stay di login
+        const last = localStorage.getItem("gx:route") || "dashboard";
+        if(last==="login") route("dashboard"); else route(last);
       }else{
+        updateNav(false);
         route("login");
         if(user && user.uid!==ADMIN_UID){ signOut(auth); toast("Bukan admin"); }
       }
     });
+
     btnLogin.onclick = async ()=>{
       try{
+        btnLogin.disabled = true; btnLogin.textContent = "Masuk…";
         await signInWithEmailAndPassword(auth, (email.value||"").trim(), password.value||"");
         toast("Login sukses");
-      }catch(err){ toast("Login gagal"); }
+      }catch(err){
+        toast("Login gagal");
+      }finally{
+        btnLogin.disabled = false; btnLogin.textContent = "Sign In";
+      }
     };
-    btnSignOut.onclick = async ()=>{ try{ await signOut(auth); toast("Signed out"); }catch{} };
 
-    // Data
+    btnSignOut.onclick = async ()=>{
+      try{
+        btnSignOut.disabled = true;
+        await signOut(auth);
+        toast("Signed out");
+        route("login");
+      }catch{ /* noop */ }
+      finally{ btnSignOut.disabled = false; }
+    };
+
+    // ===== Data
     let cache = {}; // { key: {exp:number} }
     function startData(){
       onValue(ref(db,"auth/globalKey"), s=>{ globalKey.value = s.exists()? (s.val()||"") : ""; });
@@ -259,7 +314,7 @@
 
     function render(){
       // KPIs
-      const ks = Object.keys(cache);
+      const ks = Object.keys(cache||{});
       let expCount=0;
       for(const k of ks){ const v=cache[k]?.exp||0; if(v && Date.now()>v) expCount++; }
       kpiKeys.textContent = String(ks.length);
@@ -277,14 +332,19 @@
 
         const row = document.createElement("div");
         row.className="item";
-        if(dense.checked) row.style.padding="8px 10px";
+        if(dense.checked) row.style.padding="10px 10px";
 
         const left = document.createElement("div");
         left.style.display="grid"; left.style.gap="4px";
         const expStr = expMs? new Date(expMs).toLocaleDateString("id-ID",{day:"2-digit",month:"short",year:"numeric"}) : "Permanen";
         left.innerHTML = `<strong style="word-break:break-all">${k}</strong><span class="muted" style="font-size:.85rem">Expire: ${expStr}</span>`;
 
-        const right = document.createElement("div"); right.style.display="flex"; right.style.gap="6px"; right.style.flexWrap="wrap";
+        const status = document.createElement("span");
+        status.className="pill "+(expired?"exp":"ok");
+        status.textContent = expired?"Expired":"Aktif";
+
+        const right = document.createElement("div");
+        right.style.display="flex"; right.style.gap="6px"; right.style.flexWrap="wrap";
         const mk=(txt,action)=>{ const b=document.createElement("button"); b.className="btn small"; b.textContent=txt; b.dataset.key=k; b.dataset.action=action; return b; };
         right.appendChild(mk("Copy","copy"));
         right.appendChild(mk("+7","add7"));
@@ -292,7 +352,6 @@
         right.appendChild(mk("Tanggal…","setdate"));
         const del=mk("Hapus","del"); del.style.background="#2a1212"; del.style.borderColor="#5d2a2a"; right.appendChild(del);
 
-        const status = document.createElement("span"); status.className="pill "+(expired?"exp":"ok"); status.textContent = expired?"Expired":"Aktif";
         row.appendChild(left); row.appendChild(status); row.appendChild(right);
         frag.appendChild(row);
       }
@@ -318,7 +377,10 @@
     }, {passive:true});
 
     // Controls
-    $("#btnGen").onclick = ()=>{ newKey.value = (Math.random().toString(36).slice(2,6)+"-"+Math.random().toString(36).slice(2,6)+"-"+Math.random().toString(36).slice(2,6)+"-"+Math.random().toString(36).slice(2,6)).toUpperCase(); newKey.focus(); };
+    $("#btnGen").onclick = ()=>{
+      newKey.value = (Math.random().toString(36).slice(2,6)+"-"+Math.random().toString(36).slice(2,6)+"-"+Math.random().toString(36).slice(2,6)+"-"+Math.random().toString(36).slice(2,6)).toUpperCase();
+      newKey.focus();
+    };
     $("#btnAdd").onclick = async ()=>{
       const k=(newKey.value||"").trim(); if(!k) return toast("Isi key");
       let ms=0; if(exp.value){ const [Y,M,D]=exp.value.split("-").map(n=>parseInt(n,10)); ms=new Date(Y,M-1,D,23,59,59,999).getTime(); }
@@ -326,9 +388,25 @@
     };
     $("#btnSaveGlobal").onclick = async ()=>{ await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); toast("Global key disimpan"); };
     $("#btnClearGlobal").onclick = async ()=>{ await set(ref(db,"auth/globalKey"), ""); toast("Dikosongkan"); };
-    $("#btnSignOut").onclick = async ()=>{ try{ await signOut(auth); toast("Signed out"); route("login"); }catch{} };
     $("#search").addEventListener("input", ()=>render(), {passive:true});
 
+    // Chip +7 / No Exp di form buat key
+    document.addEventListener("click",(e)=>{
+      const chip=e.target.closest(".chip[data-add]"); if(!chip) return;
+      const v = Number(chip.dataset.add||0);
+      if(v===0){ exp.value=""; toast("Tanpa Exp"); return; }
+      const base = new Date();
+      base.setDate(base.getDate()+v);
+      const Y = base.getFullYear(), M=String(base.getMonth()+1).padStart(2,"0"), D=String(base.getDate()).padStart(2,"0");
+      exp.value = `${Y}-${M}-${D}`;
+      toast(`+${v} hari`);
+    }, {passive:true});
+
+    // Buka route terakhir
+    (function initRoute(){
+      const last = localStorage.getItem("gx:route");
+      if(last) route(last);
+    })();
   </script>
 </body>
 </html>
