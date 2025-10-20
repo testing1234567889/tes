@@ -70,7 +70,6 @@
   .login .brand{justify-content:center;margin-bottom:6px}
   .toast{position:fixed;inset:auto 10px 10px auto;background:#111827;border:1px solid #263248;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);opacity:.98;z-index:999}
   .link{color:#a8d0ff;text-decoration:none;border-bottom:1px dashed #3b82f6}
-  /* Tiny phones */
   @media(max-width:420px){
     .actions .btn{padding:8px 10px}
     .btn{font-size:12.5px}
@@ -230,7 +229,6 @@
   const viewLogin = $("#viewLogin"), viewDash=$("#viewDash");
   const adminEmail=$("#adminEmail"), btnSignOut=$("#btnSignOut");
   const formLogin=$("#formLogin"), email=$("#email"), password=$("#password");
-
   const globalKey=$("#globalKey"), btnSaveGlobal=$("#btnSaveGlobal"), btnClearGlobal=$("#btnClearGlobal");
   const newKey=$("#newKey"), btnGen=$("#btnGen"), exp=$("#exp"), btnAdd=$("#btnAdd");
   const rows=$("#rows"), search=$("#search");
@@ -333,9 +331,6 @@
     newKey.value=""; exp.value=""; toast("Key ditambahkan","ok");
   };
   search.addEventListener("input", renderTable);
-
-  // expose firebase funcs
-  const { update, ref, remove, set } = await import("https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js");
 </script>
 </body>
 </html>
