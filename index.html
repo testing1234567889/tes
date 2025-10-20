@@ -7,11 +7,11 @@
 <style>
   :root{
     --bg:#0b0d14;--card:#101624;--muted:#9fb0c2;--line:#1e2636;
-    --pri:#7c3aed;--pri2:#3b82f6; --ok:#22c55e;--warn:#f59e0b;--err:#ef4444;--teal:#06b6d4;
+    --pri:#7c3aed;--pri2:#3b82f6; --ok:#22c55e;--err:#ef4444;--teal:#06b6d4;
     --r:clamp(12px,2vw,18px); --pad:clamp(12px,2.5vw,20px);
     --shadow:0 10px 30px rgba(0,0,0,.35);
   }
-  *{box-sizing:border-box}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{height:100%}
   body{
     margin:0;
@@ -20,7 +20,10 @@
     background: radial-gradient(1200px 600px at 10% -20%, #0d1430 0%, transparent 60%),
                 radial-gradient(1000px 600px at 120% 0%, #12283a 0%, transparent 55%),
                 var(--bg);
-    display:flex;align-items:center;justify-content:center;padding:clamp(10px,3vw,24px);
+    display:flex;align-items:center;justify-content:center;
+    padding:clamp(10px,3vw,24px);
+    /* dorong turun biar aman dari address bar / notch */
+    padding-top: calc(env(safe-area-inset-top, 0px) + clamp(16px, 4vw, 28px));
   }
   .wrap{width:min(1100px,100%);display:grid;gap:clamp(8px,2vw,18px)}
   .card{
@@ -39,6 +42,7 @@
   .muted{color:var(--muted)}
   .btn{border:0;border-radius:999px;padding:9px 14px;color:#fff;cursor:pointer;transition:.15s transform,.2s filter;font:inherit}
   .btn:active{transform:scale(.97)}
+  .btn:focus{outline:none}
   .btn-primary{background:linear-gradient(135deg,var(--pri),var(--pri2))}
   .btn-ok{background:linear-gradient(135deg,var(--teal),var(--ok))}
   .btn-ghost{background:#192133;border:1px solid #27314a;color:#dbe7ff}
@@ -55,7 +59,7 @@
   .chip{padding:6px 10px;border-radius:999px;background:#0e1726;border:1px solid #26304a;cursor:pointer;user-select:none}
   .chip:hover{border-color:#3b82f6}
 
-  /* Desktop table wrapper */
+  /* Desktop table */
   .scroll-x{overflow:auto; -webkit-overflow-scrolling:touch}
   .tbl{width:100%;border-collapse:separate;border-spacing:0 clamp(6px,1.4vw,8px);min-width:640px}
   .tbl th{font-weight:600;color:#cfe0ff;text-align:left;padding:8px}
@@ -66,11 +70,12 @@
   .pill-ok{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.35)}
   .pill-exp{background:rgba(239,68,68,.18);color:#fecaca;border:1px solid rgba(239,68,68,.35)}
 
-  /* MOBILE LIST for keys */
+  /* Mobile list */
   .mobile-list{display:none}
   .m-item{background:#0f1524;border:1px solid #22304b;border-radius:12px;padding:10px;margin-bottom:8px}
   .m-top{display:flex;align-items:center;gap:8px}
   .m-key{font-weight:700;word-break:break-all;flex:1}
+  .no-select{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
   .m-status{white-space:nowrap}
   .m-exp{color:var(--muted);font-size:12px;margin:6px 0 8px}
   .m-actions{display:flex;flex-direction:column;gap:6px}
@@ -81,7 +86,6 @@
 
   /* Breakpoints */
   @media(max-width:900px){
-    /* switch to mobile list */
     .desk-only{display:none}
     .mobile-list{display:block}
   }
@@ -162,7 +166,6 @@
           <label class="muted" for="exp">Kadaluarsa (opsional)</label>
           <input id="exp" type="datetime-local" class="limit-phone"/>
           <span class="chip" data-add="7">+7 hari</span>
-          <span class="chip" data-add="30">+30 hari</span>
           <span class="chip" data-add="0">Tanpa Exp</span>
           <button id="btnAdd" class="btn btn-ok right">Tambah Key</button>
         </div>
@@ -242,7 +245,7 @@
     if(!ms || Number(ms)===0) return "Permanen";
     const d = new Date(Number(ms));
     const pad = n=>String(n).padStart(2,"0");
-    return `${pad(d.getDate())} ${bulan[d.getMonth()]} ${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    return `${pad(d.getDate())} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
   };
   const isExpired = (ms)=> (ms && Number(ms)!==0 && Date.now()>Number(ms));
   const genKey = ()=>{
@@ -251,7 +254,7 @@
   };
 
   // DOM
-  const uidInfo = $("#uidInfo"); uidInfo.textContent = ADMIN_UID;
+  const uidInfo = $("#uidInfo"); uidInfo && (uidInfo.textContent = ADMIN_UID);
   const viewLogin = $("#viewLogin"), viewDash=$("#viewDash");
   const adminEmail=$("#adminEmail"), btnSignOut=$("#btnSignOut");
   const formLogin=$("#formLogin"), email=$("#email"), password=$("#password");
@@ -293,6 +296,7 @@
   }
 
   function renderDesktop(){
+    if(!rows) return;
     const q = search.value.trim().toUpperCase();
     const ks = Object.keys(cacheKeys).sort();
     if(ks.length===0){ rows.innerHTML = `<tr><td colspan="4" class="muted" style="padding:14px">Belum ada key.</td></tr>`; return; }
@@ -303,13 +307,12 @@
       const expired = isExpired(expMs);
       html += `
       <tr>
-        <td style="word-break:break-all">${k}</td>
+        <td style="word-break:break-all"><span class="no-select">${k}</span></td>
         <td>${fmtExp(expMs)}</td>
         <td><span class="pill ${expired?'pill-exp':'pill-ok'}">${expired?'Expired':'Aktif'}</span></td>
         <td class="actions">
           <button class="btn btn-ghost" data-action="copy" data-key="${k}">Copy</button>
-          <button class="btn btn-ghost" data-action="add7" data-key="${k}">+7d</button>
-          <button class="btn btn-ghost" data-action="add30" data-key="${k}">+30d</button>
+          <button class="btn btn-ghost" data-action="add7" data-key="${k}">+7 hari</button>
           <button class="btn btn-ghost" data-action="noexp" data-key="${k}">No Exp</button>
           <button class="btn btn-primary" data-action="setdate" data-key="${k}">Set Tanggal…</button>
           <button class="btn btn-danger" data-action="del" data-key="${k}">Hapus</button>
@@ -320,6 +323,7 @@
   }
 
   function renderMobile(){
+    if(!mobileList) return;
     const q = search.value.trim().toUpperCase();
     const ks = Object.keys(cacheKeys).sort();
     if(ks.length===0){ mobileList.innerHTML = `<div class="muted" style="padding:6px 0">Belum ada key.</div>`; return; }
@@ -331,14 +335,13 @@
       html += `
         <div class="m-item">
           <div class="m-top">
-            <div class="m-key">${k}</div>
+            <div class="m-key no-select">${k}</div>
             <div class="m-status pill ${expired?'pill-exp':'pill-ok'}">${expired?'Expired':'Aktif'}</div>
           </div>
           <div class="m-exp">${fmtExp(expMs)}</div>
           <div class="m-actions">
             <button class="btn btn-ghost" data-action="copy" data-key="${k}">Copy</button>
             <button class="btn btn-ghost" data-action="add7" data-key="${k}">+7 hari</button>
-            <button class="btn btn-ghost" data-action="add30" data-key="${k}">+30 hari</button>
             <button class="btn btn-ghost" data-action="noexp" data-key="${k}">No Exp</button>
             <button class="btn btn-primary" data-action="setdate" data-key="${k}">Set Tanggal…</button>
             <button class="btn btn-danger" data-action="del" data-key="${k}">Hapus</button>
@@ -356,7 +359,6 @@
       try{
         if(act==="copy"){ await navigator.clipboard.writeText(k); toast("Key disalin","ok"); }
         else if(act==="add7"){ await update(ref(db,"auth/keys/"+k), {exp: Date.now()+7*864e5}); toast("Expire +7 hari","ok"); }
-        else if(act==="add30"){ await update(ref(db,"auth/keys/"+k), {exp: Date.now()+30*864e5}); toast("Expire +30 hari","ok"); }
         else if(act==="noexp"){ await update(ref(db,"auth/keys/"+k), {exp: 0}); toast("Expire dihapus","ok"); }
         else if(act==="setdate"){
           const cur = cacheKeys[k]?.exp||0;
@@ -372,29 +374,30 @@
       }catch(err){ toast("Aksi gagal: "+(err.code||"error"),"err"); }
     })();
   }
-  rows.addEventListener("click", handleActionClick);
-  mobileList.addEventListener("click", handleActionClick);
+  rows && rows.addEventListener("click", handleActionClick);
+  mobileList && mobileList.addEventListener("click", handleActionClick);
 
   // controls
-  $("#btnSaveGlobal").onclick = async ()=>{ await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); toast("Global key disimpan","ok"); };
-  $("#btnClearGlobal").onclick = async ()=>{ await set(ref(db,"auth/globalKey"), ""); toast("Global key dikosongkan","ok"); };
-  $("#btnGen").onclick = ()=>{ newKey.value = genKey(); newKey.focus(); };
+  btnSaveGlobal.onclick = async ()=>{ await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); toast("Global key disimpan","ok"); };
+  btnClearGlobal.onclick = async ()=>{ await set(ref(db,"auth/globalKey"), ""); toast("Global key dikosongkan","ok"); };
+  btnGen.onclick = ()=>{ newKey.value = genKey(); newKey.focus(); };
   document.querySelectorAll(".chip").forEach(ch=>{
     ch.addEventListener("click", ()=>{
       const days = Number(ch.dataset.add);
       if(days===0){ exp.value=""; return; }
       const dt = new Date(Date.now()+days*864e5);
+      // isi datetime-local (UTC offset aware)
       exp.value = new Date(dt.getTime()-dt.getTimezoneOffset()*60000).toISOString().slice(0,16);
     });
   });
-  $("#btnAdd").onclick = async ()=>{
+  btnAdd.onclick = async ()=>{
     const k = (newKey.value||"").trim();
     if(!k){ toast("Isi key dulu.","err"); return; }
     const ms = exp.value ? new Date(exp.value).getTime() : 0;
     await update(ref(db,"auth/keys/"+k), {exp: ms||0});
     newKey.value=""; exp.value=""; toast("Key ditambahkan","ok");
   };
-  $("#search").addEventListener("input", renderLists);
+  search.addEventListener("input", renderLists);
 </script>
 </body>
 </html>
