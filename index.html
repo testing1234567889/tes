@@ -9,7 +9,7 @@
     --bg:#0b0d14;--card:#101624;--muted:#9fb0c2;--line:#1e2636;
     --pri:#7c3aed;--pri2:#3b82f6; --ok:#22c55e;--err:#ef4444;--teal:#06b6d4;
     --r:clamp(12px,2vw,18px); --pad:clamp(12px,2.5vw,20px);
-    --shadow:0 10px 30px rgba(0,0,0,.35);
+    --shadow:0 10px 24px rgba(0,0,0,.30);
   }
 
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -19,15 +19,13 @@
     min-height:100svh; /* aman address bar mobile */
     font:clamp(12px,1.6vw,14.5px)/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Inter,sans-serif;
     color:#eef3fb;
-    background: radial-gradient(1200px 600px at 10% -20%, #0d1430 0%, transparent 60%),
-                radial-gradient(1000px 600px at 120% 0%, #12283a 0%, transparent 55%),
-                var(--bg);
-    /* safe area + ruang ekstra */
+    background:
+      radial-gradient(1000px 520px at 8% -20%, #0d1430 0%, transparent 60%),
+      radial-gradient(900px 560px at 120% 0%, #12283a 0%, transparent 55%),
+      var(--bg);
     padding: calc(env(safe-area-inset-top, 0px) + clamp(16px, 4vw, 28px)) clamp(10px,3vw,24px) clamp(16px,4vw,28px);
-    /* anti salin global */
     user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
   }
-  /* Re-enable selection hanya di input/textarea (biar bisa edit/copy di field) */
   input, textarea { user-select:text; -webkit-user-select:text; -webkit-touch-callout:default; }
 
   .wrap{width:min(1100px,100%);margin:0 auto;display:grid;gap:clamp(8px,2vw,18px)}
@@ -35,9 +33,13 @@
     background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
     border:1px solid rgba(255,255,255,.08);
     border-radius:var(--r); box-shadow:var(--shadow);
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(4px); /* ringan */
   }
-  .header{display:flex;align-items:center;justify-content:space-between;padding:var(--pad)}
+  /* Lite mode untuk device mem <= 2GB */
+  .lite .card{backdrop-filter:none;background:#0f1424d9;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+  .lite .m-item{background:#11182b}
+
+  .header{position:relative;display:flex;align-items:center;justify-content:space-between;padding:var(--pad)}
   .brand{display:flex;align-items:center;gap:12px;min-width:0}
   .badge{width:clamp(34px,6vw,42px);height:clamp(34px,6vw,42px);border-radius:50%;position:relative;background:#0a1222;border:1px solid rgba(255,255,255,.08);flex:0 0 auto}
   .eye{position:absolute;top:40%;width:7px;height:7px;background:#56c0ff;border-radius:50%}
@@ -53,10 +55,11 @@
   .btn-ok{background:linear-gradient(135deg,var(--teal),var(--ok));border:none}
   .btn-ghost{background:#192133;border:1px solid #27314a;color:#dbe7ff}
   .btn-danger{background:linear-gradient(135deg,#ef4444,#b91c1c);border:none}
+  .signout{position:absolute;top:10px;right:10px}
 
   .grid{display:grid;gap:clamp(10px,2vw,14px);padding:var(--pad);grid-template-columns:1fr}
   @media(min-width:900px){ .grid{ grid-template-columns: 1.2fr 2fr } }
-  .section{padding:var(--pad);border-top:1px solid var(--line)}
+  .section{padding:var(--pad);border-top:1px solid var(--line);content-visibility:auto;contain-intrinsic-size: 400px 800px;}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   input,select{
     color:#e7edf8;background:#0e1424;border:1px solid #27314a;border-radius:10px;
@@ -82,7 +85,7 @@
   .m-item{background:#0f1524;border:1px solid #22304b;border-radius:12px;padding:10px;margin-bottom:8px}
   .m-top{display:flex;align-items:center;gap:8px}
   .m-key{font-weight:700;word-break:break-all;flex:1}
-  .m-key, .m-exp, .title, .muted, h3, label { user-select:none; -webkit-user-select:none; } /* anti salin teks */
+  .m-key, .m-exp, .title, .muted, h3, label { user-select:none; -webkit-user-select:none; }
   .m-status{white-space:nowrap}
   .m-exp{color:var(--muted);font-size:12px;margin:6px 0 8px}
   .m-actions{display:flex;flex-direction:column;gap:6px}
@@ -121,10 +124,8 @@
         <div class="muted" style="font-size:12px;">Kelola Global Key & Premium Keys</div>
       </div>
     </div>
-    <div class="row">
-      <span id="adminEmail" class="muted" style="font-size:12px;margin-right:10px;"></span>
-      <button id="btnSignOut" class="btn btn-ghost hide">Sign Out</button>
-    </div>
+    <!-- email disembunyikan -->
+    <button id="btnSignOut" class="btn btn-ghost signout">Sign Out</button>
   </div>
 
   <!-- LOGIN -->
@@ -137,8 +138,7 @@
       <div class="section" style="border-top:none;padding-top:0">
         <div class="row"><input id="email" type="email" placeholder="Email" required /></div>
         <div class="row" style="margin-top:10px"><input id="password" type="password" placeholder="Password" required /></div>
-        <div class="row" style="margin-top:14px;justify-content:space-between">
-          <span class="muted" style="font-size:12px">UID admin: <code id="uidInfo">-</code></span>
+        <div class="row" style="margin-top:14px;justify-content:flex-end">
           <button class="btn btn-primary" type="submit">Sign In</button>
         </div>
       </div>
@@ -245,7 +245,7 @@
     t.style.borderColor = kind==="err" ? "rgba(239,68,68,.5)" :
                           kind==="ok"  ? "rgba(34,197,94,.5)" :
                           "rgba(59,130,246,.5)";
-    show(t); clearTimeout(window._t); window._t=setTimeout(()=>hide(t), 2800);
+    show(t); clearTimeout(window._t); window._t=setTimeout(()=>hide(t), 2400);
   };
   const bulan = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
   const fmtExp = (ms)=>{
@@ -264,15 +264,17 @@
     const y=d.getFullYear(); const m=String(d.getMonth()+1).padStart(2,"0"); const da=String(d.getDate()).padStart(2,"0");
     return `${y}-${m}-${da}`;
   };
-  const endOfDayMs = (y,m,d)=>{
-    // local end of day 23:59:59
-    return new Date(y, m-1, d, 23, 59, 59, 999).getTime();
-  };
+  const endOfDayMs = (y,m,d)=> new Date(y, m-1, d, 23, 59, 59, 999).getTime();
+
+  // Lite mode otomatis (hemat GPU/blur) untuk deviceMemory <= 2
+  try{ if('deviceMemory' in navigator && navigator.deviceMemory <= 2){ document.body.classList.add('lite'); } }catch(e){}
+
+  // Debounce helper
+  const debounce=(fn,ms=180)=>{let t;return (...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}};
 
   // DOM
-  const uidInfo = $("#uidInfo"); uidInfo && (uidInfo.textContent = ADMIN_UID);
   const viewLogin = $("#viewLogin"), viewDash=$("#viewDash");
-  const adminEmail=$("#adminEmail"), btnSignOut=$("#btnSignOut");
+  const btnSignOut=$("#btnSignOut");
   const formLogin=$("#formLogin"), email=$("#email"), password=$("#password");
   const globalKey=$("#globalKey"), btnSaveGlobal=$("#btnSaveGlobal"), btnClearGlobal=$("#btnClearGlobal");
   const newKey=$("#newKey"), btnGen=$("#btnGen"), exp=$("#exp"), btnAdd=$("#btnAdd");
@@ -281,12 +283,10 @@
   // auth
   onAuthStateChanged(auth, (user)=>{
     if(user && user.uid===ADMIN_UID){
-      adminEmail.textContent = user.email || "(admin)";
-      show(viewDash); hide(viewLogin); show(btnSignOut);
+      show(viewDash); hide(viewLogin);
       startData();
     }else{
-      hide(viewDash); show(viewLogin); hide(btnSignOut);
-      adminEmail.textContent = "";
+      hide(viewDash); show(viewLogin);
       if(user && user.uid!==ADMIN_UID){ signOut(auth); toast("Akun bukan admin.","err"); }
     }
   });
@@ -300,11 +300,13 @@
   btnSignOut.onclick = async ()=>{ await signOut(auth); toast("Signed out"); };
 
   // data
-  let cacheKeys = {}; // snapshot cache
+  let cacheKeys = {};
   function startData(){
-    onValue(ref(db,"auth/globalKey"), s=>{ globalKey.value = s.exists()? (s.val()||"") : ""; });
-    onValue(ref(db,"auth/keys"), s=>{ cacheKeys = s.val()||{}; renderLists(); });
+    onValue(ref(db,"auth/globalKey"), s=>{ globalKey.value = s.exists()? (s.val()||"") : ""; }, {onlyOnce:false});
+    onValue(ref(db,"auth/keys"), s=>{ cacheKeys = s.val()||{}; renderLists(); }, {onlyOnce:false});
   }
+
+  const doSearch = debounce(()=>renderLists(), 200);
 
   function renderLists(){
     renderDesktop();
@@ -367,16 +369,24 @@
     mobileList.innerHTML = html || `<div class="muted" style="padding:6px 0">Tidak ada hasil.</div>`;
   }
 
-  // actions (delegation) — berlaku untuk desktop & mobile
-  function handleActionClick(e){
-    const b = e.target.closest("button[data-action]"); if(!b) return;
+  // Delegation tunggal (lebih irit)
+  document.addEventListener("click", (e)=>{
+    const b = e.target.closest("button[data-action]");
+    if(!b) return;
     const k = b.dataset.key; const act = b.dataset.action;
+
     (async ()=>{
       try{
-        if(act==="copy"){ await navigator.clipboard.writeText(k); toast("Key disalin","ok"); }
-        else if(act==="add7"){ await update(ref(db,"auth/keys/"+k), {exp: Date.now()+7*864e5}); toast("Expire +7 hari","ok"); }
-        else if(act==="noexp"){ await update(ref(db,"auth/keys/"+k), {exp: 0}); toast("Expire dihapus","ok"); }
-        else if(act==="setdate"){
+        if(act==="copy"){
+          await navigator.clipboard.writeText(k); toast("Key disalin","ok");
+        } else if(act==="add7"){
+          const cur = cacheKeys[k]?.exp||0;
+          const base = Math.max(Number(cur)||0, Date.now());
+          await update(ref(db,"auth/keys/"+k), {exp: base + 7*864e5});
+          toast("Ditambah +7 hari","ok");
+        } else if(act==="noexp"){
+          await update(ref(db,"auth/keys/"+k), {exp: 0}); toast("Expire dihapus","ok");
+        } else if(act==="setdate"){
           const cur = cacheKeys[k]?.exp||0;
           const seed = cur>0 ? dateToInput(cur) : dateToInput(Date.now());
           const val = prompt("Masukkan tanggal (YYYY-MM-DD)\nKosongkan untuk No Exp:", seed);
@@ -384,28 +394,29 @@
           const v = val.trim();
           const ms = v==="" ? 0 : (()=>{ const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return endOfDayMs(Y,M,D); })();
           await update(ref(db,"auth/keys/"+k), {exp: ms||0}); toast("Expire diperbarui","ok");
-        }
-        else if(act==="del"){
+        } else if(act==="del"){
           if(confirm(`Hapus key:\n${k}?`)){ await remove(ref(db,"auth/keys/"+k)); toast("Key dihapus","ok"); }
         }
       }catch(err){ toast("Aksi gagal: "+(err.code||"error"),"err"); }
     })();
-  }
-  rows && rows.addEventListener("click", handleActionClick);
-  mobileList && mobileList.addEventListener("click", handleActionClick);
+  }, {passive:true});
 
   // controls
   btnSaveGlobal.onclick = async ()=>{ await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); toast("Global key disimpan","ok"); };
   btnClearGlobal.onclick = async ()=>{ await set(ref(db,"auth/globalKey"), ""); toast("Global key dikosongkan","ok"); };
   btnGen.onclick = ()=>{ newKey.value = genKey(); newKey.focus(); };
+
+  // chip +7 / no-exp (tambah di atas nilai yang sudah ada pada input date)
   document.querySelectorAll(".chip").forEach(ch=>{
     ch.addEventListener("click", ()=>{
       const days = Number(ch.dataset.add);
       if(days===0){ exp.value=""; return; }
-      const dt = new Date(Date.now()+days*864e5);
-      exp.value = dateToInput(dt.getTime());
-    });
+      const base = exp.value ? new Date(exp.value) : new Date();
+      base.setDate(base.getDate()+days);
+      exp.value = dateToInput(base.getTime());
+    }, {passive:true});
   });
+
   btnAdd.onclick = async ()=>{
     const k = (newKey.value||"").trim();
     if(!k){ toast("Isi key dulu.","err"); return; }
@@ -417,7 +428,8 @@
     await update(ref(db,"auth/keys/"+k), {exp: ms});
     newKey.value=""; exp.value=""; toast("Key ditambahkan","ok");
   };
-  search.addEventListener("input", renderLists);
+
+  search.addEventListener("input", doSearch, {passive:true});
 </script>
 </body>
 </html>
