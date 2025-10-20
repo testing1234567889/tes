@@ -37,7 +37,7 @@
   .mouth{position:absolute;bottom:22%;left:50%;width:18px;height:2px;background:#9fb0c2;border-radius:2px;transform:translateX(-50%)}
   .title{font-weight:700;letter-spacing:.2px;font-size:clamp(14px,2.4vw,18px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .muted{color:var(--muted)}
-  .btn{border:0;border-radius:999px;padding:10px 16px;color:#fff;cursor:pointer;transition:.15s transform,.2s filter;font:inherit}
+  .btn{border:0;border-radius:999px;padding:9px 14px;color:#fff;cursor:pointer;transition:.15s transform,.2s filter;font:inherit}
   .btn:active{transform:scale(.97)}
   .btn-primary{background:linear-gradient(135deg,var(--pri),var(--pri2))}
   .btn-ok{background:linear-gradient(135deg,var(--teal),var(--ok))}
@@ -46,7 +46,7 @@
   .grid{display:grid;gap:clamp(10px,2vw,14px);padding:var(--pad);grid-template-columns:1fr}
   @media(min-width:900px){ .grid{ grid-template-columns: 1.2fr 2fr } }
   .section{padding:var(--pad);border-top:1px solid var(--line)}
-  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   input,select{
     color:#e7edf8;background:#0e1424;border:1px solid #27314a;border-radius:10px;
     padding:10px 12px;outline:none;min-width:0;width:100%;
@@ -54,6 +54,8 @@
   input:focus{border-color:#56c0ff;box-shadow:0 0 0 3px rgba(86,192,255,.15)}
   .chip{padding:6px 10px;border-radius:999px;background:#0e1726;border:1px solid #26304a;cursor:pointer;user-select:none}
   .chip:hover{border-color:#3b82f6}
+
+  /* Desktop table wrapper */
   .scroll-x{overflow:auto; -webkit-overflow-scrolling:touch}
   .tbl{width:100%;border-collapse:separate;border-spacing:0 clamp(6px,1.4vw,8px);min-width:640px}
   .tbl th{font-weight:600;color:#cfe0ff;text-align:left;padding:8px}
@@ -63,18 +65,35 @@
   .pill{padding:3px 8px;border-radius:999px;font-size:12px}
   .pill-ok{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.35)}
   .pill-exp{background:rgba(239,68,68,.18);color:#fecaca;border:1px solid rgba(239,68,68,.35)}
-  .actions{display:flex;gap:8px;flex-wrap:wrap}
+
+  /* MOBILE LIST for keys */
+  .mobile-list{display:none}
+  .m-item{background:#0f1524;border:1px solid #22304b;border-radius:12px;padding:10px;margin-bottom:8px}
+  .m-top{display:flex;align-items:center;gap:8px}
+  .m-key{font-weight:700;word-break:break-all;flex:1}
+  .m-status{white-space:nowrap}
+  .m-exp{color:var(--muted);font-size:12px;margin:6px 0 8px}
+  .m-actions{display:flex;flex-direction:column;gap:6px}
+  .m-actions .btn{width:100%;padding:8px 10px}
+
+  /* Inputs width limit on phones */
+  .limit-phone{max-width:360px;width:100%}
+
+  /* Breakpoints */
+  @media(max-width:900px){
+    /* switch to mobile list */
+    .desk-only{display:none}
+    .mobile-list{display:block}
+  }
+  @media(min-width:901px){
+    .mobile-only{display:none}
+  }
+
   .right{margin-left:auto}
   .hide{display:none}
   .login{max-width:min(420px,100%);margin:0 auto;padding:var(--pad)}
   .login .brand{justify-content:center;margin-bottom:6px}
   .toast{position:fixed;inset:auto 10px 10px auto;background:#111827;border:1px solid #263248;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);opacity:.98;z-index:999}
-  .link{color:#a8d0ff;text-decoration:none;border-bottom:1px dashed #3b82f6}
-  @media(max-width:420px){
-    .actions .btn{padding:8px 10px}
-    .btn{font-size:12.5px}
-    .title{max-width:52vw}
-  }
 </style>
 </head>
 <body>
@@ -126,25 +145,22 @@
       <section class="section" style="border-top:none">
         <h3 style="margin:0 0 10px">Global Key</h3>
         <div class="row">
-          <input id="globalKey" placeholder="Kosongkan jika tidak memakai global key" style="flex:1;min-width:220px"/>
+          <input id="globalKey" class="limit-phone" placeholder="Kosongkan jika tidak memakai global key"/>
           <button id="btnSaveGlobal" class="btn btn-primary">Simpan</button>
           <button id="btnClearGlobal" class="btn btn-ghost">Hapus</button>
-        </div>
-        <div class="muted" style="font-size:12px;margin-top:6px">
-          Client Android hanya baca <code>/auth/globalKey</code> (read-only).
         </div>
       </section>
 
       <!-- NEW KEY -->
       <section class="section">
         <h3 style="margin:0 0 10px">Buat Key Baru</h3>
-        <div class="row" style="gap:10px">
-          <input id="newKey" placeholder="Key (atau klik Generate)" style="flex:1;min-width:220px"/>
+        <div class="row" style="gap:8px">
+          <input id="newKey" class="limit-phone" placeholder="Key (atau klik Generate)"/>
           <button id="btnGen" class="btn btn-ghost">Generate</button>
         </div>
-        <div class="row" style="margin-top:10px">
+        <div class="row" style="margin-top:8px">
           <label class="muted" for="exp">Kadaluarsa (opsional)</label>
-          <input id="exp" type="datetime-local" style="max-width:260px"/>
+          <input id="exp" type="datetime-local" class="limit-phone"/>
           <span class="chip" data-add="7">+7 hari</span>
           <span class="chip" data-add="30">+30 hari</span>
           <span class="chip" data-add="0">Tanpa Exp</span>
@@ -152,13 +168,15 @@
         </div>
       </section>
 
-      <!-- TABLE -->
+      <!-- KEYS LIST -->
       <section class="section" style="grid-column:1/-1">
         <div class="row" style="justify-content:space-between;margin-bottom:8px">
           <h3 style="margin:0">Daftar Key</h3>
-          <input id="search" placeholder="Cari key…" style="min-width:180px;max-width:260px"/>
+          <input id="search" placeholder="Cari key…" style="min-width:160px;max-width:260px"/>
         </div>
-        <div class="scroll-x">
+
+        <!-- Desktop Table -->
+        <div class="scroll-x desk-only">
           <table class="tbl">
             <thead>
             <tr>
@@ -170,6 +188,11 @@
             </thead>
             <tbody id="rows"><tr><td colspan="4" class="muted" style="padding:14px">Memuat…</td></tr></tbody>
           </table>
+        </div>
+
+        <!-- Mobile Cards -->
+        <div id="mobileList" class="mobile-list mobile-only">
+          <!-- diisi via JS -->
         </div>
       </section>
 
@@ -197,7 +220,7 @@
   // SDK
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
   import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-  import { getDatabase, ref, onValue, set, update, remove, get, child } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+  import { getDatabase, ref, onValue, set, update, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -214,9 +237,12 @@
                           "rgba(59,130,246,.5)";
     show(t); clearTimeout(window._t); window._t=setTimeout(()=>hide(t), 2800);
   };
+  const bulan = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
   const fmtExp = (ms)=>{
-    if(!ms || Number(ms)===0) return "Tidak ada (permanen)";
-    return new Date(Number(ms)).toLocaleString();
+    if(!ms || Number(ms)===0) return "Permanen";
+    const d = new Date(Number(ms));
+    const pad = n=>String(n).padStart(2,"0");
+    return `${pad(d.getDate())} ${bulan[d.getMonth()]} ${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
   };
   const isExpired = (ms)=> (ms && Number(ms)!==0 && Date.now()>Number(ms));
   const genKey = ()=>{
@@ -231,7 +257,7 @@
   const formLogin=$("#formLogin"), email=$("#email"), password=$("#password");
   const globalKey=$("#globalKey"), btnSaveGlobal=$("#btnSaveGlobal"), btnClearGlobal=$("#btnClearGlobal");
   const newKey=$("#newKey"), btnGen=$("#btnGen"), exp=$("#exp"), btnAdd=$("#btnAdd");
-  const rows=$("#rows"), search=$("#search");
+  const rows=$("#rows"), search=$("#search"), mobileList=$("#mobileList");
 
   // auth
   onAuthStateChanged(auth, (user)=>{
@@ -258,10 +284,15 @@
   let cacheKeys = {}; // snapshot cache
   function startData(){
     onValue(ref(db,"auth/globalKey"), s=>{ globalKey.value = s.exists()? (s.val()||"") : ""; });
-    onValue(ref(db,"auth/keys"), s=>{ cacheKeys = s.val()||{}; renderTable(); });
+    onValue(ref(db,"auth/keys"), s=>{ cacheKeys = s.val()||{}; renderLists(); });
   }
 
-  function renderTable(){
+  function renderLists(){
+    renderDesktop();
+    renderMobile();
+  }
+
+  function renderDesktop(){
     const q = search.value.trim().toUpperCase();
     const ks = Object.keys(cacheKeys).sort();
     if(ks.length===0){ rows.innerHTML = `<tr><td colspan="4" class="muted" style="padding:14px">Belum ada key.</td></tr>`; return; }
@@ -288,33 +319,66 @@
     rows.innerHTML = html || `<tr><td colspan="4" class="muted" style="padding:14px">Tidak ada hasil.</td></tr>`;
   }
 
-  // table actions (event delegation)
-  rows.addEventListener("click", async (e)=>{
+  function renderMobile(){
+    const q = search.value.trim().toUpperCase();
+    const ks = Object.keys(cacheKeys).sort();
+    if(ks.length===0){ mobileList.innerHTML = `<div class="muted" style="padding:6px 0">Belum ada key.</div>`; return; }
+    let html="";
+    for(const k of ks){
+      if(q && !k.toUpperCase().includes(q)) continue;
+      const expMs = cacheKeys[k]?.exp||0;
+      const expired = isExpired(expMs);
+      html += `
+        <div class="m-item">
+          <div class="m-top">
+            <div class="m-key">${k}</div>
+            <div class="m-status pill ${expired?'pill-exp':'pill-ok'}">${expired?'Expired':'Aktif'}</div>
+          </div>
+          <div class="m-exp">${fmtExp(expMs)}</div>
+          <div class="m-actions">
+            <button class="btn btn-ghost" data-action="copy" data-key="${k}">Copy</button>
+            <button class="btn btn-ghost" data-action="add7" data-key="${k}">+7 hari</button>
+            <button class="btn btn-ghost" data-action="add30" data-key="${k}">+30 hari</button>
+            <button class="btn btn-ghost" data-action="noexp" data-key="${k}">No Exp</button>
+            <button class="btn btn-primary" data-action="setdate" data-key="${k}">Set Tanggal…</button>
+            <button class="btn btn-danger" data-action="del" data-key="${k}">Hapus</button>
+          </div>
+        </div>`;
+    }
+    mobileList.innerHTML = html || `<div class="muted" style="padding:6px 0">Tidak ada hasil.</div>`;
+  }
+
+  // actions (delegation) — berlaku untuk desktop & mobile
+  function handleActionClick(e){
     const b = e.target.closest("button[data-action]"); if(!b) return;
     const k = b.dataset.key; const act = b.dataset.action;
-    try{
-      if(act==="copy"){ await navigator.clipboard.writeText(k); toast("Key disalin","ok"); }
-      else if(act==="add7"){ await update(ref(db,"auth/keys/"+k), {exp: Date.now()+7*864e5}); toast("Expire +7 hari","ok"); }
-      else if(act==="add30"){ await update(ref(db,"auth/keys/"+k), {exp: Date.now()+30*864e5}); toast("Expire +30 hari","ok"); }
-      else if(act==="noexp"){ await update(ref(db,"auth/keys/"+k), {exp: 0}); toast("Expire dihapus","ok"); }
-      else if(act==="setdate"){
-        const cur = cacheKeys[k]?.exp||0;
-        const iso = cur>0 ? new Date(cur).toISOString().slice(0,16) : new Date().toISOString().slice(0,16);
-        const val = prompt("Set datetime-local (YYYY-MM-DDTHH:MM)\nKosongkan untuk No Exp:", iso);
-        if(val===null) return;
-        const ms = val.trim()==="" ? 0 : new Date(val).getTime();
-        await update(ref(db,"auth/keys/"+k), {exp: ms||0}); toast("Expire diperbarui","ok");
-      }
-      else if(act==="del"){
-        if(confirm(`Hapus key:\n${k}?`)){ await remove(ref(db,"auth/keys/"+k)); toast("Key dihapus","ok"); }
-      }
-    }catch(err){ toast("Aksi gagal: "+(err.code||"error"),"err"); }
-  });
+    (async ()=>{
+      try{
+        if(act==="copy"){ await navigator.clipboard.writeText(k); toast("Key disalin","ok"); }
+        else if(act==="add7"){ await update(ref(db,"auth/keys/"+k), {exp: Date.now()+7*864e5}); toast("Expire +7 hari","ok"); }
+        else if(act==="add30"){ await update(ref(db,"auth/keys/"+k), {exp: Date.now()+30*864e5}); toast("Expire +30 hari","ok"); }
+        else if(act==="noexp"){ await update(ref(db,"auth/keys/"+k), {exp: 0}); toast("Expire dihapus","ok"); }
+        else if(act==="setdate"){
+          const cur = cacheKeys[k]?.exp||0;
+          const iso = cur>0 ? new Date(cur).toISOString().slice(0,16) : new Date().toISOString().slice(0,16);
+          const val = prompt("Set datetime-local (YYYY-MM-DDTHH:MM)\nKosongkan untuk No Exp:", iso);
+          if(val===null) return;
+          const ms = val.trim()==="" ? 0 : new Date(val).getTime();
+          await update(ref(db,"auth/keys/"+k), {exp: ms||0}); toast("Expire diperbarui","ok");
+        }
+        else if(act==="del"){
+          if(confirm(`Hapus key:\n${k}?`)){ await remove(ref(db,"auth/keys/"+k)); toast("Key dihapus","ok"); }
+        }
+      }catch(err){ toast("Aksi gagal: "+(err.code||"error"),"err"); }
+    })();
+  }
+  rows.addEventListener("click", handleActionClick);
+  mobileList.addEventListener("click", handleActionClick);
 
   // controls
-  btnSaveGlobal.onclick = async ()=>{ await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); toast("Global key disimpan","ok"); };
-  btnClearGlobal.onclick = async ()=>{ await set(ref(db,"auth/globalKey"), ""); toast("Global key dikosongkan","ok"); };
-  btnGen.onclick = ()=>{ newKey.value = genKey(); newKey.focus(); };
+  $("#btnSaveGlobal").onclick = async ()=>{ await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); toast("Global key disimpan","ok"); };
+  $("#btnClearGlobal").onclick = async ()=>{ await set(ref(db,"auth/globalKey"), ""); toast("Global key dikosongkan","ok"); };
+  $("#btnGen").onclick = ()=>{ newKey.value = genKey(); newKey.focus(); };
   document.querySelectorAll(".chip").forEach(ch=>{
     ch.addEventListener("click", ()=>{
       const days = Number(ch.dataset.add);
@@ -323,14 +387,14 @@
       exp.value = new Date(dt.getTime()-dt.getTimezoneOffset()*60000).toISOString().slice(0,16);
     });
   });
-  btnAdd.onclick = async ()=>{
+  $("#btnAdd").onclick = async ()=>{
     const k = (newKey.value||"").trim();
     if(!k){ toast("Isi key dulu.","err"); return; }
     const ms = exp.value ? new Date(exp.value).getTime() : 0;
     await update(ref(db,"auth/keys/"+k), {exp: ms||0});
     newKey.value=""; exp.value=""; toast("Key ditambahkan","ok");
   };
-  search.addEventListener("input", renderTable);
+  $("#search").addEventListener("input", renderLists);
 </script>
 </body>
 </html>
