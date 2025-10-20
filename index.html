@@ -11,7 +11,6 @@
     html,body{height:100%}
     body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;background:#0b0f14;color:#e6edf3;-webkit-tap-highlight-color:transparent}
     a{color:inherit;text-decoration:none}
-    button,input,select,textarea{font:inherit;color:inherit}
     img,svg{display:block;max-width:100%}
 
     :root{
@@ -42,18 +41,21 @@
     .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .16s ease;z-index:45}
     .backdrop.show{opacity:1;pointer-events:auto}
 
-    /* ===== App */
+    /* ===== App & pages */
     .app{min-height:calc(100dvh - 56px);padding:14px;display:flex;flex-direction:column;gap:14px}
     .page{display:none}
-    .page.show{display:block}
+    /* bikin konten dalam satu page punya jarak vertikal antar .card */
+    .page.show{display:grid;gap:16px}
     .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:12px}
     .muted{color:var(--muted);font-size:.95rem}
     .grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
     @media (max-width:560px){.grid{grid-template-columns:1fr}}
     .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .row.between{justify-content:space-between;align-items:center}
 
-    /* ===== Inputs: DARK FORCE OVERRIDE ===== */
-    input, select, textarea{
+    /* ===== Inputs: DARK FORCE OVERRIDE (kecuali checkbox/radio/range/file) */
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+    select, textarea{
       width:100%;
       padding:12px;
       border-radius:12px;
@@ -81,7 +83,7 @@
     /* Disabled look konsisten */
     input:disabled, textarea:disabled{opacity:.6}
 
-    /* List Key */
+    /* ===== List Key */
     .list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden}
     .item{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:12px;background:#0e1420;border-bottom:1px solid var(--line)}
     .item:nth-child(2n){background:#0d131e}
@@ -92,9 +94,22 @@
     .footer{margin-top:auto;color:var(--muted);font-size:.85rem;text-align:center;opacity:.9}
     .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#0f1622;cursor:pointer;user-select:none}
 
+    /* ===== Switch (untuk Pengaturan) */
+    .switch{display:inline-flex;align-items:center;gap:10px}
+    .switch input{position:absolute;opacity:0;width:0;height:0}
+    .switch .track{width:44px;height:26px;background:#1f2937;border:1px solid var(--line);border-radius:999px;position:relative;transition:background .15s,border-color .15s}
+    .switch .thumb{position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#cbd5e1;transition:left .15s,background .15s}
+    .switch input:checked + .track{background:#12211a;border-color:#1f4e39}
+    .switch input:checked + .track .thumb{left:20px;background:#9de7c4}
+
     /* Lite mode (RAM 2GB) */
     .lite .btn{box-shadow:none}
     .lite .card{box-shadow:none}
+
+    /* Reduce mode (kurangi animasi/bayangan) */
+    .reduce *{transition:none!important;animation:none!important}
+    .reduce .btn,.reduce .card{box-shadow:none!important}
+    .reduce .drawer,.reduce .backdrop{transition:none!important}
 
     /* Utilities */
     .hide{display:none!important}
@@ -180,7 +195,7 @@
 
       <!-- Daftar Key -->
       <div class="card">
-        <div class="row" style="justify-content:space-between;align-items:center">
+        <div class="row between">
           <h3 style="margin:0">Daftar Key</h3>
           <input id="search" type="search" placeholder="Cari key…" style="min-width:160px;max-width:260px">
         </div>
@@ -193,9 +208,30 @@
     <!-- Settings -->
     <section class="page" data-page="settings">
       <div class="card">
-        <h3>Ringan</h3>
-        <label class="chip"><input id="dense" type="checkbox"> List rapat</label>
-        <label class="chip"><input id="reduce" type="checkbox"> Kurangi animasi</label>
+        <h3>Pengaturan</h3>
+
+        <div class="row between">
+          <div>
+            <strong>List rapat</strong>
+            <div class="muted">Padatkan tinggi item di daftar key.</div>
+          </div>
+          <label class="switch">
+            <input id="dense" type="checkbox">
+            <span class="track"><i class="thumb"></i></span>
+          </label>
+        </div>
+
+        <div class="row between">
+          <div>
+            <strong>Kurangi animasi</strong>
+            <div class="muted">Matikan transisi & bayangan, lebih enteng.</div>
+          </div>
+          <label class="switch">
+            <input id="reduce" type="checkbox">
+            <span class="track"><i class="thumb"></i></span>
+          </label>
+        </div>
+
       </div>
     </section>
 
@@ -271,11 +307,20 @@
     const email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin");
     const btnSignOut=$("#btnSignOut");
 
-    // Settings persist
-    dense.checked = localStorage.getItem("gx:dense")==="1";
+    // Settings persist (init state)
+    dense.checked  = localStorage.getItem("gx:dense")==="1";
     reduce.checked = localStorage.getItem("gx:reduce")==="1";
+    if(reduce.checked){
+      document.body.classList.add('reduce');
+      document.documentElement.style.scrollBehavior='auto';
+    }
+
     dense.onchange = ()=>{ localStorage.setItem("gx:dense", dense.checked?"1":"0"); render(); };
-    reduce.onchange = ()=>{ document.documentElement.style.scrollBehavior = reduce.checked?"auto":"smooth"; localStorage.setItem("gx:reduce", reduce.checked?"1":"0"); };
+    reduce.onchange = ()=>{ 
+      document.body.classList.toggle('reduce', reduce.checked);
+      document.documentElement.style.scrollBehavior = reduce.checked?"auto":"smooth";
+      localStorage.setItem("gx:reduce", reduce.checked?"1":"0");
+    };
 
     // ===== Auth & Nav visibility
     function updateNav(user){
@@ -376,22 +421,37 @@
       keyList.appendChild(frag);
     }
 
-    // Actions
+    // Actions untuk daftar key
     document.addEventListener("click",(e)=>{
       const b=e.target.closest("button[data-action]"); if(!b) return;
       const k=b.dataset.key, act=b.dataset.action;
       (async()=>{
         try{
           if(act==="copy"){ await navigator.clipboard.writeText(k); toast("Disalin"); }
-          else if(act==="add7"){ const cur=cache[k]?.exp||0; const base=Math.max(cur||0, Date.now()); await update(ref(db,"auth/keys/"+k), {exp: base + 7*864e5}); toast("+7 hari"); }
+          else if(act==="add7"){ 
+            const cur=cache[k]?.exp||0; 
+            const base=Math.max(cur||0, Date.now()); 
+            await update(ref(db,"auth/keys/"+k), {exp: base + 7*864e5}); 
+            toast("+7 hari"); 
+          }
           else if(act==="noexp"){ await update(ref(db,"auth/keys/"+k), {exp:0}); toast("No Exp"); }
-          else if(act==="setdate"){ const cur=cache[k]?.exp||0; const seed = cur? new Date(cur): new Date(); const pad=n=>String(n).padStart(2,"0"); const def=`${seed.getFullYear()}-${pad(seed.getMonth()+1)}-${pad(seed.getDate())}`; const v=prompt("YYYY-MM-DD (kosong = No Exp)", def); if(v===null) return; const ms = v.trim()===""?0:(()=>{ const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return new Date(Y,M-1,D,23,59,59,999).getTime(); })(); await update(ref(db,"auth/keys/"+k), {exp: ms}); toast("Tanggal di-set"); }
+          else if(act==="setdate"){ 
+            const cur=cache[k]?.exp||0; 
+            const seed = cur? new Date(cur): new Date(); 
+            const pad=n=>String(n).padStart(2,"0"); 
+            const def=`${seed.getFullYear()}-${pad(seed.getMonth()+1)}-${pad(seed.getDate())}`; 
+            const v=prompt("YYYY-MM-DD (kosong = No Exp)", def); 
+            if(v===null) return; 
+            const ms = v.trim()===""?0:(()=>{ const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return new Date(Y,M-1,D,23,59,59,999).getTime(); })(); 
+            await update(ref(db,"auth/keys/"+k), {exp: ms}); 
+            toast("Tanggal di-set"); 
+          }
           else if(act==="del"){ if(confirm(`Hapus key:\n${k}?`)){ await remove(ref(db,"auth/keys/"+k)); toast("Dihapus"); } }
         }catch{ toast("Gagal"); }
       })();
     }, {passive:true});
 
-    // Controls
+    // Kontrol form pembuatan key
     document.getElementById("btnGen").onclick = ()=>{
       const rand = ()=>Math.random().toString(36).slice(2,6).toUpperCase();
       document.getElementById("newKey").value = `${rand()}-${rand()}-${rand()}-${rand()}`;
@@ -410,13 +470,14 @@
 
     document.getElementById("search").addEventListener("input", ()=>render(), {passive:true});
 
-    // Chip +7 / No Exp
+    // Chip +7 / No Exp (akumulatif)
     document.addEventListener("click",(e)=>{
       const chip=e.target.closest(".chip[data-add]"); if(!chip) return;
       const v = Number(chip.dataset.add||0);
       const exp=document.getElementById("exp");
       if(v===0){ exp.value=""; toast("Tanpa Exp"); return; }
-      const base = new Date(); base.setDate(base.getDate()+v);
+      const base = exp.value ? new Date(exp.value) : new Date();
+      base.setDate(base.getDate()+v);
       const Y=base.getFullYear(), M=String(base.getMonth()+1).padStart(2,"0"), D=String(base.getDate()).padStart(2,"0");
       exp.value = `${Y}-${M}-${D}`; toast(`+${v} hari`);
     }, {passive:true});
