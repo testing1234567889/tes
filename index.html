@@ -1,427 +1,435 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0f14" />
-  <title>GxMods Admin – Mobile</title>
-  <style>
-    /* ===== Reset ringan */
-    *,*::before,*::after{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,"Noto Sans",Arial,sans-serif;background:#0b0f14;color:#e6edf3;-webkit-tap-highlight-color:transparent}
-    img,svg,canvas{max-width:100%;display:block}
-    button,input,select,textarea{font:inherit;color:inherit}
-    a{color:inherit;text-decoration:none}
-    :root{
-      --bg:#0b0f14;
-      --card:#111826;
-      --card-2:#0e1420;
-      --text:#e6edf3;
-      --muted:#a2b2c2;
-      --accent:#6ccaff;
-      --accent-2:#7f5af0;
-      --border:#1b2433;
-      --ok:#19c37d;
-      --warn:#ffb020;
-      --bad:#ff5d5d;
-      --radius:16px;
-      --shadow:0 6px 24px rgba(0,0,0,.25), 0 1px 0 rgba(255,255,255,.02) inset;
-    }
-    /* Kurangi animasi untuk hemat baterai/ram */
-    @media (prefers-reduced-motion: reduce){
-      *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-    }
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>GxMods Admin Panel</title>
+<style>
+  :root{
+    --bg:#0b0d14;--card:#101624;--muted:#9fb0c2;--line:#1e2636;
+    --pri:#7c3aed;--pri2:#3b82f6; --ok:#22c55e;--err:#ef4444;--teal:#06b6d4;
+    --r:clamp(12px,2vw,18px); --pad:clamp(12px,2.5vw,20px);
+    --shadow:0 10px 24px rgba(0,0,0,.30);
+  }
 
-    /* ===== Layout umum */
-    .topbar{
-      position:sticky;top:0;z-index:30;
-      display:flex;align-items:center;gap:12px;
-      height:56px;padding:0 14px;
-      background:linear-gradient(180deg,#0c111b,#0a0f18);
-      border-bottom:1px solid var(--border);
-      backdrop-filter:saturate(120%) blur(6px);
-    }
-    .title{font-weight:700;letter-spacing:.2px}
-    .grow{flex:1}
-    .btn{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:10px 12px;border-radius:14px;border:1px solid var(--border);
-      background:var(--card);box-shadow:var(--shadow);cursor:pointer;
-    }
-    .btn:active{transform:translateY(1px)}
-    .btn.ghost{background:transparent}
-    .icon{width:20px;height:20px;display:inline-block}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0;
+    min-height:100svh; /* aman address bar mobile */
+    font:clamp(12px,1.6vw,14.5px)/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Inter,sans-serif;
+    color:#eef3fb;
+    background:
+      radial-gradient(1000px 520px at 8% -20%, #0d1430 0%, transparent 60%),
+      radial-gradient(900px 560px at 120% 0%, #12283a 0%, transparent 55%),
+      var(--bg);
+    padding: calc(env(safe-area-inset-top, 0px) + clamp(16px, 4vw, 28px)) clamp(10px,3vw,24px) clamp(16px,4vw,28px);
+    user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
+  }
+  input, textarea { user-select:text; -webkit-user-select:text; -webkit-touch-callout:default; }
 
-    .app{
-      min-height:calc(100dvh - 56px);
-      padding:16px;
-      display:flex;flex-direction:column;gap:16px;
-    }
+  .wrap{width:min(1100px,100%);margin:0 auto;display:grid;gap:clamp(8px,2vw,18px)}
+  .card{
+    background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:var(--r); box-shadow:var(--shadow);
+    backdrop-filter: blur(4px); /* ringan */
+  }
+  /* Lite mode untuk device mem <= 2GB */
+  .lite .card{backdrop-filter:none;background:#0f1424d9;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+  .lite .m-item{background:#11182b}
 
-    /* ===== Drawer */
-    .drawer{position:fixed;inset:0 auto 0 0;z-index:40;width:min(78%,320px);
-      background:var(--card-2);border-right:1px solid var(--border);
-      transform:translateX(-100%);transition:transform .18s ease-out;
-      will-change:transform;contain:paint; /* hemat layout */
-    }
-    .drawer.open{transform:translateX(0)}
-    .drawer .brand{display:flex;align-items:center;gap:10px;padding:16px;border-bottom:1px solid var(--border)}
-    .drawer nav{padding:8px}
-    .nav-item{
-      display:flex;align-items:center;gap:12px;
-      padding:12px 14px;border-radius:12px;
-      border:1px solid transparent;color:#d7e1ec;
-    }
-    .nav-item:hover{background:#0f1622}
-    .nav-item.active{border-color:#223047;background:#0e1420}
-    .drawer-footer{margin-top:auto;padding:12px 14px;color:var(--muted);font-size:.9rem;border-top:1px solid var(--border)}
+  .header{position:relative;display:flex;align-items:center;justify-content:space-between;padding:var(--pad)}
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .badge{width:clamp(34px,6vw,42px);height:clamp(34px,6vw,42px);border-radius:50%;position:relative;background:#0a1222;border:1px solid rgba(255,255,255,.08);flex:0 0 auto}
+  .eye{position:absolute;top:40%;width:7px;height:7px;background:#56c0ff;border-radius:50%}
+  .eye.l{left:25%} .eye.r{right:25%}
+  .mouth{position:absolute;bottom:22%;left:50%;width:18px;height:2px;background:#9fb0c2;border-radius:2px;transform:translateX(-50%)}
+  .title{font-weight:700;letter-spacing:.2px;font-size:clamp(14px,2.4vw,18px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .muted{color:var(--muted)}
 
-    .backdrop{position:fixed;inset:0;z-index:35;background:rgba(0,0,0,.48);
-      opacity:0;pointer-events:none;transition:opacity .18s ease-out}
-    .backdrop.show{opacity:1;pointer-events:auto}
+  .btn{border:0;border-radius:999px;padding:9px 14px;color:#fff;cursor:pointer;transition:.15s transform,.2s filter;font:inherit;background:#192133;border:1px solid #27314a}
+  .btn:active{transform:scale(.97)}
+  .btn:focus{outline:none}
+  .btn-primary{background:linear-gradient(135deg,var(--pri),var(--pri2));border:none}
+  .btn-ok{background:linear-gradient(135deg,var(--teal),var(--ok));border:none}
+  .btn-ghost{background:#192133;border:1px solid #27314a;color:#dbe7ff}
+  .btn-danger{background:linear-gradient(135deg,#ef4444,#b91c1c);border:none}
+  .signout{position:absolute;top:10px;right:10px}
 
-    /* ===== Cards & grid */
-    .grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
-    @media (max-width:520px){.grid{grid-template-columns:1fr}}
-    .card{
-      background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-      box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:10px;
-    }
-    .card h3{margin:0 0 6px 0;font-size:1rem}
-    .muted{color:var(--muted);font-size:.95rem}
-    .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#0e1a26;border:1px solid var(--border);font-size:.78rem}
-    .kpi{font-weight:700;font-size:1.25rem}
+  .grid{display:grid;gap:clamp(10px,2vw,14px);padding:var(--pad);grid-template-columns:1fr}
+  @media(min-width:900px){ .grid{ grid-template-columns: 1.2fr 2fr } }
+  .section{padding:var(--pad);border-top:1px solid var(--line);content-visibility:auto;contain-intrinsic-size: 400px 800px;}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  input,select{
+    color:#e7edf8;background:#0e1424;border:1px solid #27314a;border-radius:10px;
+    padding:10px 12px;outline:none;min-width:0;width:100%;
+  }
+  input:focus{border-color:#56c0ff;box-shadow:0 0 0 3px rgba(86,192,255,.15)}
+  .chip{padding:6px 10px;border-radius:999px;background:#0e1726;border:1px solid #26304a;cursor:pointer;user-select:none}
+  .chip:hover{border-color:#3b82f6}
 
-    /* ===== Pages */
-    .page{display:none;animation:fade .18s ease-out}
-    .page.show{display:block}
-    @keyframes fade{from{opacity:.001;transform:translateY(4px)}to{opacity:1;transform:none}}
+  /* Desktop table */
+  .scroll-x{overflow:auto; -webkit-overflow-scrolling:touch}
+  .tbl{width:100%;border-collapse:separate;border-spacing:0 clamp(6px,1.4vw,8px);min-width:640px}
+  .tbl th{font-weight:600;color:#cfe0ff;text-align:left;padding:8px}
+  .tbl td{padding:10px 8px;background:#0f1524;border-top:1px solid #22304b;border-bottom:1px solid #22304b;vertical-align:middle}
+  .tbl tr td:first-child{border-left:1px solid #22304b;border-top-left-radius:10px;border-bottom-left-radius:10px}
+  .tbl tr td:last-child{border-right:1px solid #22304b;border-top-right-radius:10px;border-bottom-right-radius:10px}
+  .pill{padding:3px 8px;border-radius:999px;font-size:12px}
+  .pill-ok{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.35)}
+  .pill-exp{background:rgba(239,68,68,.18);color:#fecaca;border:1px solid rgba(239,68,68,.35)}
 
-    /* ===== Forms (ringan) */
-    .field{display:flex;flex-direction:column;gap:6px}
-    .row{display:flex;gap:8px;flex-wrap:wrap}
-    input[type="text"], input[type="search"], input[type="number"], textarea, select{
-      width:100%;padding:12px 12px;border-radius:12px;background:#0f1622;border:1px solid var(--border);color:var(--text);
-    }
-    .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:#0f1622}
-    .list{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:14px;overflow:hidden}
-    .list .item{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:12px 12px;background:#0e1420;border-bottom:1px solid var(--border)}
-    .list .item:last-child{border-bottom:none}
-    .btn.small{padding:8px 10px;border-radius:10px}
-    .btn.ok{background:#0d1f18;border-color:#144d3b}
-    .btn.warn{background:#24190e;border-color:#6a4a1a}
-    .btn.bad{background:#2a1212;border-color:#6b2323}
+  /* Mobile list */
+  .mobile-list{display:none}
+  .m-item{background:#0f1524;border:1px solid #22304b;border-radius:12px;padding:10px;margin-bottom:8px}
+  .m-top{display:flex;align-items:center;gap:8px}
+  .m-key{font-weight:700;word-break:break-all;flex:1}
+  .m-key, .m-exp, .title, .muted, h3, label { user-select:none; -webkit-user-select:none; }
+  .m-status{white-space:nowrap}
+  .m-exp{color:var(--muted);font-size:12px;margin:6px 0 8px}
+  .m-actions{display:flex;flex-direction:column;gap:6px}
+  .m-actions .btn{width:100%;padding:8px 10px}
 
-    /* Footer */
-    .footer{margin-top:auto;color:var(--muted);font-size:.85rem;padding:8px;text-align:center;opacity:.9}
-  </style>
+  /* Inputs width limit on phones */
+  .limit-phone{max-width:360px;width:100%}
+
+  /* Breakpoints */
+  @media(max-width:900px){
+    .desk-only{display:none}
+    .mobile-list{display:block}
+  }
+  @media(min-width:901px){
+    .mobile-only{display:none}
+  }
+
+  .right{margin-left:auto}
+  .hide{display:none}
+  .login{max-width:min(420px,100%);margin:0 auto;padding:var(--pad)}
+  .login .brand{justify-content:center;margin-bottom:6px}
+  .toast{position:fixed;inset:auto 10px 10px auto;background:#111827;border:1px solid #263248;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);opacity:.98;z-index:999}
+</style>
 </head>
 <body>
-  <!-- Topbar -->
-  <header class="topbar" role="banner">
-    <button id="menuBtn" class="btn" aria-label="Buka menu" title="Menu">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-      </svg>
-      <span>Menu</span>
-    </button>
-    <div class="title">GxMods Admin</div>
-    <div class="grow"></div>
-    <button id="refreshBtn" class="btn ghost" title="Segarkan">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline>
-        <path d="M3.51 9a9 9 0 0114.13-3.36L23 10M1 14l5.36 4.36A9 9 0 0020.49 15"></path>
-      </svg>
-    </button>
-  </header>
+<div class="wrap">
 
-  <!-- Drawer -->
-  <aside class="drawer" id="drawer" aria-hidden="true">
+  <!-- HEADER -->
+  <div class="card header">
     <div class="brand">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M7 7h10v10H7z"/></svg>
-      <strong>Menu</strong>
+      <div class="badge" aria-hidden="true">
+        <span class="eye l"></span><span class="eye r"></span><span class="mouth"></span>
+      </div>
+      <div>
+        <div class="title">GxMods Admin Panel</div>
+        <div class="muted" style="font-size:12px;">Kelola Global Key & Premium Keys</div>
+      </div>
     </div>
-    <nav>
-      <a class="nav-item active" href="#dashboard" data-route="dashboard">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8"/><path d="M9 22V12h6v10"/></svg>
-        <span>Dashboard</span>
-      </a>
-      <a class="nav-item" href="#keys" data-route="keys">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 12h10M7 9h6M7 15h6"/></svg>
-        <span>Daftar Key</span>
-      </a>
-      <a class="nav-item" href="#settings" data-route="settings">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06A2 2 0 016.04 3.2l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V2a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06A2 2 0 0120.8 6.04l-.06.06a1.65 1.65 0 00-.33 1.82V9c0 .68.39 1.3 1 1.6.63.31 1.02.94 1.02 1.65s-.39 1.34-1.02 1.65c-.61.3-1 .92-1 1.6z"/></svg>
-        <span>Pengaturan</span>
-      </a>
-      <a class="nav-item" href="#about" data-route="about">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-        <span>Tentang</span>
-      </a>
-    </nav>
-    <div class="drawer-footer">v1.0 • Ringan untuk RAM 2 GB</div>
-  </aside>
-  <div class="backdrop" id="backdrop" aria-hidden="true"></div>
+    <!-- email disembunyikan -->
+    <button id="btnSignOut" class="btn btn-ghost signout">Sign Out</button>
+  </div>
 
-  <!-- App -->
-  <main class="app" id="app">
-    <!-- Dashboard -->
-    <section class="page show" data-page="dashboard" aria-labelledby="dash-h">
-      <h2 id="dash-h" class="visually-hidden">Dashboard</h2>
-      <div class="grid">
-        <div class="card">
-          <h3>Status Bot</h3>
-          <div class="row" style="align-items:center;justify-content:space-between">
-            <span class="badge">Online</span>
-            <span class="kpi" id="kpi-active">0</span>
-          </div>
-          <p class="muted">Jumlah topik yang dipantau saat ini.</p>
-          <div class="row">
-            <button class="btn ok small" id="btnStart">Start</button>
-            <button class="btn bad small" id="btnStop">Stop</button>
-            <button class="btn small" id="btnRestart">Restart</button>
-          </div>
-        </div>
-        <div class="card">
-          <h3>Ringkasan</h3>
-          <div class="row" style="gap:10px;flex-wrap:wrap">
-            <div class="chip">Key aktif: <strong id="kpi-keys">0</strong></div>
-            <div class="chip">Percobaan hari ini: <strong id="kpi-attempt">0</strong></div>
-            <div class="chip">Versi config: <strong>1.0</strong></div>
-          </div>
-          <p class="muted">Angka ini hanya contoh; koneksikan ke backend Anda untuk data asli.</p>
+  <!-- LOGIN -->
+  <div id="viewLogin" class="card login">
+    <div class="brand">
+      <div class="badge"><span class="eye l"></span><span class="eye r"></span><span class="mouth"></span></div>
+    </div>
+    <h2 style="margin:6px 0 12px">Login Admin</h2>
+    <form id="formLogin" class="grid">
+      <div class="section" style="border-top:none;padding-top:0">
+        <div class="row"><input id="email" type="email" placeholder="Email" required /></div>
+        <div class="row" style="margin-top:10px"><input id="password" type="password" placeholder="Password" required /></div>
+        <div class="row" style="margin-top:14px;justify-content:flex-end">
+          <button class="btn btn-primary" type="submit">Sign In</button>
         </div>
       </div>
+    </form>
+    <div class="section muted" style="font-size:12px">
+      Akun email/password harus ada di Firebase Auth. UID harus cocok dengan whitelist.
+    </div>
+  </div>
 
-      <div class="card">
-        <h3>Log Singkat</h3>
-        <div id="log" style="font-family:ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;max-height:28vh;overflow:auto;border:1px solid var(--border);border-radius:12px;padding:10px;background:#0c131e"></div>
-      </div>
-    </section>
+  <!-- DASHBOARD -->
+  <div id="viewDash" class="card hide">
+    <div class="grid">
 
-    <!-- Daftar Key -->
-    <section class="page" data-page="keys" aria-labelledby="keys-h">
-      <h2 id="keys-h" class="visually-hidden">Daftar Key</h2>
-      <div class="card">
-        <h3>Kelola Key</h3>
+      <!-- GLOBAL KEY -->
+      <section class="section" style="border-top:none">
+        <h3 style="margin:0 0 10px">Global Key</h3>
         <div class="row">
-          <div class="field" style="flex:2;min-width:200px">
-            <label for="keyInput" class="muted">Key</label>
-            <input id="keyInput" type="text" inputmode="text" autocomplete="off" placeholder="ABCD-1234-XXXX" />
-          </div>
-          <div class="field" style="flex:1;min-width:140px">
-            <label for="idInput" class="muted">ID (opsional)</label>
-            <input id="idInput" type="text" inputmode="text" autocomplete="off" placeholder="a1b2c3..." />
-          </div>
+          <input id="globalKey" class="limit-phone" placeholder="Kosongkan jika tidak memakai global key"/>
+          <button id="btnSaveGlobal" class="btn btn-primary">Simpan</button>
+          <button id="btnClearGlobal" class="btn btn-ghost">Hapus</button>
         </div>
-        <div class="row">
-          <button id="btnAdd" class="btn ok">Tambah</button>
-          <button id="btnClear" class="btn warn">Bersihkan Semua</button>
-          <div class="grow"></div>
-          <input id="search" class="chip" type="search" placeholder="Cari key..." style="min-width:160px"/>
+      </section>
+
+      <!-- NEW KEY -->
+      <section class="section">
+        <h3 style="margin:0 0 10px">Buat Key Baru</h3>
+        <div class="row" style="gap:8px">
+          <input id="newKey" class="limit-phone" placeholder="Key (atau klik Generate)"/>
+          <button id="btnGen" class="btn btn-ghost">Generate</button>
         </div>
-      </div>
-
-      <div class="list" id="keyList" role="list" aria-live="polite"></div>
-
-      <div class="footer">Data key disimpan di <em>localStorage</em> perangkat ini. Integrasikan dengan API Anda untuk produksi.</div>
-    </section>
-
-    <!-- Settings -->
-    <section class="page" data-page="settings" aria-labelledby="set-h">
-      <h2 id="set-h" class="visually-hidden">Pengaturan</h2>
-      <div class="card">
-        <h3>Tampilan</h3>
-        <div class="row">
-          <label class="chip"><input id="reduceMotion" type="checkbox" /> Kurangi animasi</label>
-          <label class="chip"><input id="denseList" type="checkbox" /> List rapat</label>
+        <div class="row" style="margin-top:8px">
+          <label class="muted" for="exp">Tanggal kadaluarsa (opsional)</label>
+          <input id="exp" type="date" class="limit-phone"/>
+          <span class="chip" data-add="7">+7 hari</span>
+          <span class="chip" data-add="0">Tanpa Exp</span>
+          <button id="btnAdd" class="btn btn-ok right">Tambah Key</button>
         </div>
-        <p class="muted">Opsi ini membantu perangkat RAM kecil tetap mulus.</p>
-      </div>
+      </section>
 
-      <div class="card">
-        <h3>Sinkronisasi</h3>
-        <div class="row">
-          <button class="btn small" id="btnExport">Export JSON</button>
-          <input type="file" id="fileImport" accept="application/json" style="display:none" />
-          <button class="btn small" id="btnImport">Import JSON</button>
+      <!-- KEYS LIST -->
+      <section class="section" style="grid-column:1/-1">
+        <div class="row" style="justify-content:space-between;margin-bottom:8px">
+          <h3 style="margin:0">Daftar Key</h3>
+          <input id="search" placeholder="Cari key…" style="min-width:160px;max-width:260px"/>
         </div>
-        <p class="muted">Format: [{"key":"ABCD-1234-XXXX","id":"optional"}]</p>
-      </div>
-    </section>
 
-    <!-- About -->
-    <section class="page" data-page="about">
-      <div class="card">
-        <h3>Tentang</h3>
-        <p class="muted">UI ini dirancang mobile-first, drawer menu, dan "Daftar Key" dipisah dari Dashboard.
-          Semua vanilla HTML/CSS/JS, tanpa framework, supaya enteng buat RAM 2 GB.</p>
-      </div>
-    </section>
-  </main>
+        <!-- Desktop Table -->
+        <div class="scroll-x desk-only">
+          <table class="tbl">
+            <thead>
+            <tr>
+              <th style="width:34%">Key</th>
+              <th>Expire</th>
+              <th>Status</th>
+              <th style="width:28%">Aksi</th>
+            </tr>
+            </thead>
+            <tbody id="rows"><tr><td colspan="4" class="muted" style="padding:14px">Memuat…</td></tr></tbody>
+          </table>
+        </div>
 
-  <script>
-    // ===== Util hemat: q / qa
-    const q = (s, el=document) => el.querySelector(s);
-    const qa = (s, el=document) => el.querySelectorAll(s);
+        <!-- Mobile Cards -->
+        <div id="mobileList" class="mobile-list mobile-only">
+          <!-- diisi via JS -->
+        </div>
+      </section>
 
-    // ===== Drawer
-    const drawer = q('#drawer');
-    const menuBtn = q('#menuBtn');
-    const backdrop = q('#backdrop');
-    const openMenu = () => { drawer.classList.add('open'); backdrop.classList.add('show'); document.body.classList.add('menu-open'); drawer.setAttribute('aria-hidden','false'); };
-    const closeMenu = () => { drawer.classList.remove('open'); backdrop.classList.remove('show'); document.body.classList.remove('menu-open'); drawer.setAttribute('aria-hidden','true'); };
-    menuBtn.addEventListener('click', openMenu, {passive:true});
-    backdrop.addEventListener('click', closeMenu, {passive:true});
+    </div>
+  </div>
 
-    // Swipe to close (simple, cheap)
-    let startX=null;
-    drawer.addEventListener('touchstart',e=>{startX=e.touches[0].clientX},{passive:true});
-    drawer.addEventListener('touchmove',e=>{
-      if(startX===null) return;
-      const dx=e.touches[0].clientX-startX;
-      if(dx<-42) closeMenu();
-    },{passive:true});
+  <div id="toast" class="toast hide"></div>
+</div>
 
-    // ===== Routing (SPA ringan)
-    const pages = qa('.page');
-    const navItems = qa('.nav-item');
-    function showPage(name){
-      pages.forEach(p=>p.classList.toggle('show', p.dataset.page===name));
-      navItems.forEach(a=>a.classList.toggle('active', a.dataset.route===name));
-      closeMenu();
-      // focus management for a11y (cheap)
-      const active = q('.page.show'); if(active) active.setAttribute('tabindex','-1'), active.focus({preventScroll:true});
-      // Save route
-      localStorage.setItem('gx:route', name);
+<!-- Firebase (v10 modular) -->
+<script type="module">
+  // CONFIG & CONSTANTS
+  const ADMIN_UID = "4CCiNyEyTvSUPnY6Ugd9PzAU1df2";
+  const firebaseConfig = {
+    apiKey: "AIzaSyAJ2YitGgxTI8k440TmWUHgntkTLSqkX3c",
+    authDomain: "dialog-vip-only-key.firebaseapp.com",
+    databaseURL: "https://dialog-vip-only-key-default-rtdb.firebaseio.com",
+    projectId: "dialog-vip-only-key",
+    storageBucket: "dialog-vip-only-key.firebasestorage.app",
+    messagingSenderId: "405714783893",
+    appId: "1:405714783893:web:9cf697f2104b91958ed59c",
+    measurementId: "G-YKCTBR2857"
+  };
+
+  // SDK
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+  import { getDatabase, ref, onValue, set, update, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getDatabase(app);
+
+  // helpers
+  const $ = (q)=>document.querySelector(q);
+  const show = (el)=>el.classList.remove("hide");
+  const hide = (el)=>el.classList.add("hide");
+  const toast = (msg, kind="")=>{
+    const t=$("#toast"); t.textContent = msg;
+    t.style.borderColor = kind==="err" ? "rgba(239,68,68,.5)" :
+                          kind==="ok"  ? "rgba(34,197,94,.5)" :
+                          "rgba(59,130,246,.5)";
+    show(t); clearTimeout(window._t); window._t=setTimeout(()=>hide(t), 2400);
+  };
+  const bulan = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+  const fmtExp = (ms)=>{
+    if(!ms || Number(ms)===0) return "Permanen";
+    const d = new Date(Number(ms));
+    const pad = n=>String(n).padStart(2,"0");
+    return `${pad(d.getDate())} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
+  };
+  const isExpired = (ms)=> (ms && Number(ms)!==0 && Date.now()>Number(ms));
+  const genKey = ()=>{
+    const c = ()=>Math.random().toString(36).slice(2,6).toUpperCase();
+    return `${c()}-${c()}-${c()}-${c()}`;
+  };
+  const dateToInput = (ms)=>{
+    const d = new Date(ms);
+    const y=d.getFullYear(); const m=String(d.getMonth()+1).padStart(2,"0"); const da=String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${da}`;
+  };
+  const endOfDayMs = (y,m,d)=> new Date(y, m-1, d, 23, 59, 59, 999).getTime();
+
+  // Lite mode otomatis (hemat GPU/blur) untuk deviceMemory <= 2
+  try{ if('deviceMemory' in navigator && navigator.deviceMemory <= 2){ document.body.classList.add('lite'); } }catch(e){}
+
+  // Debounce helper
+  const debounce=(fn,ms=180)=>{let t;return (...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}};
+
+  // DOM
+  const viewLogin = $("#viewLogin"), viewDash=$("#viewDash");
+  const btnSignOut=$("#btnSignOut");
+  const formLogin=$("#formLogin"), email=$("#email"), password=$("#password");
+  const globalKey=$("#globalKey"), btnSaveGlobal=$("#btnSaveGlobal"), btnClearGlobal=$("#btnClearGlobal");
+  const newKey=$("#newKey"), btnGen=$("#btnGen"), exp=$("#exp"), btnAdd=$("#btnAdd");
+  const rows=$("#rows"), search=$("#search"), mobileList=$("#mobileList");
+
+  // auth
+  onAuthStateChanged(auth, (user)=>{
+    if(user && user.uid===ADMIN_UID){
+      show(viewDash); hide(viewLogin);
+      startData();
+    }else{
+      hide(viewDash); show(viewLogin);
+      if(user && user.uid!==ADMIN_UID){ signOut(auth); toast("Akun bukan admin.","err"); }
     }
-    navItems.forEach(a=>a.addEventListener('click', e=>{e.preventDefault(); showPage(a.dataset.route);}));
-    // Restore route
-    showPage(localStorage.getItem('gx:route') || 'dashboard');
+  });
+  formLogin.addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    try{
+      await signInWithEmailAndPassword(auth, email.value.trim(), password.value);
+      toast("Login sukses","ok");
+    }catch(err){ toast("Login gagal: "+(err.code||"error"),"err"); }
+  });
+  btnSignOut.onclick = async ()=>{ await signOut(auth); toast("Signed out"); };
 
-    // ===== Dashboard dummy
-    const kpiActive = q('#kpi-active');
-    const kpiKeys = q('#kpi-keys');
-    const kpiAttempt = q('#kpi-attempt');
-    const log = q('#log');
-    function pushLog(line){
-      const t=new Date().toLocaleTimeString();
-      log.textContent += `[${t}] ${line}\n`;
-      log.scrollTop = log.scrollHeight;
+  // data
+  let cacheKeys = {};
+  function startData(){
+    onValue(ref(db,"auth/globalKey"), s=>{ globalKey.value = s.exists()? (s.val()||"") : ""; }, {onlyOnce:false});
+    onValue(ref(db,"auth/keys"), s=>{ cacheKeys = s.val()||{}; renderLists(); }, {onlyOnce:false});
+  }
+
+  const doSearch = debounce(()=>renderLists(), 200);
+
+  function renderLists(){
+    renderDesktop();
+    renderMobile();
+  }
+
+  function renderDesktop(){
+    if(!rows) return;
+    const q = search.value.trim().toUpperCase();
+    const ks = Object.keys(cacheKeys).sort();
+    if(ks.length===0){ rows.innerHTML = `<tr><td colspan="4" class="muted" style="padding:14px">Belum ada key.</td></tr>`; return; }
+    let html="";
+    for(const k of ks){
+      if(q && !k.toUpperCase().includes(q)) continue;
+      const expMs = cacheKeys[k]?.exp||0;
+      const expired = isExpired(expMs);
+      html += `
+      <tr>
+        <td style="word-break:break-all"><span>${k}</span></td>
+        <td>${fmtExp(expMs)}</td>
+        <td><span class="pill ${expired?'pill-exp':'pill-ok'}">${expired?'Expired':'Aktif'}</span></td>
+        <td class="actions">
+          <button class="btn btn-ghost" data-action="copy" data-key="${k}">Copy</button>
+          <button class="btn btn-ghost" data-action="add7" data-key="${k}">+7 hari</button>
+          <button class="btn btn-ghost" data-action="noexp" data-key="${k}">No Exp</button>
+          <button class="btn btn-primary" data-action="setdate" data-key="${k}">Set Tanggal…</button>
+          <button class="btn btn-danger" data-action="del" data-key="${k}">Hapus</button>
+        </td>
+      </tr>`;
     }
-    q('#btnStart').addEventListener('click', ()=>pushLog('Bot start (dummy).'), {passive:true});
-    q('#btnStop').addEventListener('click', ()=>pushLog('Bot stop (dummy).'), {passive:true});
-    q('#btnRestart').addEventListener('click', ()=>pushLog('Bot restart (dummy).'), {passive:true});
+    rows.innerHTML = html || `<tr><td colspan="4" class="muted" style="padding:14px">Tidak ada hasil.</td></tr>`;
+  }
 
-    // ===== Key store (localStorage)
-    const KEY_STORE = 'gx:keys:v1';
-    const denseToggle = q('#denseList');
-    const reduceToggle = q('#reduceMotion');
-    let keys = [];
-    try { keys = JSON.parse(localStorage.getItem(KEY_STORE) || '[]'); } catch { keys = []; }
-    function saveKeys(){ localStorage.setItem(KEY_STORE, JSON.stringify(keys)); kpiKeys.textContent = String(keys.length); }
-    function renderKeys(filter=''){
-      const list = q('#keyList');
-      list.innerHTML='';
-      const frag = document.createDocumentFragment();
-      const low = filter.toLowerCase();
-      let count = 0;
-      for(const it of keys){
-        if(low && !(it.key?.toLowerCase().includes(low) || (it.id||'').toLowerCase().includes(low))) continue;
-        const row = document.createElement('div');
-        row.className = 'item';
-        if(denseToggle.checked) row.style.padding = '8px 10px';
-        const left = document.createElement('div');
-        left.style.display='grid';
-        left.style.gap='4px';
-        left.innerHTML = `<strong>${(it.key||'–')}</strong><span class="muted" style="font-size:.85rem">ID: ${(it.id||'—')}</span>`;
-        const right = document.createElement('div');
-        const del = document.createElement('button');
-        del.className='btn bad small'; del.textContent='Hapus';
-        del.addEventListener('click', ()=>{
-          const idx = keys.indexOf(it);
-          if(idx>-1){ keys.splice(idx,1); saveKeys(); renderKeys(q('#search').value); pushLog('Key dihapus.'); }
-        }, {passive:true});
-        right.appendChild(del);
-        row.appendChild(left); row.appendChild(right);
-        frag.appendChild(row);
-        count++;
-      }
-      list.appendChild(frag);
-      if(count===0){
-        const empty = document.createElement('div');
-        empty.className='item'; empty.innerHTML = '<span class="muted">Belum ada data.</span>';
-        list.appendChild(empty);
-      }
+  function renderMobile(){
+    if(!mobileList) return;
+    const q = search.value.trim().toUpperCase();
+    const ks = Object.keys(cacheKeys).sort();
+    if(ks.length===0){ mobileList.innerHTML = `<div class="muted" style="padding:6px 0">Belum ada key.</div>`; return; }
+    let html="";
+    for(const k of ks){
+      if(q && !k.toUpperCase().includes(q)) continue;
+      const expMs = cacheKeys[k]?.exp||0;
+      const expired = isExpired(expMs);
+      html += `
+        <div class="m-item">
+          <div class="m-top">
+            <div class="m-key">${k}</div>
+            <div class="m-status pill ${expired?'pill-exp':'pill-ok'}">${expired?'Expired':'Aktif'}</div>
+          </div>
+          <div class="m-exp">${fmtExp(expMs)}</div>
+          <div class="m-actions">
+            <button class="btn btn-ghost" data-action="copy" data-key="${k}">Copy</button>
+            <button class="btn btn-ghost" data-action="add7" data-key="${k}">+7 hari</button>
+            <button class="btn btn-ghost" data-action="noexp" data-key="${k}">No Exp</button>
+            <button class="btn btn-primary" data-action="setdate" data-key="${k}">Set Tanggal…</button>
+            <button class="btn btn-danger" data-action="del" data-key="${k}">Hapus</button>
+          </div>
+        </div>`;
     }
-    renderKeys();
+    mobileList.innerHTML = html || `<div class="muted" style="padding:6px 0">Tidak ada hasil.</div>`;
+  }
 
-    // Tambah & clear
-    q('#btnAdd').addEventListener('click', ()=>{
-      const key = q('#keyInput').value.trim();
-      const id = q('#idInput').value.trim();
-      if(!key){ pushLog('Key kosong, batal.'); return; }
-      keys.unshift({key, ...(id?{id}:{} )});
-      q('#keyInput').value=''; q('#idInput').value='';
-      saveKeys(); renderKeys(q('#search').value);
-      pushLog('Key ditambahkan.');
-    });
-    q('#btnClear').addEventListener('click', ()=>{
-      if(!confirm('Hapus semua key?')) return;
-      keys.length=0; saveKeys(); renderKeys(); pushLog('Semua key dibersihkan.');
-    });
-    q('#search').addEventListener('input', e=>renderKeys(e.target.value), {passive:true});
+  // Delegation tunggal (lebih irit)
+  document.addEventListener("click", (e)=>{
+    const b = e.target.closest("button[data-action]");
+    if(!b) return;
+    const k = b.dataset.key; const act = b.dataset.action;
 
-    // KPI dummy naik turun tipis agar hidup
-    setInterval(()=>{
-      const n = Math.max(0, Number(kpiActive.textContent)||0);
-      kpiActive.textContent = String(Math.max(0, n + (Math.random()>.5?1:-1)));
-      kpiAttempt.textContent = String((Number(kpiAttempt.textContent)||0) + (Math.random()>.5?1:0));
-    }, 2500);
-
-    // ===== Settings
-    denseToggle.addEventListener('change', ()=>renderKeys(q('#search').value), {passive:true});
-    reduceToggle.addEventListener('change', ()=>{
-      document.documentElement.style.scrollBehavior = reduceToggle.checked ? 'auto' : 'smooth';
-    }, {passive:true});
-
-    // ===== Export / Import
-    q('#btnExport').addEventListener('click', ()=>{
-      const blob = new Blob([JSON.stringify(keys,null,2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = Object.assign(document.createElement('a'), {href:url, download:'keys.json'});
-      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-    });
-    q('#btnImport').addEventListener('click', ()=>q('#fileImport').click());
-    q('#fileImport').addEventListener('change', async (e)=>{
-      const file = e.target.files?.[0]; if(!file) return;
+    (async ()=>{
       try{
-        const text = await file.text();
-        const arr = JSON.parse(text);
-        if(Array.isArray(arr)){
-          keys = arr.filter(x=>x && typeof x==='object' && x.key);
-          saveKeys(); renderKeys(); pushLog('Import sukses.');
-        }else{ alert('Format tidak valid.'); }
-      }catch{ alert('Gagal membaca file.'); }
-      e.target.value='';
-    });
+        if(act==="copy"){
+          await navigator.clipboard.writeText(k); toast("Key disalin","ok");
+        } else if(act==="add7"){
+          const cur = cacheKeys[k]?.exp||0;
+          const base = Math.max(Number(cur)||0, Date.now());
+          await update(ref(db,"auth/keys/"+k), {exp: base + 7*864e5});
+          toast("Ditambah +7 hari","ok");
+        } else if(act==="noexp"){
+          await update(ref(db,"auth/keys/"+k), {exp: 0}); toast("Expire dihapus","ok");
+        } else if(act==="setdate"){
+          const cur = cacheKeys[k]?.exp||0;
+          const seed = cur>0 ? dateToInput(cur) : dateToInput(Date.now());
+          const val = prompt("Masukkan tanggal (YYYY-MM-DD)\nKosongkan untuk No Exp:", seed);
+          if(val===null) return;
+          const v = val.trim();
+          const ms = v==="" ? 0 : (()=>{ const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return endOfDayMs(Y,M,D); })();
+          await update(ref(db,"auth/keys/"+k), {exp: ms||0}); toast("Expire diperbarui","ok");
+        } else if(act==="del"){
+          if(confirm(`Hapus key:\n${k}?`)){ await remove(ref(db,"auth/keys/"+k)); toast("Key dihapus","ok"); }
+        }
+      }catch(err){ toast("Aksi gagal: "+(err.code||"error"),"err"); }
+    })();
+  }, {passive:true});
 
-    // ===== Restore flags
-    if(localStorage.getItem('gx:reduce')==='1'){ reduceToggle.checked=true; }
-    if(localStorage.getItem('gx:dense')==='1'){ denseToggle.checked=true; }
-    reduceToggle.addEventListener('change',()=>localStorage.setItem('gx:reduce', reduceToggle.checked?'1':'0'));
-    denseToggle.addEventListener('change',()=>localStorage.setItem('gx:dense', denseToggle.checked?'1':'0'));
+  // controls
+  btnSaveGlobal.onclick = async ()=>{ await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); toast("Global key disimpan","ok"); };
+  btnClearGlobal.onclick = async ()=>{ await set(ref(db,"auth/globalKey"), ""); toast("Global key dikosongkan","ok"); };
+  btnGen.onclick = ()=>{ newKey.value = genKey(); newKey.focus(); };
 
-    // ===== Misc: refresh dummy
-    q('#refreshBtn').addEventListener('click', ()=>pushLog('Refresh UI.'), {passive:true});
-  </script>
+  // chip +7 / no-exp (tambah di atas nilai yang sudah ada pada input date)
+  document.querySelectorAll(".chip").forEach(ch=>{
+    ch.addEventListener("click", ()=>{
+      const days = Number(ch.dataset.add);
+      if(days===0){ exp.value=""; return; }
+      const base = exp.value ? new Date(exp.value) : new Date();
+      base.setDate(base.getDate()+days);
+      exp.value = dateToInput(base.getTime());
+    }, {passive:true});
+  });
 
-  <style>
-    /* Kecilkan aksesibilitas visual helper */
-    .visually-hidden{
-      position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap
+  btnAdd.onclick = async ()=>{
+    const k = (newKey.value||"").trim();
+    if(!k){ toast("Isi key dulu.","err"); return; }
+    let ms = 0;
+    if(exp.value){
+      const [Y,M,D] = exp.value.split("-").map(n=>parseInt(n,10));
+      ms = endOfDayMs(Y,M,D);
     }
-  </style>
+    await update(ref(db,"auth/keys/"+k), {exp: ms});
+    newKey.value=""; exp.value=""; toast("Key ditambahkan","ok");
+  };
+
+  search.addEventListener("input", doSearch, {passive:true});
+</script>
 </body>
 </html>
