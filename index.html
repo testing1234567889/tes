@@ -1,57 +1,63 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>GxMods Admin Panel</title>
 <style>
   :root{
     --bg:#0b0d14;--card:#101624;--muted:#9fb0c2;--line:#1e2636;
     --pri:#7c3aed;--pri2:#3b82f6; --ok:#22c55e;--warn:#f59e0b;--err:#ef4444;--teal:#06b6d4;
-    --round:18px;--shadow:0 10px 30px rgba(0,0,0,.35);
+    --r:clamp(12px,2vw,18px); --pad:clamp(12px,2.5vw,20px);
+    --shadow:0 10px 30px rgba(0,0,0,.35);
   }
-  *{box-sizing:border-box} html,body{height:100%}
+  *{box-sizing:border-box}
+  html,body{height:100%}
   body{
-    margin:0;font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Inter,sans-serif;color:#eef3fb;
+    margin:0;
+    font:clamp(12px,1.6vw,14.5px)/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Inter,sans-serif;
+    color:#eef3fb;
     background: radial-gradient(1200px 600px at 10% -20%, #0d1430 0%, transparent 60%),
                 radial-gradient(1000px 600px at 120% 0%, #12283a 0%, transparent 55%),
                 var(--bg);
-    display:flex;align-items:center;justify-content:center;padding:24px;
+    display:flex;align-items:center;justify-content:center;padding:clamp(10px,3vw,24px);
   }
-  .wrap{width:min(1100px,100%);display:grid;gap:18px}
+  .wrap{width:min(1100px,100%);display:grid;gap:clamp(8px,2vw,18px)}
   .card{
     background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
     border:1px solid rgba(255,255,255,.08);
-    border-radius:var(--round); box-shadow:var(--shadow);
-    backdrop-filter: blur(8px);
+    border-radius:var(--r); box-shadow:var(--shadow);
+    backdrop-filter: blur(6px);
   }
-  .header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px}
-  .brand{display:flex;align-items:center;gap:12px}
-  .badge{width:42px;height:42px;border-radius:50%;position:relative;background:#0a1222;border:1px solid rgba(255,255,255,.08)}
-  .eye{position:absolute;top:16px;width:7px;height:7px;background:#56c0ff;border-radius:50%}
-  .eye.l{left:12px} .eye.r{right:12px}
-  .mouth{position:absolute;bottom:12px;left:50%;width:18px;height:2px;background:#9fb0c2;border-radius:2px;transform:translateX(-50%)}
-  .title{font-weight:700;letter-spacing:.3px}
+  .header{display:flex;align-items:center;justify-content:space-between;padding:var(--pad)}
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .badge{width:clamp(34px,6vw,42px);height:clamp(34px,6vw,42px);border-radius:50%;position:relative;background:#0a1222;border:1px solid rgba(255,255,255,.08);flex:0 0 auto}
+  .eye{position:absolute;top:40%;width:7px;height:7px;background:#56c0ff;border-radius:50%}
+  .eye.l{left:25%} .eye.r{right:25%}
+  .mouth{position:absolute;bottom:22%;left:50%;width:18px;height:2px;background:#9fb0c2;border-radius:2px;transform:translateX(-50%)}
+  .title{font-weight:700;letter-spacing:.2px;font-size:clamp(14px,2.4vw,18px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .muted{color:var(--muted)}
-  .btn{border:0;border-radius:999px;padding:10px 16px;color:#fff;cursor:pointer;transition:.15s transform,.2s filter}
+  .btn{border:0;border-radius:999px;padding:10px 16px;color:#fff;cursor:pointer;transition:.15s transform,.2s filter;font:inherit}
   .btn:active{transform:scale(.97)}
   .btn-primary{background:linear-gradient(135deg,var(--pri),var(--pri2))}
   .btn-ok{background:linear-gradient(135deg,var(--teal),var(--ok))}
   .btn-ghost{background:#192133;border:1px solid #27314a;color:#dbe7ff}
-  .grid{display:grid;gap:14px;padding:16px}
+  .btn-danger{background:linear-gradient(135deg,#ef4444,#b91c1c)}
+  .grid{display:grid;gap:clamp(10px,2vw,14px);padding:var(--pad);grid-template-columns:1fr}
   @media(min-width:900px){ .grid{ grid-template-columns: 1.2fr 2fr } }
-  .section{padding:16px;border-top:1px solid var(--line)}
+  .section{padding:var(--pad);border-top:1px solid var(--line)}
   .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   input,select{
     color:#e7edf8;background:#0e1424;border:1px solid #27314a;border-radius:10px;
-    padding:10px 12px;outline:none;min-width:0
+    padding:10px 12px;outline:none;min-width:0;width:100%;
   }
   input:focus{border-color:#56c0ff;box-shadow:0 0 0 3px rgba(86,192,255,.15)}
-  .chip{padding:6px 10px;border-radius:999px;background:#0e1726;border:1px solid #26304a;cursor:pointer}
+  .chip{padding:6px 10px;border-radius:999px;background:#0e1726;border:1px solid #26304a;cursor:pointer;user-select:none}
   .chip:hover{border-color:#3b82f6}
-  .tbl{width:100%;border-collapse:separate;border-spacing:0 8px}
+  .scroll-x{overflow:auto; -webkit-overflow-scrolling:touch}
+  .tbl{width:100%;border-collapse:separate;border-spacing:0 clamp(6px,1.4vw,8px);min-width:640px}
   .tbl th{font-weight:600;color:#cfe0ff;text-align:left;padding:8px}
-  .tbl td{padding:10px 8px;background:#0f1524;border-top:1px solid #22304b;border-bottom:1px solid #22304b}
+  .tbl td{padding:10px 8px;background:#0f1524;border-top:1px solid #22304b;border-bottom:1px solid #22304b;vertical-align:middle}
   .tbl tr td:first-child{border-left:1px solid #22304b;border-top-left-radius:10px;border-bottom-left-radius:10px}
   .tbl tr td:last-child{border-right:1px solid #22304b;border-top-right-radius:10px;border-bottom-right-radius:10px}
   .pill{padding:3px 8px;border-radius:999px;font-size:12px}
@@ -60,10 +66,16 @@
   .actions{display:flex;gap:8px;flex-wrap:wrap}
   .right{margin-left:auto}
   .hide{display:none}
-  .login{max-width:420px;margin:0 auto;padding:20px}
-  .login .brand{justify-content:center;margin-bottom:10px}
-  .toast{position:fixed;inset:auto 12px 12px auto;background:#111827;border:1px solid #263248;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);opacity:.98}
+  .login{max-width:min(420px,100%);margin:0 auto;padding:var(--pad)}
+  .login .brand{justify-content:center;margin-bottom:6px}
+  .toast{position:fixed;inset:auto 10px 10px auto;background:#111827;border:1px solid #263248;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);opacity:.98;z-index:999}
   .link{color:#a8d0ff;text-decoration:none;border-bottom:1px dashed #3b82f6}
+  /* Tiny phones */
+  @media(max-width:420px){
+    .actions .btn{padding:8px 10px}
+    .btn{font-size:12.5px}
+    .title{max-width:52vw}
+  }
 </style>
 </head>
 <body>
@@ -81,7 +93,7 @@
       </div>
     </div>
     <div class="row">
-      <span id="adminEmail" class="muted" style="font-size:13px;margin-right:10px;"></span>
+      <span id="adminEmail" class="muted" style="font-size:12px;margin-right:10px;"></span>
       <button id="btnSignOut" class="btn btn-ghost hide">Sign Out</button>
     </div>
   </div>
@@ -91,19 +103,19 @@
     <div class="brand">
       <div class="badge"><span class="eye l"></span><span class="eye r"></span><span class="mouth"></span></div>
     </div>
-    <h2 style="margin:6px 0 14px">Login Admin</h2>
+    <h2 style="margin:6px 0 12px">Login Admin</h2>
     <form id="formLogin" class="grid">
       <div class="section" style="border-top:none;padding-top:0">
-        <div class="row"><input id="email" type="email" placeholder="Email" style="width:100%" required /></div>
-        <div class="row" style="margin-top:10px"><input id="password" type="password" placeholder="Password" style="width:100%" required /></div>
+        <div class="row"><input id="email" type="email" placeholder="Email" required /></div>
+        <div class="row" style="margin-top:10px"><input id="password" type="password" placeholder="Password" required /></div>
         <div class="row" style="margin-top:14px;justify-content:space-between">
-          <span class="muted" style="font-size:12px">Hanya UID: <code id="uidInfo">-</code></span>
+          <span class="muted" style="font-size:12px">UID admin: <code id="uidInfo">-</code></span>
           <button class="btn btn-primary" type="submit">Sign In</button>
         </div>
       </div>
     </form>
     <div class="section muted" style="font-size:12px">
-      Tips: Akun email/password harus dibuat di Firebase Auth. UID harus cocok dengan whitelist.
+      Akun email/password harus ada di Firebase Auth. UID harus cocok dengan whitelist.
     </div>
   </div>
 
@@ -115,12 +127,12 @@
       <section class="section" style="border-top:none">
         <h3 style="margin:0 0 10px">Global Key</h3>
         <div class="row">
-          <input id="globalKey" placeholder="Kosongkan kalau tidak pakai global key" style="flex:1;min-width:220px" />
+          <input id="globalKey" placeholder="Kosongkan jika tidak memakai global key" style="flex:1;min-width:220px"/>
           <button id="btnSaveGlobal" class="btn btn-primary">Simpan</button>
           <button id="btnClearGlobal" class="btn btn-ghost">Hapus</button>
         </div>
         <div class="muted" style="font-size:12px;margin-top:6px">
-          Catatan: Android client membaca <code>/auth/globalKey</code> langsung dari RTDB (read-only).
+          Client Android hanya baca <code>/auth/globalKey</code> (read-only).
         </div>
       </section>
 
@@ -128,12 +140,12 @@
       <section class="section">
         <h3 style="margin:0 0 10px">Buat Key Baru</h3>
         <div class="row" style="gap:10px">
-          <input id="newKey" placeholder="Key (atau klik Generate)" style="flex:1;min-width:220px" />
+          <input id="newKey" placeholder="Key (atau klik Generate)" style="flex:1;min-width:220px"/>
           <button id="btnGen" class="btn btn-ghost">Generate</button>
         </div>
         <div class="row" style="margin-top:10px">
           <label class="muted" for="exp">Kadaluarsa (opsional)</label>
-          <input id="exp" type="datetime-local" />
+          <input id="exp" type="datetime-local" style="max-width:260px"/>
           <span class="chip" data-add="7">+7 hari</span>
           <span class="chip" data-add="30">+30 hari</span>
           <span class="chip" data-add="0">Tanpa Exp</span>
@@ -145,19 +157,21 @@
       <section class="section" style="grid-column:1/-1">
         <div class="row" style="justify-content:space-between;margin-bottom:8px">
           <h3 style="margin:0">Daftar Key</h3>
-          <input id="search" placeholder="Cari key…" style="min-width:200px" />
+          <input id="search" placeholder="Cari key…" style="min-width:180px;max-width:260px"/>
         </div>
-        <table class="tbl" id="tbl">
-          <thead>
+        <div class="scroll-x">
+          <table class="tbl">
+            <thead>
             <tr>
               <th style="width:34%">Key</th>
               <th>Expire</th>
               <th>Status</th>
               <th style="width:28%">Aksi</th>
             </tr>
-          </thead>
-          <tbody id="rows"><tr><td colspan="4" class="muted" style="padding:14px">Memuat…</td></tr></tbody>
-        </table>
+            </thead>
+            <tbody id="rows"><tr><td colspan="4" class="muted" style="padding:14px">Memuat…</td></tr></tbody>
+          </table>
+        </div>
       </section>
 
     </div>
@@ -168,7 +182,7 @@
 
 <!-- Firebase (v10 modular) -->
 <script type="module">
-  // ----- CONFIG -----
+  // CONFIG & CONSTANTS
   const ADMIN_UID = "4CCiNyEyTvSUPnY6Ugd9PzAU1df2";
   const firebaseConfig = {
     apiKey: "AIzaSyAJ2YitGgxTI8k440TmWUHgntkTLSqkX3c",
@@ -181,7 +195,7 @@
     measurementId: "G-YKCTBR2857"
   };
 
-  // ----- SDK -----
+  // SDK
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
   import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
   import { getDatabase, ref, onValue, set, update, remove, get, child } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
@@ -190,149 +204,118 @@
   const auth = getAuth(app);
   const db   = getDatabase(app);
 
-  // ----- UI helpers -----
+  // helpers
   const $ = (q)=>document.querySelector(q);
-  const uidInfo = $("#uidInfo"); uidInfo.textContent = ADMIN_UID;
   const show = (el)=>el.classList.remove("hide");
   const hide = (el)=>el.classList.add("hide");
   const toast = (msg, kind="")=>{
-    const t=$("#toast");
-    t.textContent = msg;
+    const t=$("#toast"); t.textContent = msg;
     t.style.borderColor = kind==="err" ? "rgba(239,68,68,.5)" :
                           kind==="ok"  ? "rgba(34,197,94,.5)" :
                           "rgba(59,130,246,.5)";
-    t.classList.remove("hide");
-    clearTimeout(window._t); window._t=setTimeout(()=>t.classList.add("hide"), 2800);
+    show(t); clearTimeout(window._t); window._t=setTimeout(()=>hide(t), 2800);
   };
   const fmtExp = (ms)=>{
     if(!ms || Number(ms)===0) return "Tidak ada (permanen)";
-    const d = new Date(Number(ms));
-    return d.toLocaleString();
+    return new Date(Number(ms)).toLocaleString();
   };
-  const isExpired = (ms)=>{
-    if(!ms || Number(ms)===0) return false;
-    return Date.now() > Number(ms);
-  };
+  const isExpired = (ms)=> (ms && Number(ms)!==0 && Date.now()>Number(ms));
   const genKey = ()=>{
-    const chunk = ()=>Math.random().toString(36).slice(2, 6).toUpperCase();
-    return `${chunk()}-${chunk()}-${chunk()}-${chunk()}`;
+    const c = ()=>Math.random().toString(36).slice(2,6).toUpperCase();
+    return `${c()}-${c()}-${c()}-${c()}`;
   };
 
-  // ----- DOM -----
-  const viewLogin = $("#viewLogin");
-  const viewDash  = $("#viewDash");
-  const adminEmail = $("#adminEmail");
-  const btnSignOut = $("#btnSignOut");
-  const formLogin = $("#formLogin");
-  const inpEmail = $("#email");
-  const inpPass  = $("#password");
+  // DOM
+  const uidInfo = $("#uidInfo"); uidInfo.textContent = ADMIN_UID;
+  const viewLogin = $("#viewLogin"), viewDash=$("#viewDash");
+  const adminEmail=$("#adminEmail"), btnSignOut=$("#btnSignOut");
+  const formLogin=$("#formLogin"), email=$("#email"), password=$("#password");
 
-  const globalKey = $("#globalKey");
-  const btnSaveGlobal = $("#btnSaveGlobal");
-  const btnClearGlobal = $("#btnClearGlobal");
+  const globalKey=$("#globalKey"), btnSaveGlobal=$("#btnSaveGlobal"), btnClearGlobal=$("#btnClearGlobal");
+  const newKey=$("#newKey"), btnGen=$("#btnGen"), exp=$("#exp"), btnAdd=$("#btnAdd");
+  const rows=$("#rows"), search=$("#search");
 
-  const newKey = $("#newKey");
-  const btnGen = $("#btnGen");
-  const exp = $("#exp");
-  const btnAdd = $("#btnAdd");
-  const rows = $("#rows");
-  const search = $("#search");
-
-  // ----- Auth flow -----
-  onAuthStateChanged(auth, async (user)=>{
-    if(user && user.uid === ADMIN_UID){
+  // auth
+  onAuthStateChanged(auth, (user)=>{
+    if(user && user.uid===ADMIN_UID){
       adminEmail.textContent = user.email || "(admin)";
       show(viewDash); hide(viewLogin); show(btnSignOut);
-      attachDataListeners();
+      startData();
     }else{
       hide(viewDash); show(viewLogin); hide(btnSignOut);
       adminEmail.textContent = "";
-      // auto sign-out jika bukan admin
-      if(user && user.uid !== ADMIN_UID){ await signOut(auth); toast("Akun bukan admin.", "err"); }
+      if(user && user.uid!==ADMIN_UID){ signOut(auth); toast("Akun bukan admin.","err"); }
     }
   });
-
   formLogin.addEventListener("submit", async (e)=>{
     e.preventDefault();
     try{
-      await signInWithEmailAndPassword(auth, inpEmail.value.trim(), inpPass.value);
-      toast("Login sukses", "ok");
-    }catch(err){
-      toast("Login gagal: " + (err.code||"error"), "err");
-    }
+      await signInWithEmailAndPassword(auth, email.value.trim(), password.value);
+      toast("Login sukses","ok");
+    }catch(err){ toast("Login gagal: "+(err.code||"error"),"err"); }
   });
-
   btnSignOut.onclick = async ()=>{ await signOut(auth); toast("Signed out"); };
 
-  // ----- Data binding -----
-  function attachDataListeners(){
-    // Global Key
-    onValue(ref(db, "auth/globalKey"), (snap)=>{
-      globalKey.value = snap.exists() ? (snap.val()||"") : "";
-    });
-    // Keys table (live)
-    onValue(ref(db, "auth/keys"), (snap)=>{
-      const all = snap.val() || {};
-      renderTable(all);
-    });
+  // data
+  let cacheKeys = {}; // snapshot cache
+  function startData(){
+    onValue(ref(db,"auth/globalKey"), s=>{ globalKey.value = s.exists()? (s.val()||"") : ""; });
+    onValue(ref(db,"auth/keys"), s=>{ cacheKeys = s.val()||{}; renderTable(); });
   }
 
-  function renderTable(all){
+  function renderTable(){
     const q = search.value.trim().toUpperCase();
-    const keys = Object.keys(all).sort();
-    if(keys.length===0){ rows.innerHTML = `<tr><td colspan="4" class="muted" style="padding:14px">Belum ada key.</td></tr>`; return; }
-    let html = "";
-    for(const k of keys){
+    const ks = Object.keys(cacheKeys).sort();
+    if(ks.length===0){ rows.innerHTML = `<tr><td colspan="4" class="muted" style="padding:14px">Belum ada key.</td></tr>`; return; }
+    let html="";
+    for(const k of ks){
       if(q && !k.toUpperCase().includes(q)) continue;
-      const expMs = all[k]?.exp || 0;
+      const expMs = cacheKeys[k]?.exp||0;
       const expired = isExpired(expMs);
       html += `
-        <tr>
-          <td style="word-break:break-all">${k}</td>
-          <td>${fmtExp(expMs)}</td>
-          <td><span class="pill ${expired ? 'pill-exp':'pill-ok'}">${expired?'Expired':'Aktif'}</span></td>
-          <td class="actions">
-            <button class="btn btn-ghost" onclick="copyKey('${k}')">Copy</button>
-            <button class="btn btn-ghost" onclick="quickExp('${k}',7)">+7d</button>
-            <button class="btn btn-ghost" onclick="quickExp('${k}',30)">+30d</button>
-            <button class="btn btn-ghost" onclick="noExp('${k}')">No Exp</button>
-            <button class="btn btn-primary" onclick="editExp('${k}')">Set Tanggal…</button>
-            <button class="btn" style="background:linear-gradient(135deg,#ef4444,#b91c1c)" onclick="delKey('${k}')">Hapus</button>
-          </td>
-        </tr>`;
+      <tr>
+        <td style="word-break:break-all">${k}</td>
+        <td>${fmtExp(expMs)}</td>
+        <td><span class="pill ${expired?'pill-exp':'pill-ok'}">${expired?'Expired':'Aktif'}</span></td>
+        <td class="actions">
+          <button class="btn btn-ghost" data-action="copy" data-key="${k}">Copy</button>
+          <button class="btn btn-ghost" data-action="add7" data-key="${k}">+7d</button>
+          <button class="btn btn-ghost" data-action="add30" data-key="${k}">+30d</button>
+          <button class="btn btn-ghost" data-action="noexp" data-key="${k}">No Exp</button>
+          <button class="btn btn-primary" data-action="setdate" data-key="${k}">Set Tanggal…</button>
+          <button class="btn btn-danger" data-action="del" data-key="${k}">Hapus</button>
+        </td>
+      </tr>`;
     }
     rows.innerHTML = html || `<tr><td colspan="4" class="muted" style="padding:14px">Tidak ada hasil.</td></tr>`;
   }
 
-  // expose helpers for inline buttons
-  window.copyKey = async (k)=>{ await navigator.clipboard.writeText(k); toast("Key disalin", "ok"); };
-  window.quickExp = async (k, days)=>{
-    const until = Date.now() + days*24*60*60*1000;
-    await update(ref(db, "auth/keys/"+k), {exp: until});
-    toast(`Expire diatur ${days} hari`, "ok");
-  };
-  window.noExp = async (k)=>{ await update(ref(db,"auth/keys/"+k), {exp: 0}); toast("Expire dihapus", "ok"); };
-  window.editExp = async (k)=>{
-    const current = await get(child(ref(db), "auth/keys/"+k+"/exp"));
-    const nowISO = new Date().toISOString().slice(0,16);
-    const val = prompt("Set datetime-local (YYYY-MM-DDTHH:MM)\nKosongkan untuk No Exp:",
-                       current.exists() && Number(current.val())>0 ? new Date(Number(current.val())).toISOString().slice(0,16) : nowISO);
-    if(val===null) return;
-    const ms = val.trim()==="" ? 0 : new Date(val).getTime();
-    await update(ref(db,"auth/keys/"+k), {exp: ms||0});
-    toast("Expire diperbarui", "ok");
-  };
+  // table actions (event delegation)
+  rows.addEventListener("click", async (e)=>{
+    const b = e.target.closest("button[data-action]"); if(!b) return;
+    const k = b.dataset.key; const act = b.dataset.action;
+    try{
+      if(act==="copy"){ await navigator.clipboard.writeText(k); toast("Key disalin","ok"); }
+      else if(act==="add7"){ await update(ref(db,"auth/keys/"+k), {exp: Date.now()+7*864e5}); toast("Expire +7 hari","ok"); }
+      else if(act==="add30"){ await update(ref(db,"auth/keys/"+k), {exp: Date.now()+30*864e5}); toast("Expire +30 hari","ok"); }
+      else if(act==="noexp"){ await update(ref(db,"auth/keys/"+k), {exp: 0}); toast("Expire dihapus","ok"); }
+      else if(act==="setdate"){
+        const cur = cacheKeys[k]?.exp||0;
+        const iso = cur>0 ? new Date(cur).toISOString().slice(0,16) : new Date().toISOString().slice(0,16);
+        const val = prompt("Set datetime-local (YYYY-MM-DDTHH:MM)\nKosongkan untuk No Exp:", iso);
+        if(val===null) return;
+        const ms = val.trim()==="" ? 0 : new Date(val).getTime();
+        await update(ref(db,"auth/keys/"+k), {exp: ms||0}); toast("Expire diperbarui","ok");
+      }
+      else if(act==="del"){
+        if(confirm(`Hapus key:\n${k}?`)){ await remove(ref(db,"auth/keys/"+k)); toast("Key dihapus","ok"); }
+      }
+    }catch(err){ toast("Aksi gagal: "+(err.code||"error"),"err"); }
+  });
 
-  // create / update
-  btnSaveGlobal.onclick = async ()=>{
-    await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim());
-    toast("Global key disimpan", "ok");
-  };
-  btnClearGlobal.onclick = async ()=>{
-    await set(ref(db,"auth/globalKey"), "");
-    toast("Global key dikosongkan", "ok");
-  };
-
+  // controls
+  btnSaveGlobal.onclick = async ()=>{ await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); toast("Global key disimpan","ok"); };
+  btnClearGlobal.onclick = async ()=>{ await set(ref(db,"auth/globalKey"), ""); toast("Global key dikosongkan","ok"); };
   btnGen.onclick = ()=>{ newKey.value = genKey(); newKey.focus(); };
   document.querySelectorAll(".chip").forEach(ch=>{
     ch.addEventListener("click", ()=>{
@@ -342,17 +325,17 @@
       exp.value = new Date(dt.getTime()-dt.getTimezoneOffset()*60000).toISOString().slice(0,16);
     });
   });
-
   btnAdd.onclick = async ()=>{
     const k = (newKey.value||"").trim();
-    if(!k){ toast("Isi key dulu.", "err"); return; }
+    if(!k){ toast("Isi key dulu.","err"); return; }
     const ms = exp.value ? new Date(exp.value).getTime() : 0;
-    await update(ref(db,"auth/keys/"+k), { exp: ms||0 });
-    newKey.value=""; exp.value=""; toast("Key ditambahkan", "ok");
+    await update(ref(db,"auth/keys/"+k), {exp: ms||0});
+    newKey.value=""; exp.value=""; toast("Key ditambahkan","ok");
   };
+  search.addEventListener("input", renderTable);
 
-  search.addEventListener("input", ()=>attachDataListeners()); // re-render filter (ringan)
-
+  // expose firebase funcs
+  const { update, ref, remove, set } = await import("https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js");
 </script>
 </body>
 </html>
