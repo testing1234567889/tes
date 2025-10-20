@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>GxMods Admin Panel</title>
 <style>
   :root{
@@ -11,21 +11,26 @@
     --r:clamp(12px,2vw,18px); --pad:clamp(12px,2.5vw,20px);
     --shadow:0 10px 30px rgba(0,0,0,.35);
   }
+
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{height:100%}
   body{
     margin:0;
+    min-height:100svh; /* aman address bar mobile */
     font:clamp(12px,1.6vw,14.5px)/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Inter,sans-serif;
     color:#eef3fb;
     background: radial-gradient(1200px 600px at 10% -20%, #0d1430 0%, transparent 60%),
                 radial-gradient(1000px 600px at 120% 0%, #12283a 0%, transparent 55%),
                 var(--bg);
-    display:flex;align-items:center;justify-content:center;
-    padding:clamp(10px,3vw,24px);
-    /* dorong turun biar aman dari address bar / notch */
-    padding-top: calc(env(safe-area-inset-top, 0px) + clamp(16px, 4vw, 28px));
+    /* safe area + ruang ekstra */
+    padding: calc(env(safe-area-inset-top, 0px) + clamp(16px, 4vw, 28px)) clamp(10px,3vw,24px) clamp(16px,4vw,28px);
+    /* anti salin global */
+    user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
   }
-  .wrap{width:min(1100px,100%);display:grid;gap:clamp(8px,2vw,18px)}
+  /* Re-enable selection hanya di input/textarea (biar bisa edit/copy di field) */
+  input, textarea { user-select:text; -webkit-user-select:text; -webkit-touch-callout:default; }
+
+  .wrap{width:min(1100px,100%);margin:0 auto;display:grid;gap:clamp(8px,2vw,18px)}
   .card{
     background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
     border:1px solid rgba(255,255,255,.08);
@@ -40,13 +45,15 @@
   .mouth{position:absolute;bottom:22%;left:50%;width:18px;height:2px;background:#9fb0c2;border-radius:2px;transform:translateX(-50%)}
   .title{font-weight:700;letter-spacing:.2px;font-size:clamp(14px,2.4vw,18px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .muted{color:var(--muted)}
-  .btn{border:0;border-radius:999px;padding:9px 14px;color:#fff;cursor:pointer;transition:.15s transform,.2s filter;font:inherit}
+
+  .btn{border:0;border-radius:999px;padding:9px 14px;color:#fff;cursor:pointer;transition:.15s transform,.2s filter;font:inherit;background:#192133;border:1px solid #27314a}
   .btn:active{transform:scale(.97)}
   .btn:focus{outline:none}
-  .btn-primary{background:linear-gradient(135deg,var(--pri),var(--pri2))}
-  .btn-ok{background:linear-gradient(135deg,var(--teal),var(--ok))}
+  .btn-primary{background:linear-gradient(135deg,var(--pri),var(--pri2));border:none}
+  .btn-ok{background:linear-gradient(135deg,var(--teal),var(--ok));border:none}
   .btn-ghost{background:#192133;border:1px solid #27314a;color:#dbe7ff}
-  .btn-danger{background:linear-gradient(135deg,#ef4444,#b91c1c)}
+  .btn-danger{background:linear-gradient(135deg,#ef4444,#b91c1c);border:none}
+
   .grid{display:grid;gap:clamp(10px,2vw,14px);padding:var(--pad);grid-template-columns:1fr}
   @media(min-width:900px){ .grid{ grid-template-columns: 1.2fr 2fr } }
   .section{padding:var(--pad);border-top:1px solid var(--line)}
@@ -75,7 +82,7 @@
   .m-item{background:#0f1524;border:1px solid #22304b;border-radius:12px;padding:10px;margin-bottom:8px}
   .m-top{display:flex;align-items:center;gap:8px}
   .m-key{font-weight:700;word-break:break-all;flex:1}
-  .no-select{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  .m-key, .m-exp, .title, .muted, h3, label { user-select:none; -webkit-user-select:none; } /* anti salin teks */
   .m-status{white-space:nowrap}
   .m-exp{color:var(--muted);font-size:12px;margin:6px 0 8px}
   .m-actions{display:flex;flex-direction:column;gap:6px}
@@ -163,8 +170,8 @@
           <button id="btnGen" class="btn btn-ghost">Generate</button>
         </div>
         <div class="row" style="margin-top:8px">
-          <label class="muted" for="exp">Kadaluarsa (opsional)</label>
-          <input id="exp" type="datetime-local" class="limit-phone"/>
+          <label class="muted" for="exp">Tanggal kadaluarsa (opsional)</label>
+          <input id="exp" type="date" class="limit-phone"/>
           <span class="chip" data-add="7">+7 hari</span>
           <span class="chip" data-add="0">Tanpa Exp</span>
           <button id="btnAdd" class="btn btn-ok right">Tambah Key</button>
@@ -252,6 +259,15 @@
     const c = ()=>Math.random().toString(36).slice(2,6).toUpperCase();
     return `${c()}-${c()}-${c()}-${c()}`;
   };
+  const dateToInput = (ms)=>{
+    const d = new Date(ms);
+    const y=d.getFullYear(); const m=String(d.getMonth()+1).padStart(2,"0"); const da=String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${da}`;
+  };
+  const endOfDayMs = (y,m,d)=>{
+    // local end of day 23:59:59
+    return new Date(y, m-1, d, 23, 59, 59, 999).getTime();
+  };
 
   // DOM
   const uidInfo = $("#uidInfo"); uidInfo && (uidInfo.textContent = ADMIN_UID);
@@ -307,7 +323,7 @@
       const expired = isExpired(expMs);
       html += `
       <tr>
-        <td style="word-break:break-all"><span class="no-select">${k}</span></td>
+        <td style="word-break:break-all"><span>${k}</span></td>
         <td>${fmtExp(expMs)}</td>
         <td><span class="pill ${expired?'pill-exp':'pill-ok'}">${expired?'Expired':'Aktif'}</span></td>
         <td class="actions">
@@ -335,7 +351,7 @@
       html += `
         <div class="m-item">
           <div class="m-top">
-            <div class="m-key no-select">${k}</div>
+            <div class="m-key">${k}</div>
             <div class="m-status pill ${expired?'pill-exp':'pill-ok'}">${expired?'Expired':'Aktif'}</div>
           </div>
           <div class="m-exp">${fmtExp(expMs)}</div>
@@ -362,10 +378,11 @@
         else if(act==="noexp"){ await update(ref(db,"auth/keys/"+k), {exp: 0}); toast("Expire dihapus","ok"); }
         else if(act==="setdate"){
           const cur = cacheKeys[k]?.exp||0;
-          const iso = cur>0 ? new Date(cur).toISOString().slice(0,16) : new Date().toISOString().slice(0,16);
-          const val = prompt("Set datetime-local (YYYY-MM-DDTHH:MM)\nKosongkan untuk No Exp:", iso);
+          const seed = cur>0 ? dateToInput(cur) : dateToInput(Date.now());
+          const val = prompt("Masukkan tanggal (YYYY-MM-DD)\nKosongkan untuk No Exp:", seed);
           if(val===null) return;
-          const ms = val.trim()==="" ? 0 : new Date(val).getTime();
+          const v = val.trim();
+          const ms = v==="" ? 0 : (()=>{ const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return endOfDayMs(Y,M,D); })();
           await update(ref(db,"auth/keys/"+k), {exp: ms||0}); toast("Expire diperbarui","ok");
         }
         else if(act==="del"){
@@ -386,15 +403,18 @@
       const days = Number(ch.dataset.add);
       if(days===0){ exp.value=""; return; }
       const dt = new Date(Date.now()+days*864e5);
-      // isi datetime-local (UTC offset aware)
-      exp.value = new Date(dt.getTime()-dt.getTimezoneOffset()*60000).toISOString().slice(0,16);
+      exp.value = dateToInput(dt.getTime());
     });
   });
   btnAdd.onclick = async ()=>{
     const k = (newKey.value||"").trim();
     if(!k){ toast("Isi key dulu.","err"); return; }
-    const ms = exp.value ? new Date(exp.value).getTime() : 0;
-    await update(ref(db,"auth/keys/"+k), {exp: ms||0});
+    let ms = 0;
+    if(exp.value){
+      const [Y,M,D] = exp.value.split("-").map(n=>parseInt(n,10));
+      ms = endOfDayMs(Y,M,D);
+    }
+    await update(ref(db,"auth/keys/"+k), {exp: ms});
     newKey.value=""; exp.value=""; toast("Key ditambahkan","ok");
   };
   search.addEventListener("input", renderLists);
