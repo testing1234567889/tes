@@ -74,7 +74,6 @@
     body.authed .login-only{display:none!important}
     body.noauth #menuBtn, body.noauth #btnSignOut{display:none!important}
     body.noauth .topbar, body.noauth .drawer, body.noauth .backdrop{display:none!important}
-    body.booting .page{display:none!important}
 
     /* Login centering */
     body.noauth .app{min-height:100dvh;display:grid;place-items:center;padding:20px}
@@ -98,13 +97,12 @@
       display:none;z-index:1000;text-align:center;max-width:80vw
     }
 
-    /* Lite */
     .lite .btn,.lite .card{box-shadow:none}
     .hide{display:none!important}
   </style>
 </head>
-<body class="noauth booting">
-  <!-- Topbar -->
+<body class="noauth">
+  <!-- Topbar (disembunyikan saat belum login) -->
   <header class="topbar">
     <button id="menuBtn" class="btn" aria-label="Menu">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
@@ -130,7 +128,7 @@
   <div id="backdrop" class="backdrop"></div>
 
   <main id="app" class="app">
-    <!-- Dashboard (ringkasan DIHAPUS) -->
+    <!-- Dashboard (tanpa ringkasan) -->
     <section class="page guarded" data-page="dashboard">
       <div class="grid">
         <div class="card">
@@ -229,8 +227,8 @@
       </div>
     </section>
 
-    <!-- Login (center) -->
-    <section class="page login-only" data-page="login">
+    <!-- Login (SELALU tampil default biar gak blank) -->
+    <section class="page login-only show" data-page="login">
       <div class="card login-card">
         <h3 class="login-title">Login</h3>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -252,6 +250,7 @@
   <div id="toast"></div>
 
   <script type="module">
+    /* ====== CONFIG ====== */
     const ADMIN_UID = "4CCiNyEyTvSUPnY6Ugd9PzAU1df2";
 
     const firebaseConfig = {
@@ -265,6 +264,7 @@
       measurementId: "G-YKCTBR2857"
     };
 
+    /* ====== Imports ====== */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
     import {
       getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut,
@@ -272,16 +272,22 @@
     } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
     import { getDatabase, ref, onValue, set, update, remove, off } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
+    /* ====== Init ====== */
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    // persist login across refresh (tanpa top-level await, aman di WebView lama)
+    // Persist session (tanpa top-level await)
     setPersistence(auth, browserLocalPersistence).catch(()=>{});
     const db   = getDatabase(app);
 
-    const $ = (s,el=document)=>el.querySelector(s);
+    /* ====== Utils ====== */
+    const $  = (s,el=document)=>el.querySelector(s);
     const $$ = (s,el=document)=>el.querySelectorAll(s);
     const toast = (t)=>{ const el=$("#toast"); el.textContent=t; el.style.display="block"; clearTimeout(window._t); window._t=setTimeout(()=>el.style.display="none",1600); }
     const vibrate = (ms=20)=>{ try{ if(settings.haptic && navigator.vibrate) navigator.vibrate(ms); }catch{} }
+
+    // Tampilkan error JS biar gak “blank tanpa jejak”
+    window.addEventListener("error", e=>{ try{ toast((e.message||"Error").slice(0,120)); }catch{} });
+    window.addEventListener("unhandledrejection", e=>{ try{ toast(String(e.reason||"Error").slice(0,120)); }catch{} });
 
     // Anti long-press / copy global (kecuali input/textarea)
     document.addEventListener("contextmenu", e=>e.preventDefault());
@@ -301,7 +307,7 @@
     const closeDrawer=()=>{drawer.classList.remove("open"); backdrop.classList.remove("show"); drawer.setAttribute("aria-hidden","true");};
     $("#menuBtn").onclick=openDrawer; backdrop.onclick=closeDrawer;
 
-    // Lite mode untuk RAM kecil
+    // Lite mode kecilin efek
     try{ if('deviceMemory' in navigator && navigator.deviceMemory<=2){ document.body.classList.add('lite'); } }catch{}
 
     const protectedRoutes = new Set(["dashboard","keys","settings"]);
@@ -324,7 +330,7 @@
       $("#btnSignOut").classList.toggle("hide", !authed);
     }
 
-    // Settings state
+    /* ====== Settings ====== */
     const settings = {
       compact: localStorage.getItem("gx:compact")==="1",
       reduce:  localStorage.getItem("gx:reduce")==="1",
@@ -342,8 +348,8 @@
 
     function applySettings(){
       document.body.classList.toggle('compact', settings.compact);
-      document.body.classList.toggle('reduce', settings.reduce);
-      document.body.classList.toggle('readonly', settings.readOnly);
+      document.body.classList.toggle('reduce',  settings.reduce);
+      document.body.classList.toggle('readonly',settings.readOnly);
       if(settings.readOnly){
         $$(".editable input, .editable button").forEach(el=>el.setAttribute("disabled","disabled"));
       }else{
@@ -375,25 +381,19 @@
       document.addEventListener(evt, ()=>resetIdleTimer(), {passive:true});
     });
 
-    // Data listeners
-    let unsubs = [];
+    /* ====== Data listeners ====== */
     function startData(){
       stopData();
-      unsubs.push(onValue(ref(db,"auth/globalKey"), s=>{ $("#globalKey").value = s.exists()? (s.val()||"") : ""; }));
-      unsubs.push(onValue(ref(db,"auth/keys"), s=>{ cache = s.val()||{}; render(); }));
+      onValue(ref(db,"auth/globalKey"), s=>{ $("#globalKey").value = s.exists()? (s.val()||"") : ""; });
+      onValue(ref(db,"auth/keys"), s=>{ cache = s.val()||{}; render(); });
     }
     function stopData(){
-      try{
-        off(ref(db,"auth/globalKey"));
-        off(ref(db,"auth/keys"));
-      }catch{}
-      unsubs = [];
+      try{ off(ref(db,"auth/globalKey")); off(ref(db,"auth/keys")); }catch{}
     }
 
-    // Auth flow — tunggu status, baru tampilkan
+    /* ====== Auth flow (tunggu status, tapi login page sudah tampil) ====== */
     onAuthStateChanged(auth, (user)=>{
       const ok = !!(user && user.uid===ADMIN_UID);
-      document.body.classList.remove("booting");
       updateNav(ok);
       if(ok){
         startData();
@@ -401,11 +401,11 @@
         resetIdleTimer();
       }else{
         stopData();
-        route("login");
+        route("login"); // login sudah .show by default, ini memastikan state konsisten
       }
     });
 
-    // Login UX
+    /* ====== Login UX ====== */
     const email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin"), togglePass=$("#togglePass");
     togglePass.addEventListener("click", ()=>{
       const type = password.getAttribute("type")==="password" ? "text" : "password";
@@ -419,21 +419,28 @@
     btnLogin.addEventListener("click", async ()=>{
       const em=(email.value||"").trim(), pw=(password.value||"");
       if(!em || !pw){ toast("Isi email & password"); return; }
-      try{ btnLogin.disabled=true; btnLogin.textContent="Masuk…";
+      try{
+        btnLogin.disabled=true; btnLogin.textContent="Masuk…";
         await signInWithEmailAndPassword(auth, em, pw);
         toast("Login sukses");
-      }catch{ toast("Login gagal"); }
-      finally{ btnLogin.disabled=false; btnLogin.textContent="Sign In"; }
+      }catch(err){
+        toast("Login gagal");
+        // unauthorized-domain biar keliatan kalau domain GitHub Pages belum di-allow
+        if(String(err&&err.code).includes("auth/unauthorized-domain")) toast("Domain belum diizinkan di Firebase Auth");
+      }finally{
+        btnLogin.disabled=false; btnLogin.textContent="Sign In";
+      }
     });
     $("#btnSignOut").onclick = async ()=>{
       try{ $("#btnSignOut").disabled=true; await signOut(auth); toast("Signed out"); route("login"); }
       catch{} finally{ $("#btnSignOut").disabled=false; }
     };
 
-    // Data & render
+    /* ====== Data & render ====== */
     let cache = {}; // { key: {exp:number} }
     const keyList=$("#keyList"), search=$("#search");
     const kpiKeys=$("#kpiKeys"), kpiExp=$("#kpiExp");
+
     function render(){
       const ks = Object.keys(cache||{});
       let expCount=0;
@@ -514,7 +521,7 @@
       })();
     }, {passive:true});
 
-    // Chips +7 / No Exp
+    // Chips cepat
     document.addEventListener("click",(e)=>{
       const chip=e.target.closest(".chip[data-add]"); if(!chip) return;
       const add = Number(chip.dataset.add||0);
@@ -524,15 +531,13 @@
       base.setDate(base.getDate()+add);
       const pad=n=>String(n).padStart(2,"0");
       ex.value = `${base.getFullYear()}-${pad(base.getMonth()+1)}-${pad(base.getDate())}`;
-      toast(`+${add} hari`);
-      vibrate();
+      toast(`+${add} hari`); vibrate();
     }, {passive:true});
 
-    // Generate & Tambah (KONSISTEN TANPA encodeURIComponent)
+    // Generate & Tambah
     $("#btnGen").onclick = ()=>{
       const rand = ()=>Math.random().toString(36).slice(2,6).toUpperCase();
-      $("#newKey").value = `${rand()}-${rand()}-${rand()}-${rand()}`;
-      $("#newKey").focus(); vibrate();
+      $("#newKey").value = `${rand()}-${rand()}-${rand()}-${rand()}`; $("#newKey").focus(); vibrate();
     };
     $("#btnAdd").onclick = async ()=>{
       if(settings.readOnly){ toast("Baca-only aktif"); return; }
