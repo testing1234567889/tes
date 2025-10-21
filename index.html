@@ -5,9 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0b0f14" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>GxMods Key Panel – Guarded</title>
+  <title>GxMods Key Panel</title>
   <style>
-    /* ===== Reset & base */
     *,*::before,*::after{box-sizing:border-box}
     html,body{height:100%}
     :root{
@@ -19,22 +18,24 @@
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
       background:var(--bg);color:#e6edf3;-webkit-tap-highlight-color:transparent;
       touch-action:manipulation;
+      user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
     }
     a{color:inherit;text-decoration:none}
     img,svg{display:block;max-width:100%}
+    input,textarea,select{user-select:text; -webkit-user-select:text; -webkit-touch-callout:default}
 
-    /* ===== Dark inputs */
+    /* Inputs */
     body,button,input,select,textarea{color:#e6edf3}
     .btn{color:#e6edf3}
     input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
     select, textarea{
       width:100%;padding:14px;border-radius:12px;background:#0a0a0a;border:1px solid #30363d;outline:none;
-      appearance:none;-webkit-appearance:none;-moz-appearance:none;font-size:16px; /* cegah zoom iOS/Android */
+      appearance:none;-webkit-appearance:none;-moz-appearance:none;font-size:16px;
     }
     input::placeholder, textarea::placeholder{color:#9aa7b3}
     input:-webkit-autofill{ -webkit-text-fill-color:#fff; box-shadow:0 0 0 1000px #0a0a0a inset; border:1px solid #30363d; caret-color:#fff; }
 
-    /* ===== Layout */
+    /* Layout */
     .topbar{position:sticky;top:0;z-index:40;height:56px;display:flex;align-items:center;gap:12px;padding:0 14px;background:#0c111b;border-bottom:1px solid var(--line)}
     .title{font-weight:700}
     .grow{flex:1}
@@ -64,7 +65,7 @@
     @media (max-width:560px){.grid{grid-template-columns:1fr}}
 
     .list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden}
-    .item{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:12px;background:#0e1420;border-bottom:1px solid var(--line)}
+    .item{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:12px;background:#0e1420;border-bottom:1px solid var(--line)}
     .item:nth-child(2n){background:#0d131e}
     .item:last-child{border-bottom:none}
     .pill{padding:3px 8px;border-radius:999px;border:1px solid var(--line);font-size:.8rem;white-space:nowrap}
@@ -73,6 +74,7 @@
     .footer{margin-top:auto;color:var(--muted);font-size:.85rem;text-align:center;opacity:.9}
     .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#0f1622;cursor:pointer;user-select:none}
 
+    /* Switch */
     .switch{display:inline-flex;align-items:center;gap:10px}
     .switch input{position:absolute;opacity:0;width:0;height:0}
     .switch .track{width:44px;height:26px;background:#1f2937;border:1px solid var(--line);border-radius:999px;position:relative;transition:background .15s,border-color .15s}
@@ -80,22 +82,44 @@
     .switch input:checked + .track{background:#12211a;border-color:#1f4e39}
     .switch input:checked + .track .thumb{left:20px;background:#9de7c4}
 
-    /* ===== Guarding states */
-    body.noauth .guarded{display:none !important}      /* kunci semua konten sensitif */
-    body.authed .login-only{display:none !important}   /* sembunyikan login kalau sudah auth */
+    /* Guarding */
+    body.noauth .guarded{display:none !important}
+    body.authed .login-only{display:none !important}
     body.noauth #menuBtn, body.noauth #btnSignOut{display:none !important}
-
-    /* Booting: cegah flash/kedip non-login */
+    body.noauth .topbar, body.noauth .drawer, body.noauth .backdrop{display:none !important}
     body.booting .page{display:none !important}
     body.booting [data-page="login"]{display:grid !important}
 
-    /* Lite & Reduce (opsional) */
+    /* Login centering */
+    body.noauth .app{min-height:100dvh; display:grid; place-items:center; padding:20px}
+    .login-card{width:100%; max-width:420px; margin:0 auto}
+
+    /* Compact & reduce */
+    body.compact .item{padding:8px 10px}
+    body.compact .item .key-main{font-size:.95rem}
+    body.reduce *{transition:none!important;animation:none!important}
+    body.reduce .btn, body.reduce .card{box-shadow:none!important}
+
+    /* Read-only */
+    body.readonly .editable{opacity:.6; pointer-events:none}
+    body.readonly .item .btn[data-action]:not([data-action="copy"]){display:none}
+
+    /* Actions grid on list */
+    .actions{display:grid;grid-auto-flow:column;grid-auto-columns:max-content;gap:6px;align-items:center}
+    .actions .btn.small{padding:6px 8px;border-radius:10px}
+
+    /* Toast center */
+    #toast{
+      position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
+      background:#111827;border:1px solid #263248;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);display:none;z-index:1000; text-align:center; max-width:80vw
+    }
+
+    /* Lite mode optional */
     .lite .btn,.lite .card{box-shadow:none}
-    .reduce *{transition:none!important;animation:none!important}
   </style>
 </head>
 <body class="noauth booting">
-  <!-- Topbar -->
+  <!-- Topbar (disembunyikan saat login) -->
   <header class="topbar">
     <button id="menuBtn" class="btn" aria-label="Menu">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -106,7 +130,7 @@
     <button id="btnSignOut" class="btn ghost">Sign Out</button>
   </header>
 
-  <!-- Drawer -->
+  <!-- Drawer (tanpa item Login) -->
   <aside id="drawer" class="drawer" aria-hidden="true">
     <div class="brand"><strong>Menu</strong></div>
     <nav class="nav" id="nav">
@@ -114,7 +138,6 @@
       <a href="#keys" data-route="keys" data-auth="in">Daftar Key</a>
       <a href="#settings" data-route="settings" data-auth="in">Pengaturan</a>
       <a href="#about" data-route="about">Tentang</a>
-      <a href="#login" data-route="login" id="navLogin" data-auth="out">Login</a>
     </nav>
   </aside>
   <div id="backdrop" class="backdrop"></div>
@@ -132,12 +155,6 @@
           <div class="row" style="display:flex;justify-content:space-between;align-items:center">
             <span class="muted">Key expired</span><strong id="kpiExp">0</strong>
           </div>
-          <p class="muted">Angka dari Firebase Realtime DB.</p>
-        </div>
-
-        <div class="card">
-          <h3>Ringkasan</h3>
-          <p class="muted">Kelola Global Key & daftar key di tab <strong>Daftar Key</strong>. Input sudah tema gelap total.</p>
         </div>
       </div>
     </section>
@@ -145,24 +162,23 @@
     <!-- Keys (guarded) -->
     <section class="page guarded" data-page="keys">
       <!-- Global Key -->
-      <div class="card" id="globalKeyCard">
+      <div class="card">
         <h3>Global Key</h3>
-        <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
+        <div class="row editable" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           <input id="globalKey" type="text" placeholder="Kosongkan jika tidak pakai"/>
           <button id="btnSaveGlobal" class="btn small">Simpan</button>
           <button id="btnClearGlobal" class="btn small">Hapus</button>
         </div>
-        <p class="muted">Nilai disimpan di <code>auth/globalKey</code>.</p>
       </div>
 
       <!-- Buat Key -->
       <div class="card">
         <h3>Buat Key</h3>
-        <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
+        <div class="row editable" style="display:flex;gap:8px;flex-wrap:wrap">
           <input id="newKey" type="text" placeholder="Key (atau klik Generate)"/>
           <button id="btnGen" class="btn small">Generate</button>
         </div>
-        <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <div class="row editable" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           <label class="muted" for="exp" style="min-width:160px">Tanggal kadaluarsa (opsional)</label>
           <input id="exp" type="date" inputmode="none" placeholder="yyyy-mm-dd" style="max-width:220px"/>
           <span class="chip" data-add="7">+7 hari</span>
@@ -180,8 +196,6 @@
         </div>
         <div id="keyList" class="list" role="list"></div>
       </div>
-
-      <div class="footer">Struktur: <code>auth/globalKey</code> & <code>auth/keys/{key} = {"exp":ms}</code>.</div>
     </section>
 
     <!-- Settings (guarded) -->
@@ -191,11 +205,11 @@
 
         <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
           <div>
-            <strong>List rapat</strong>
-            <div class="muted">Padatkan tinggi item di daftar key.</div>
+            <strong>Padatkan daftar key</strong>
+            <div class="muted">Kurangi jarak & tinggi baris.</div>
           </div>
           <label class="switch">
-            <input id="dense" type="checkbox">
+            <input id="compact" type="checkbox">
             <span class="track"><i class="thumb"></i></span>
           </label>
         </div>
@@ -203,7 +217,7 @@
         <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
           <div>
             <strong>Kurangi animasi</strong>
-            <div class="muted">Matikan transisi & bayangan, lebih enteng.</div>
+            <div class="muted">Hilangkan transisi & bayangan.</div>
           </div>
           <label class="switch">
             <input id="reduce" type="checkbox">
@@ -211,21 +225,68 @@
           </label>
         </div>
 
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div>
+            <strong>Konfirmasi saat hapus</strong>
+            <div class="muted">Minta konfirmasi sebelum menghapus key.</div>
+          </div>
+          <label class="switch">
+            <input id="confirmDelete" type="checkbox">
+            <span class="track"><i class="thumb"></i></span>
+          </label>
+        </div>
+
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div>
+            <strong>Kunci otomatis (5 menit)</strong>
+            <div class="muted">Keluar otomatis jika tidak ada aktivitas.</div>
+          </div>
+          <label class="switch">
+            <input id="idleLock" type="checkbox">
+            <span class="track"><i class="thumb"></i></span>
+          </label>
+        </div>
+
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div>
+            <strong>Mode baca-only</strong>
+            <div class="muted">Nonaktifkan semua input & aksi edit.</div>
+          </div>
+          <label class="switch">
+            <input id="readOnly" type="checkbox">
+            <span class="track"><i class="thumb"></i></span>
+          </label>
+        </div>
+
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div>
+            <strong>Getar saat aksi</strong>
+            <div class="muted">Getar singkat saat salin/simpan.</div>
+          </div>
+          <label class="switch">
+            <input id="haptic" type="checkbox">
+            <span class="track"><i class="thumb"></i></span>
+          </label>
+        </div>
       </div>
     </section>
 
-    <!-- About (bebas) -->
+    <!-- About -->
     <section class="page" data-page="about">
       <div class="card">
-        <h3>Tentang</h3>
-        <p class="muted">Optimasi RAM 2 GB: efek minimal, event delegation tunggal, dan lite mode otomatis.</p>
+        <h3>Tentang Panel</h3>
+        <p class="muted">
+          Panel ini mengelola <em>Global Key</em> dan daftar key individual dengan Firebase Realtime Database.
+          Akses dikunci oleh Firebase Auth; UI fokus Android WebView: responsif, gelap, ringan.
+          Tersedia fitur: pencarian, perpanjang cepat, tanggal kadaluarsa, dan pengaturan tampilan/perilaku.
+        </p>
       </div>
     </section>
 
-    <!-- Login (login-only) -->
+    <!-- Login (login-only, tengah) -->
     <section class="page login-only show" data-page="login">
-      <div class="card" style="max-width:480px; margin-inline:auto">
-        <h3>Login Admin</h3>
+      <div class="card login-card">
+        <h3 style="text-align:center">Login</h3>
         <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
           <input id="email" type="email" placeholder="Email" autocomplete="username">
         </div>
@@ -235,18 +296,17 @@
             <button id="togglePass" class="btn small" style="position:absolute;right:6px;top:6px">Lihat</button>
           </div>
         </div>
-        <div class="row" style="display:flex;justify-content:flex-end">
+        <div class="row" style="display:flex;justify-content:center">
           <button id="btnLogin" class="btn">Sign In</button>
         </div>
-        <p class="muted">Hanya UID admin yang diizinkan.</p>
       </div>
     </section>
   </main>
 
-  <div id="toast" style="position:fixed;right:10px;bottom:10px;background:#111827;border:1px solid #263248;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);display:none"></div>
+  <div id="toast"></div>
 
   <script type="module">
-    /* ====== Firebase config */
+    // ===== Firebase
     const ADMIN_UID = "4CCiNyEyTvSUPnY6Ugd9PzAU1df2";
     const firebaseConfig = {
       apiKey: "AIzaSyAJ2YitGgxTI8k440TmWUHgntkTLSqkX3c",
@@ -267,17 +327,25 @@
     const auth = getAuth(app);
     const db   = getDatabase(app);
 
-    /* ===== Util & state */
+    // ===== Utils & state
     const $ = (s,el=document)=>el.querySelector(s);
     const $$ = (s,el=document)=>el.querySelectorAll(s);
-    const toast = (t)=>{ const el=$("#toast"); el.textContent=t; el.style.display="block"; clearTimeout(window._t); window._t=setTimeout(()=>el.style.display="none",2000); }
-
+    const toast = (t)=>{ const el=$("#toast"); el.textContent=t; el.style.display="block"; clearTimeout(window._t); window._t=setTimeout(()=>el.style.display="none",1600); }
+    const vibrate = (ms=20)=>{ try{ if(settings.haptic && navigator.vibrate) navigator.vibrate(ms); }catch{} }
     const protectedRoutes = new Set(["dashboard","keys","settings"]);
     const drawer=$("#drawer"), backdrop=$("#backdrop");
     const openDrawer=()=>{drawer.classList.add("open"); backdrop.classList.add("show"); drawer.setAttribute("aria-hidden","false");};
     const closeDrawer=()=>{drawer.classList.remove("open"); backdrop.classList.remove("show"); drawer.setAttribute("aria-hidden","true");};
 
-    // Lite mode untuk RAM kecil
+    // Anti long-press / context-menu
+    document.addEventListener("contextmenu", e=>e.preventDefault());
+    document.addEventListener("selectstart", e=>{
+      const tag = (e.target?.tagName||"").toLowerCase();
+      if(tag==="input" || tag==="textarea") return;
+      e.preventDefault();
+    });
+
+    // Lite mode
     try{ if('deviceMemory' in navigator && navigator.deviceMemory<=2){ document.body.classList.add('lite'); } }catch{}
 
     const isAuthed = ()=> auth.currentUser && auth.currentUser.uid===ADMIN_UID;
@@ -293,14 +361,12 @@
       $$(".nav a").forEach(a=>a.classList.toggle("active",a.dataset.route===name));
       if(isAuthed()){ localStorage.setItem("gx:route", name); } else { localStorage.removeItem("gx:route"); }
       closeDrawer();
-      // ekstra: scroll to top tiap pindah
       try{ document.scrollingElement.scrollTo({top:0,behavior:"smooth"}); }catch{}
     }
 
     // Routing events
     $("#menuBtn").onclick=openDrawer; backdrop.onclick=closeDrawer;
     $$(".nav a").forEach(a=>a.onclick=(e)=>{e.preventDefault(); route(a.dataset.route);});
-    // Awal: paksa ke login (hindari flash halaman lain)
     route("login");
 
     // UI refs
@@ -308,69 +374,99 @@
     const newKey=$("#newKey"), btnGen=$("#btnGen"), exp=$("#exp"), btnAdd=$("#btnAdd");
     const keyList=$("#keyList"), search=$("#search");
     const kpiKeys=$("#kpiKeys"), kpiExp=$("#kpiExp");
-    const dense=$("#dense"), reduce=$("#reduce");
     const email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin");
     const btnSignOut=$("#btnSignOut");
     const togglePass=$("#togglePass");
 
-    // Settings persist (init)
-    dense.checked  = localStorage.getItem("gx:dense")==="1";
-    reduce.checked = localStorage.getItem("gx:reduce")==="1";
-    if(reduce.checked){ document.body.classList.add('reduce'); document.documentElement.style.scrollBehavior='auto'; }
-    dense.onchange = ()=>{ localStorage.setItem("gx:dense", dense.checked?"1":"0"); render(); };
-    reduce.onchange = ()=>{ document.body.classList.toggle('reduce', reduce.checked); document.documentElement.style.scrollBehavior = reduce.checked?"auto":"smooth"; localStorage.setItem("gx:reduce", reduce.checked?"1":"0"); };
+    // Settings state
+    const settings = {
+      compact: localStorage.getItem("gx:compact")==="1",
+      reduce:  localStorage.getItem("gx:reduce")==="1",
+      confirmDelete: localStorage.getItem("gx:confirm")==="1" || localStorage.getItem("gx:confirm")===null, // default ON
+      idleLock: localStorage.getItem("gx:idleLock")==="1",
+      readOnly: localStorage.getItem("gx:readOnly")==="1",
+      haptic:   localStorage.getItem("gx:haptic")!=="0", // default ON
+    };
+    $("#compact").checked = settings.compact;
+    $("#reduce").checked  = settings.reduce;
+    $("#confirmDelete").checked = settings.confirmDelete;
+    $("#idleLock").checked = settings.idleLock;
+    $("#readOnly").checked = settings.readOnly;
+    $("#haptic").checked   = settings.haptic;
 
-    function updateNav(authed){
-      document.body.classList.remove("booting");
-      document.body.classList.toggle("authed", !!authed);
-      document.body.classList.toggle("noauth", !authed);
-
-      $$(".nav a").forEach(a=>{
-        const need=a.dataset.auth;
-        if(need==="in") a.classList.toggle("hide", !authed);
-        else if(need==="out") a.classList.toggle("hide", authed);
-      });
-      btnSignOut.classList.toggle("hide", !authed);
+    function applySettings(){
+      document.body.classList.toggle('compact', settings.compact);
+      document.body.classList.toggle('reduce', settings.reduce);
+      document.body.classList.toggle('readonly', settings.readOnly);
+      if(settings.readOnly){
+        $$(".editable input, .editable button").forEach(el=>{ el.setAttribute("disabled","disabled"); });
+      }else{
+        $$(".editable input, .editable button").forEach(el=>{ el.removeAttribute("disabled"); });
+      }
+      render(); // refresh list padding/buttons if needed
     }
+    applySettings();
 
-    // ===== Auth state & listeners cleanup
+    $("#compact").onchange = ()=>{ settings.compact = $("#compact").checked; localStorage.setItem("gx:compact", settings.compact?"1":"0"); applySettings(); };
+    $("#reduce").onchange  = ()=>{ settings.reduce  = $("#reduce").checked;  localStorage.setItem("gx:reduce", settings.reduce?"1":"0"); applySettings(); };
+    $("#confirmDelete").onchange = ()=>{ settings.confirmDelete = $("#confirmDelete").checked; localStorage.setItem("gx:confirm", settings.confirmDelete?"1":"0"); };
+    $("#idleLock").onchange = ()=>{ settings.idleLock = $("#idleLock").checked; localStorage.setItem("gx:idleLock", settings.idleLock?"1":"0"); resetIdleTimer(); };
+    $("#readOnly").onchange = ()=>{ settings.readOnly = $("#readOnly").checked; localStorage.setItem("gx:readOnly", settings.readOnly?"1":"0"); applySettings(); };
+    $("#haptic").onchange   = ()=>{ settings.haptic   = $("#haptic").checked; localStorage.setItem("gx:haptic", settings.haptic?"1":"0"); };
+
+    // Idle lock
+    let idleTimer = null;
+    const IDLE_MS = 5*60*1000;
+    function resetIdleTimer(){
+      if(idleTimer) clearTimeout(idleTimer);
+      if(settings.idleLock && isAuthed()){
+        idleTimer = setTimeout(async ()=>{
+          try{ await signOut(auth); toast("Terkunci (idle)"); route("login"); }catch{}
+        }, IDLE_MS);
+      }
+    }
+    ["click","keydown","touchstart","mousemove"].forEach(evt=>{
+      document.addEventListener(evt, ()=>resetIdleTimer(), {passive:true});
+    });
+
+    // Data listeners
     const listeners = [];
     function startData(){
-      stopData(); // bersih dulu
+      stopData();
       listeners.push(onValue(ref(db,"auth/globalKey"), s=>{ globalKey.value = s.exists()? (s.val()||"") : ""; }));
       listeners.push(onValue(ref(db,"auth/keys"), s=>{ cache = s.val()||{}; render(); }));
     }
     function stopData(){
-      try{
-        off(ref(db,"auth/globalKey")); off(ref(db,"auth/keys"));
-      }catch{} listeners.length=0;
+      try{ off(ref(db,"auth/globalKey")); off(ref(db,"auth/keys")); }catch{}
+      listeners.length=0;
     }
 
     onAuthStateChanged(auth, (user)=>{
       if(user && user.uid===ADMIN_UID){
-        updateNav(true);
+        document.body.classList.remove("booting");
+        document.body.classList.add("authed"); document.body.classList.remove("noauth");
         startData();
         route(localStorage.getItem("gx:route") || "dashboard");
+        resetIdleTimer();
       }else{
         stopData();
-        updateNav(false);
+        document.body.classList.remove("booting");
+        document.body.classList.add("noauth"); document.body.classList.remove("authed");
         route("login");
-        if(user && user.uid!==ADMIN_UID){ signOut(auth).catch(()=>{}); toast("Bukan admin"); }
+        if(user && user.uid!==ADMIN_UID){ signOut(auth).catch(()=>{}); toast("Tidak diizinkan"); }
       }
     });
 
-    // ===== Login UX
+    // Login UX
     togglePass.addEventListener("click", ()=>{
       const type = password.getAttribute("type")==="password" ? "text" : "password";
       password.setAttribute("type", type);
       togglePass.textContent = (type==="password"?"Lihat":"Sembunyikan");
       password.focus();
     });
-
     document.addEventListener("keydown", (e)=>{
       if(e.key==="Enter" && $(".page.show")?.dataset.page==="login"){ btnLogin.click(); }
     });
-
     btnLogin.addEventListener("click", async ()=>{
       const em=(email.value||"").trim();
       const pw=password.value||"";
@@ -378,14 +474,15 @@
       try{
         btnLogin.disabled = true; btnLogin.textContent = "Masuk…";
         await signInWithEmailAndPassword(auth, em, pw);
+        vibrate();
         toast("Login sukses");
-      }catch(err){
+      }catch{
+        vibrate();
         toast("Login gagal");
       }finally{
         btnLogin.disabled = false; btnLogin.textContent = "Sign In";
       }
     });
-
     btnSignOut.onclick = async ()=>{
       try{
         btnSignOut.disabled = true;
@@ -395,7 +492,7 @@
       }catch{}finally{ btnSignOut.disabled = false; }
     };
 
-    // ===== Data & render
+    // Data & render
     let cache = {}; // { key: {exp:number} }
 
     function render(){
@@ -416,27 +513,31 @@
 
         const row = document.createElement("div");
         row.className="item";
-        if(dense.checked) row.style.padding="10px 10px";
 
         const left = document.createElement("div");
         left.style.display="grid"; left.style.gap="4px";
         const expStr = expMs? new Date(expMs).toLocaleDateString("id-ID",{day:"2-digit",month:"short",year:"numeric"}) : "Permanen";
-        left.innerHTML = `<strong style="word-break:break-all">${k}</strong><span class="muted" style="font-size:.85rem">Expire: ${expStr}</span>`;
+        left.innerHTML = `<div class="key-main" style="word-break:break-all;font-weight:700">${k}</div><span class="muted" style="font-size:.85rem">Expire: ${expStr}</span>`;
 
+        const right = document.createElement("div");
+        right.className="actions";
+        // status badge
         const status = document.createElement("span");
         status.className="pill "+(expired?"exp":"ok");
         status.textContent = expired?"Expired":"Aktif";
+        right.appendChild(status);
 
-        const right = document.createElement("div");
-        right.style.display="flex"; right.style.gap="6px"; right.style.flexWrap="wrap";
-        const mk=(txt,action)=>{ const b=document.createElement("button"); b.className="btn small"; b.textContent=txt; b.dataset.key=k; b.dataset.action=action; return b; };
-        right.appendChild(mk("Copy","copy"));
-        right.appendChild(mk("+7","add7"));
-        right.appendChild(mk("No Exp","noexp"));
-        right.appendChild(mk("Tanggal…","setdate"));
-        const del=mk("Hapus","del"); del.style.background="#2a1212"; del.style.borderColor="#5d2a2a"; right.appendChild(del);
+        // buttons (icon-less, rapih)
+        const mk=(txt,action)=>{ const b=document.createElement("button"); b.className="btn small"; b.textContent=txt; b.dataset.key=k; b.dataset.action=action; if(settings.readOnly && action!=="copy"){ b.classList.add("editable"); b.setAttribute("disabled","disabled"); } return b; };
+        const bCopy = mk("Copy","copy");
+        const bAdd7 = mk("+7","add7");
+        const bNo   = mk("No Exp","noexp");
+        const bDate = mk("Tanggal","setdate");
+        const bDel  = mk("Hapus","del"); bDel.style.background="#2a1212"; bDel.style.borderColor="#5d2a2a";
+        right.append(bCopy,bAdd7,bNo,bDate,bDel);
 
-        row.appendChild(left); row.appendChild(status); row.appendChild(right);
+        row.appendChild(left);
+        row.appendChild(right);
         frag.appendChild(row);
       }
       if(!frag.childNodes.length){
@@ -449,30 +550,50 @@
     document.addEventListener("click",(e)=>{
       const b=e.target.closest("button[data-action]"); if(!b) return;
       const k=b.dataset.key, act=b.dataset.action;
+      if(settings.readOnly && act!=="copy"){ toast("Baca-only aktif"); return; }
       (async()=>{
         try{
-          if(act==="copy"){ await navigator.clipboard.writeText(k); toast("Disalin"); }
-          else if(act==="add7"){ 
-            const cur=cache[k]?.exp||0; 
-            const base=Math.max(cur||0, Date.now()); 
-            await update(ref(db,"auth/keys/"+k), {exp: base + 7*864e5}); 
-            toast("+7 hari"); 
+          if(act==="copy"){ await navigator.clipboard.writeText(k); vibrate(); toast("Disalin"); }
+          else if(act==="add7"){
+            const cur=cache[k]?.exp||0;
+            const base=Math.max(cur||0, Date.now());
+            await update(ref(db,"auth/keys/"+k), {exp: base + 7*864e5});
+            vibrate(); toast("+7 hari");
           }
-          else if(act==="noexp"){ await update(ref(db,"auth/keys/"+k), {exp:0}); toast("No Exp"); }
-          else if(act==="setdate"){ 
-            const cur=cache[k]?.exp||0; 
-            const seed = cur? new Date(cur): new Date(); 
-            const pad=n=>String(n).padStart(2,"0"); 
-            const def=`${seed.getFullYear()}-${pad(seed.getMonth()+1)}-${pad(seed.getDate())}`; 
-            const v=prompt("YYYY-MM-DD (kosong = No Exp)", def); 
-            if(v===null) return; 
-            const ms = v.trim()===""?0:(()=>{ const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return new Date(Y,M-1,D,23,59,59,999).getTime(); })(); 
-            await update(ref(db,"auth/keys/"+k), {exp: ms}); 
-            toast("Tanggal di-set"); 
+          else if(act==="noexp"){ await update(ref(db,"auth/keys/"+k), {exp:0}); vibrate(); toast("No Exp"); }
+          else if(act==="setdate"){
+            const cur=cache[k]?.exp||0;
+            const seed = cur? new Date(cur): new Date();
+            const pad=n=>String(n).padStart(2,"0");
+            const def=`${seed.getFullYear()}-${pad(seed.getMonth()+1)}-${pad(seed.getDate())}`;
+            const v=prompt("YYYY-MM-DD (kosong = No Exp)", def);
+            if(v===null) return;
+            const ms = v.trim()===""?0:(()=>{ const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return new Date(Y,M-1,D,23,59,59,999).getTime(); })();
+            await update(ref(db,"auth/keys/"+k), {exp: ms});
+            vibrate(); toast("Tanggal di-set");
           }
-          else if(act==="del"){ if(confirm(`Hapus key:\n${k}?`)){ await remove(ref(db,"auth/keys/"+k)); toast("Dihapus"); } }
+          else if(act==="del"){
+            if(settings.confirmDelete){
+              if(!confirm(`Hapus key:\n${k}?`)) return;
+            }
+            await remove(ref(db,"auth/keys/"+k)); vibrate(); toast("Dihapus");
+          }
         }catch{ toast("Gagal"); }
       })();
+    }, {passive:true});
+
+    // Chips kontrol exp cepat
+    document.addEventListener("click",(e)=>{
+      const chip = e.target.closest(".chip"); if(!chip) return;
+      const add = parseInt(chip.dataset.add,10);
+      if(add===0){ $("#exp").value=""; toast("Tanpa Exp"); }
+      else{
+        const d = new Date(); d.setDate(d.getDate()+add);
+        const pad=n=>String(n).padStart(2,"0");
+        $("#exp").value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+        toast(`+${add} hari`);
+      }
+      vibrate();
     }, {passive:true});
 
     // Kontrol form pembuatan key
@@ -480,21 +601,29 @@
       const rand = ()=>Math.random().toString(36).slice(2,6).toUpperCase();
       $("#newKey").value = `${rand()}-${rand()}-${rand()}-${rand()}`;
       $("#newKey").focus();
+      vibrate();
     };
     $("#btnAdd").onclick = async ()=>{
+      if(settings.readOnly){ toast("Baca-only aktif"); return; }
       const k=($("#newKey").value||"").trim(); if(!k) return toast("Isi key");
       const val = ($("#exp").value||"").trim();
       let ms=0; if(val){ const [Y,M,D]=val.split("-").map(n=>parseInt(n,10)); ms=new Date(Y,M-1,D,23,59,59,999).getTime(); }
       await update(ref(db,"auth/keys/"+encodeURIComponent(k)), {exp: ms});
       $("#newKey").value=""; $("#exp").value="";
-      toast("Ditambahkan");
+      vibrate(); toast("Ditambahkan");
     };
-    $("#btnSaveGlobal").onclick = async ()=>{ await set(ref(db,"auth/globalKey"), ($("#globalKey").value||"").trim()); toast("Global key disimpan"); };
-    $("#btnClearGlobal").onclick = async ()=>{ await set(ref(db,"auth/globalKey"), ""); $("#globalKey").value=""; toast("Dikosongkan"); };
-
+    $("#btnSaveGlobal").onclick = async ()=>{
+      if(settings.readOnly){ toast("Baca-only aktif"); return; }
+      await set(ref(db,"auth/globalKey"), ($("#globalKey").value||"").trim());
+      vibrate(); toast("Tersimpan");
+    };
+    $("#btnClearGlobal").onclick = async ()=>{
+      if(settings.readOnly){ toast("Baca-only aktif"); return; }
+      await set(ref(db,"auth/globalKey"), "");
+      $("#globalKey").value="";
+      vibrate(); toast("Dikosongkan");
+    };
     $("#search")?.addEventListener("input", ()=>render(), {passive:true});
-
-    // Simpan/restore route hanya saat authed — sudah di handle di route()
 
     // Selesai boot
     window.addEventListener("load", ()=>{ document.body.classList.remove("booting"); }, {once:true});
