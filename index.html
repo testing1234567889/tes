@@ -7,7 +7,6 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>GxMods Key Panel</title>
   <style>
-    /* ===== Reset & base */
     *,*::before,*::after{box-sizing:border-box}
     html,body{height:100%}
     :root{
@@ -26,10 +25,8 @@
     img,svg{display:block;max-width:100%}
     .hide{display:none !important}
 
-    /* teks tetap bisa dipilih di input/textarea */
     input,textarea{user-select:text; -webkit-user-select:text}
 
-    /* ===== Dark inputs */
     body,button,input,select,textarea{color:#e6edf3}
     .btn{color:#e6edf3}
     input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
@@ -40,7 +37,6 @@
     input::placeholder, textarea::placeholder{color:#9aa7b3}
     input:-webkit-autofill{ -webkit-text-fill-color:#fff; box-shadow:0 0 0 1000px #0a0a0a inset; border:1px solid #30363d; caret-color:#fff; }
 
-    /* ===== Layout */
     .topbar{position:sticky;top:0;z-index:40;height:56px;display:flex;align-items:center;gap:12px;padding:0 14px;background:#0c111b;border-bottom:1px solid var(--line)}
     .title{font-weight:700}
     .grow{flex:1}
@@ -70,7 +66,6 @@
     @media (max-width:560px){.grid{grid-template-columns:1fr}}
 
     .list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden}
-    /* tata letak item responsif & rapi */
     .item{
       display:grid;gap:10px;align-items:center;padding:12px;background:#0e1420;border-bottom:1px solid var(--line);
       grid-template-columns:1fr auto minmax(240px,1fr);
@@ -99,38 +94,35 @@
     .switch input:checked + .track{background:#12211a;border-color:#1f4e39}
     .switch input:checked + .track .thumb{left:20px;background:#9de7c4}
 
-    /* ===== Guarding states */
     body.noauth .guarded{display:none !important}
     body.authed .login-only{display:none !important}
     body.noauth #menuBtn, body.noauth #btnSignOut{display:none !important}
     body.noauth .topbar, body.noauth #drawer, body.noauth #backdrop{display:none !important}
 
-    /* Booting */
+    /* Booting: sembunyikan semua page, tampilkan splash overlay */
     body.booting .page{display:none !important}
-    body.booting [data-page="login"]{display:grid !important}
+    #boot{
+      position:fixed; inset:0; display:grid; place-items:center;
+      background:var(--bg); z-index:100; font-size:14px; color:var(--muted);
+    }
 
-    /* Lite & Reduce */
     .lite .btn,.lite .card{box-shadow:none}
     .reduce *{transition:none!important;animation:none!important}
 
-    /* Login page centered */
     [data-page="login"].show{min-height:calc(100dvh - 56px); place-content:center}
 
-    /* Centered Toast */
     #toast{
       position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
       background:#111827;border:1px solid #263248;padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);
       display:none; z-index:99; pointer-events:none; text-align:center; max-width:min(92vw,520px)
     }
 
-    /* Dense mode tweaks */
     .dense .item{padding:8px}
     .dense .pill{font-size:.74rem;padding:2px 6px}
     .dense .btn.small{padding:6px 8px}
   </style>
 </head>
 <body class="noauth booting">
-  <!-- Topbar -->
   <header class="topbar">
     <button id="menuBtn" class="btn" aria-label="Menu">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -141,7 +133,6 @@
     <button id="btnSignOut" class="btn ghost">Sign Out</button>
   </header>
 
-  <!-- Drawer -->
   <aside id="drawer" class="drawer" aria-hidden="true">
     <div class="brand"><strong>Menu</strong></div>
     <nav class="nav" id="nav">
@@ -149,14 +140,11 @@
       <a href="#keys" data-route="keys" data-auth="in">Daftar Key</a>
       <a href="#settings" data-route="settings" data-auth="in">Pengaturan</a>
       <a href="#about" data-route="about">Tentang</a>
-      <!-- Link Login dihapus supaya tidak nongol di drawer -->
     </nav>
   </aside>
   <div id="backdrop" class="backdrop"></div>
 
-  <!-- App -->
   <main id="app" class="app">
-    <!-- Dashboard (guarded) -->
     <section class="page guarded" data-page="dashboard">
       <div class="grid">
         <div class="card">
@@ -171,9 +159,7 @@
       </div>
     </section>
 
-    <!-- Keys (guarded) -->
     <section class="page guarded" data-page="keys">
-      <!-- Global Key -->
       <div class="card" id="globalKeyCard">
         <h3>Global Key</h3>
         <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
@@ -183,7 +169,6 @@
         </div>
       </div>
 
-      <!-- Buat Key -->
       <div class="card">
         <h3>Buat Key</h3>
         <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
@@ -200,7 +185,6 @@
         </div>
       </div>
 
-      <!-- Daftar Key -->
       <div class="card">
         <div class="row" style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
           <h3 style="margin:0">Daftar Key</h3>
@@ -210,7 +194,6 @@
       </div>
     </section>
 
-    <!-- Settings (guarded) -->
     <section class="page guarded" data-page="settings">
       <div class="card">
         <h3>Pengaturan</h3>
@@ -273,7 +256,6 @@
       </div>
     </section>
 
-    <!-- About -->
     <section class="page" data-page="about">
       <div class="card">
         <h3>Tentang Panel</h3>
@@ -281,8 +263,8 @@
       </div>
     </section>
 
-    <!-- Login (login-only) -->
-    <section class="page login-only show" data-page="login">
+    <!-- Login awal TIDAK "show" supaya tidak kedip -->
+    <section class="page login-only" data-page="login">
       <div class="card" style="max-width:480px; margin-inline:auto">
         <h3>Login Admin</h3>
         <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
@@ -301,10 +283,12 @@
     </section>
   </main>
 
+  <!-- Splash boot -->
+  <div id="boot"><span class="muted">Memuat…</span></div>
+
   <div id="toast"></div>
 
   <script type="module">
-    /* ===== Firebase config (tanpa tambah proteksi ekstra) */
     const ADMIN_UID = "4CCiNyEyTvSUPnY6Ugd9PzAU1df2";
     const firebaseConfig = {
       apiKey: "AIzaSyAJ2YitGgxTI8k440TmWUHgntkTLSqkX3c",
@@ -326,11 +310,9 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    // Pastikan tetap login setelah refresh
     setPersistence(auth, browserLocalPersistence).catch(()=>{});
     const db   = getDatabase(app);
 
-    /* ===== Util & state */
     const $ = (s,el=document)=>el.querySelector(s);
     const $$ = (s,el=document)=>el.querySelectorAll(s);
     const toast = (t)=>{ const el=$("#toast"); el.textContent=t; el.style.display="block"; clearTimeout(window._t); window._t=setTimeout(()=>el.style.display="none",2000); }
@@ -340,7 +322,6 @@
     const openDrawer=()=>{drawer.classList.add("open"); backdrop.classList.add("show"); drawer.setAttribute("aria-hidden","false");};
     const closeDrawer=()=>{drawer.classList.remove("open"); backdrop.classList.remove("show"); drawer.setAttribute("aria-hidden","true");};
 
-    // Lite mode untuk RAM kecil
     try{ if('deviceMemory' in navigator && navigator.deviceMemory<=2){ document.body.classList.add('lite'); } }catch{}
 
     const isAuthed = ()=> auth.currentUser && auth.currentUser.uid===ADMIN_UID;
@@ -359,12 +340,9 @@
       try{ document.scrollingElement.scrollTo({top:0,behavior:"smooth"}); }catch{}
     }
 
-    // Routing events
     $("#menuBtn").onclick=openDrawer; backdrop.onclick=closeDrawer;
     $$(".nav a").forEach(a=>a.onclick=(e)=>{e.preventDefault(); route(a.dataset.route);});
-    route("login"); // awal
 
-    // UI refs
     const globalKey=$("#globalKey"), btnSaveGlobal=$("#btnSaveGlobal"), btnClearGlobal=$("#btnClearGlobal");
     const newKey=$("#newKey"), btnGen=$("#btnGen"), exp=$("#exp"), btnAdd=$("#btnAdd");
     const keyList=$("#keyList"), search=$("#search");
@@ -375,7 +353,6 @@
     const togglePass=$("#togglePass");
     const globalKeyCard=$("#globalKeyCard");
 
-    // Settings persist (init)
     dense.checked  = localStorage.getItem("gx:dense")==="1";
     reduce.checked = localStorage.getItem("gx:reduce")==="1";
     sortExpired.checked = localStorage.getItem("gx:sortExp")==="1";
@@ -395,13 +372,11 @@
     allowSelect.onchange = ()=>{ document.body.classList.toggle('allow-select', allowSelect.checked); localStorage.setItem("gx:allowSelect", allowSelect.checked?"1":"0"); };
 
     function updateNav(authed){
-      document.body.classList.remove("booting");
       document.body.classList.toggle("authed", !!authed);
       document.body.classList.toggle("noauth", !authed);
       btnSignOut.classList.toggle("hide", !authed);
     }
 
-    // ===== Auth state & listeners cleanup
     const listeners = [];
     function startData(){
       stopData();
@@ -424,9 +399,11 @@
         route("login");
         if(user && user.uid!==ADMIN_UID){ signOut(auth).catch(()=>{}); toast("Bukan admin"); }
       }
+      // Lepas splash setelah halaman dipilih → tidak ada kedip login
+      document.body.classList.remove("booting");
+      document.getElementById("boot")?.remove();
     });
 
-    // ===== Login UX
     togglePass.addEventListener("click", ()=>{
       const type = password.getAttribute("type")==="password" ? "text" : "password";
       password.setAttribute("type", type);
@@ -462,14 +439,12 @@
       }catch{}finally{ btnSignOut.disabled = false; }
     };
 
-    // ===== Anti tahan/salin di luar input
     const allowCtx = (el)=> !!el && (el.closest('input,textarea,[contenteditable="true"]'));
     document.addEventListener('copy',  e=>{ if(!document.body.classList.contains('allow-select') && !allowCtx(document.activeElement)) e.preventDefault(); });
     document.addEventListener('cut',   e=>{ if(!document.body.classList.contains('allow-select') && !allowCtx(document.activeElement)) e.preventDefault(); });
     document.addEventListener('contextmenu', e=>{ if(!document.body.classList.contains('allow-select') && !allowCtx(e.target)) e.preventDefault(); }, {passive:false});
 
-    // ===== Data & render
-    let cache = {}; // { key: {exp:number} }
+    let cache = {};
 
     function render(){
       const ks = Object.keys(cache||{});
@@ -487,7 +462,7 @@
         if(sortExpired.checked){
           const ea = (cache[a]?.exp||0) && now>(cache[a].exp);
           const eb = (cache[b]?.exp||0) && now>(cache[b].exp);
-          if(ea!==eb) return eb - ea; // expired true dulu
+          if(ea!==eb) return eb - ea;
         }
         return a.localeCompare(b);
       });
@@ -528,7 +503,6 @@
       keyList.appendChild(frag);
     }
 
-    // Actions daftar key
     document.addEventListener("click",(e)=>{
       const b=e.target.closest("button[data-action]"); if(!b) return;
       const k=b.dataset.key, act=b.dataset.action;
@@ -558,7 +532,6 @@
       })();
     }, {passive:true});
 
-    // Kontrol form pembuatan key
     $("#btnGen").onclick = ()=>{
       const rand = ()=>Math.random().toString(36).slice(2,6).toUpperCase();
       $("#newKey").value = `${rand()}-${rand()}-${rand()}-${rand()}`;
@@ -576,7 +549,6 @@
     $("#btnClearGlobal").onclick = async ()=>{ await set(ref(db,"auth/globalKey"), ""); $("#globalKey").value=""; toast("Dikosongkan"); };
 
     $("#search")?.addEventListener("input", ()=>render(), {passive:true});
-    // Chip tambah tanggal cepat
     document.addEventListener("click",(e)=>{
       const chip=e.target.closest(".chip"); if(!chip) return;
       const add = parseInt(chip.dataset.add||"0",10);
@@ -585,9 +557,6 @@
       const pad=n=>String(n).padStart(2,"0");
       $("#exp").value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
     }, {passive:true});
-
-    // Selesai boot
-    window.addEventListener("load", ()=>{ document.body.classList.remove("booting"); }, {once:true});
   </script>
 </body>
 </html>
