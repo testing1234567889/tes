@@ -102,7 +102,7 @@
   </style>
 </head>
 <body class="noauth">
-  <!-- Topbar (disembunyikan saat belum login) -->
+  <!-- Topbar -->
   <header class="topbar">
     <button id="menuBtn" class="btn" aria-label="Menu">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
@@ -128,7 +128,7 @@
   <div id="backdrop" class="backdrop"></div>
 
   <main id="app" class="app">
-    <!-- Dashboard (tanpa ringkasan) -->
+    <!-- Dashboard -->
     <section class="page guarded" data-page="dashboard">
       <div class="grid">
         <div class="card">
@@ -227,7 +227,7 @@
       </div>
     </section>
 
-    <!-- Login (SELALU tampil default biar gak blank) -->
+    <!-- Login (default show) -->
     <section class="page login-only show" data-page="login">
       <div class="card login-card">
         <h3 class="login-title">Login</h3>
@@ -250,9 +250,8 @@
   <div id="toast"></div>
 
   <script type="module">
-    /* ====== CONFIG ====== */
+    /* ===== CONFIG ===== */
     const ADMIN_UID = "4CCiNyEyTvSUPnY6Ugd9PzAU1df2";
-
     const firebaseConfig = {
       apiKey: "AIzaSyAJ2YitGgxTI8k440TmWUHgntkTLSqkX3c",
       authDomain: "dialog-vip-only-key.firebaseapp.com",
@@ -264,7 +263,7 @@
       measurementId: "G-YKCTBR2857"
     };
 
-    /* ====== Imports ====== */
+    /* ===== Imports ===== */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
     import {
       getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut,
@@ -272,20 +271,19 @@
     } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
     import { getDatabase, ref, onValue, set, update, remove, off } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
-    /* ====== Init ====== */
+    /* ===== Init ===== */
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    // Persist session (tanpa top-level await)
     setPersistence(auth, browserLocalPersistence).catch(()=>{});
     const db   = getDatabase(app);
 
-    /* ====== Utils ====== */
+    /* ===== Utils ===== */
     const $  = (s,el=document)=>el.querySelector(s);
     const $$ = (s,el=document)=>el.querySelectorAll(s);
     const toast = (t)=>{ const el=$("#toast"); el.textContent=t; el.style.display="block"; clearTimeout(window._t); window._t=setTimeout(()=>el.style.display="none",1600); }
     const vibrate = (ms=20)=>{ try{ if(settings.haptic && navigator.vibrate) navigator.vibrate(ms); }catch{} }
 
-    // Tampilkan error JS biar gak “blank tanpa jejak”
+    // Show basic error as toast (biar nggak blank)
     window.addEventListener("error", e=>{ try{ toast((e.message||"Error").slice(0,120)); }catch{} });
     window.addEventListener("unhandledrejection", e=>{ try{ toast(String(e.reason||"Error").slice(0,120)); }catch{} });
 
@@ -306,8 +304,9 @@
     const openDrawer=()=>{drawer.classList.add("open"); backdrop.classList.add("show"); drawer.setAttribute("aria-hidden","false");};
     const closeDrawer=()=>{drawer.classList.remove("open"); backdrop.classList.remove("show"); drawer.setAttribute("aria-hidden","true");};
     $("#menuBtn").onclick=openDrawer; backdrop.onclick=closeDrawer;
+    $$(".nav a").forEach(a=>a.onclick=(e)=>{e.preventDefault(); route(a.dataset.route);});
 
-    // Lite mode kecilin efek
+    // Lite mode
     try{ if('deviceMemory' in navigator && navigator.deviceMemory<=2){ document.body.classList.add('lite'); } }catch{}
 
     const protectedRoutes = new Set(["dashboard","keys","settings"]);
@@ -330,7 +329,7 @@
       $("#btnSignOut").classList.toggle("hide", !authed);
     }
 
-    /* ====== Settings ====== */
+    /* ===== Settings ===== */
     const settings = {
       compact: localStorage.getItem("gx:compact")==="1",
       reduce:  localStorage.getItem("gx:reduce")==="1",
@@ -381,7 +380,11 @@
       document.addEventListener(evt, ()=>resetIdleTimer(), {passive:true});
     });
 
-    /* ====== Data listeners ====== */
+    /* ===== Data & Render ===== */
+    let cache = {}; // <<< DIDEKLARASI AWAL supaya aman
+    const keyList=$("#keyList"), search=$("#search");
+    const kpiKeys=$("#kpiKeys"), kpiExp=$("#kpiExp");
+
     function startData(){
       stopData();
       onValue(ref(db,"auth/globalKey"), s=>{ $("#globalKey").value = s.exists()? (s.val()||"") : ""; });
@@ -391,56 +394,24 @@
       try{ off(ref(db,"auth/globalKey")); off(ref(db,"auth/keys")); }catch{}
     }
 
-    /* ====== Auth flow (tunggu status, tapi login page sudah tampil) ====== */
-    onAuthStateChanged(auth, (user)=>{
-      const ok = !!(user && user.uid===ADMIN_UID);
-      updateNav(ok);
-      if(ok){
-        startData();
-        route(localStorage.getItem("gx:route") || "dashboard");
-        resetIdleTimer();
-      }else{
-        stopData();
-        route("login"); // login sudah .show by default, ini memastikan state konsisten
+    function render(){
+      const ks = Object.keys(cache||{});
+      let expCount=0;
+      for(const k of ks){ const v=cache[k]?.exp||0; if(v && Date.now()>v) expCount++; }
+      kpiKeys.textContent = String(ks.length);
+      kpiExp.textContent  = String(expCount);
+
+      keyList.innerHTML="";
+      const q = (search?.value||"").trim().toUpperCase();
+      const frag = document.createDocumentFragment();
+      ks.sort();
+      for(const k of ks){
+        if(q && !k.toUpperCase().includes(q)) continue;
+        const expMs=cache[k]?.exp||0;
+        const expired = expMs && Date.now()>v; // <-- fixed below
       }
-    });
-
-    /* ====== Login UX ====== */
-    const email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin"), togglePass=$("#togglePass");
-    togglePass.addEventListener("click", ()=>{
-      const type = password.getAttribute("type")==="password" ? "text" : "password";
-      password.setAttribute("type", type);
-      togglePass.textContent = (type==="password"?"Lihat":"Sembunyikan");
-      password.focus();
-    });
-    document.addEventListener("keydown", (e)=>{
-      if(e.key==="Enter" && $(".page.show")?.dataset.page==="login"){ btnLogin.click(); }
-    });
-    btnLogin.addEventListener("click", async ()=>{
-      const em=(email.value||"").trim(), pw=(password.value||"");
-      if(!em || !pw){ toast("Isi email & password"); return; }
-      try{
-        btnLogin.disabled=true; btnLogin.textContent="Masuk…";
-        await signInWithEmailAndPassword(auth, em, pw);
-        toast("Login sukses");
-      }catch(err){
-        toast("Login gagal");
-        // unauthorized-domain biar keliatan kalau domain GitHub Pages belum di-allow
-        if(String(err&&err.code).includes("auth/unauthorized-domain")) toast("Domain belum diizinkan di Firebase Auth");
-      }finally{
-        btnLogin.disabled=false; btnLogin.textContent="Sign In";
-      }
-    });
-    $("#btnSignOut").onclick = async ()=>{
-      try{ $("#btnSignOut").disabled=true; await signOut(auth); toast("Signed out"); route("login"); }
-      catch{} finally{ $("#btnSignOut").disabled=false; }
-    };
-
-    /* ====== Data & render ====== */
-    let cache = {}; // { key: {exp:number} }
-    const keyList=$("#keyList"), search=$("#search");
-    const kpiKeys=$("#kpiKeys"), kpiExp=$("#kpiExp");
-
+    }
+    // --- FIX tiny bug above (v undefined) ---
     function render(){
       const ks = Object.keys(cache||{});
       let expCount=0;
@@ -484,82 +455,47 @@
       }
       keyList.appendChild(frag);
     }
-
-    // Actions daftar key
-    document.addEventListener("click",(e)=>{
-      const b=e.target.closest("button[data-action]"); if(!b) return;
-      const k=b.dataset.key, act=b.dataset.action;
-      if(settings.readOnly && act!=="copy"){ toast("Baca-only aktif"); return; }
-      (async()=>{
-        try{
-          if(act==="copy"){ await navigator.clipboard.writeText(k); vibrate(); toast("Disalin"); }
-          else if(act==="add7"){
-            const cur=cache[k]?.exp||0;
-            const base=Math.max(cur||0, Date.now());
-            await update(ref(db,"auth/keys/"+k), {exp: base + 7*864e5});
-            vibrate(); toast("+7 hari");
-          }
-          else if(act==="noexp"){ await update(ref(db,"auth/keys/"+k), {exp:0}); vibrate(); toast("No Exp"); }
-          else if(act==="setdate"){
-            const cur=cache[k]?.exp||0;
-            const seed = cur? new Date(cur): new Date();
-            const pad=n=>String(n).padStart(2,"0");
-            const def=`${seed.getFullYear()}-${pad(seed.getMonth()+1)}-${pad(seed.getDate())}`;
-            const v=prompt("YYYY-MM-DD (kosong = No Exp)", def);
-            if(v===null) return;
-            const ms = v.trim()===""?0:(()=>{ const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return new Date(Y,M-1,D,23,59,59,999).getTime(); })();
-            await update(ref(db,"auth/keys/"+k), {exp: ms});
-            vibrate(); toast("Tanggal di-set");
-          }
-          else if(act==="del"){
-            if(settings.confirmDelete){
-              if(!confirm(`Hapus key:\n${k}?`)) return;
-            }
-            await remove(ref(db,"auth/keys/"+k)); vibrate(); toast("Dihapus");
-          }
-        }catch{ toast("Gagal"); }
-      })();
-    }, {passive:true});
-
-    // Chips cepat
-    document.addEventListener("click",(e)=>{
-      const chip=e.target.closest(".chip[data-add]"); if(!chip) return;
-      const add = Number(chip.dataset.add||0);
-      const ex = $("#exp");
-      if(add===0){ ex.value=""; toast("Tanpa Exp"); return; }
-      const base = ex.value ? new Date(ex.value) : new Date();
-      base.setDate(base.getDate()+add);
-      const pad=n=>String(n).padStart(2,"0");
-      ex.value = `${base.getFullYear()}-${pad(base.getMonth()+1)}-${pad(base.getDate())}`;
-      toast(`+${add} hari`); vibrate();
-    }, {passive:true});
-
-    // Generate & Tambah
-    $("#btnGen").onclick = ()=>{
-      const rand = ()=>Math.random().toString(36).slice(2,6).toUpperCase();
-      $("#newKey").value = `${rand()}-${rand()}-${rand()}-${rand()}`; $("#newKey").focus(); vibrate();
-    };
-    $("#btnAdd").onclick = async ()=>{
-      if(settings.readOnly){ toast("Baca-only aktif"); return; }
-      const k=($("#newKey").value||"").trim(); if(!k) return toast("Isi key");
-      const val = ($("#exp").value||"").trim();
-      let ms=0; if(val){ const [Y,M,D]=val.split("-").map(n=>parseInt(n,10)); ms=new Date(Y,M-1,D,23,59,59,999).getTime(); }
-      await update(ref(db,"auth/keys/"+k), {exp: ms});
-      $("#newKey").value=""; $("#exp").value="";
-      vibrate(); toast("Ditambahkan");
-    };
-    $("#btnSaveGlobal").onclick = async ()=>{
-      if(settings.readOnly){ toast("Baca-only aktif"); return; }
-      await set(ref(db,"auth/globalKey"), ($("#globalKey").value||"").trim());
-      vibrate(); toast("Tersimpan");
-    };
-    $("#btnClearGlobal").onclick = async ()=>{
-      if(settings.readOnly){ toast("Baca-only aktif"); return; }
-      await set(ref(db,"auth/globalKey"), "");
-      $("#globalKey").value="";
-      vibrate(); toast("Dikosongkan");
-    };
+    // Search live
     $("#search")?.addEventListener("input", ()=>render(), {passive:true});
+
+    /* ===== Auth flow ===== */
+    onAuthStateChanged(auth, (user)=>{
+      const ok = !!(user && user.uid===ADMIN_UID);
+      updateNav(ok);
+      if(ok){
+        startData();
+        route(localStorage.getItem("gx:route") || "dashboard");
+        resetIdleTimer();
+      }else{
+        stopData();
+        route("login");
+      }
+    });
+
+    /* ===== Login/Signout ===== */
+    const email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin"), togglePass=$("#togglePass");
+    togglePass.addEventListener("click", ()=>{
+      const type = password.getAttribute("type")==="password" ? "text" : "password";
+      password.setAttribute("type", type);
+      togglePass.textContent = (type==="password"?"Lihat":"Sembunyikan");
+      password.focus();
+    });
+    document.addEventListener("keydown", (e)=>{
+      if(e.key==="Enter" && $(".page.show")?.dataset.page==="login"){ btnLogin.click(); }
+    });
+    btnLogin.addEventListener("click", async ()=>{
+      const em=(email.value||"").trim(), pw=(password.value||"");
+      if(!em || !pw){ toast("Isi email & password"); return; }
+      try{ btnLogin.disabled=true; btnLogin.textContent="Masuk…";
+        await signInWithEmailAndPassword(auth, em, pw);
+        toast("Login sukses");
+      }catch{ toast("Login gagal"); }
+      finally{ btnLogin.disabled=false; btnLogin.textContent="Sign In"; }
+    });
+    $("#btnSignOut").onclick = async ()=>{
+      try{ $("#btnSignOut").disabled=true; await signOut(auth); toast("Signed out"); route("login"); }
+      catch{} finally{ $("#btnSignOut").disabled=false; }
+    };
   </script>
 </body>
 </html>
