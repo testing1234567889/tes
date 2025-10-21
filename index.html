@@ -4,35 +4,31 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0b0f14" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>GxMods Key Panel</title>
   <style>
     *,*::before,*::after{box-sizing:border-box}
     html,body{height:100%}
-    :root{
-      --bg:#0b0f14;--card:#0f1622;--line:#1a2331;--muted:#9fb1c3;
-      --r:16px; --shadow:0 6px 24px rgba(0,0,0,.28);
-    }
+    :root{--bg:#0b0f14;--card:#0f1622;--line:#1a2331;--muted:#9fb1c3;--r:16px;--shadow:0 6px 24px rgba(0,0,0,.28)}
     body{
-      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-      background:var(--bg); color:#e6edf3; -webkit-tap-highlight-color:transparent; touch-action:manipulation;
-      user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
+      margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      background:var(--bg);color:#e6edf3;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+      user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
     }
     a{color:inherit;text-decoration:none}
     img,svg{display:block;max-width:100%}
-    input,textarea,select{user-select:text; -webkit-user-select:text; -webkit-touch-callout:default}
+    input,textarea,select{user-select:text;-webkit-user-select:text;-webkit-touch-callout:default}
 
     /* Inputs */
     .btn{color:#e6edf3}
     input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
     select, textarea{
-      width:100%; padding:14px; border-radius:12px; background:#0a0a0a; border:1px solid #30363d; outline:none;
-      appearance:none; -webkit-appearance:none; -moz-appearance:none; font-size:16px;
+      width:100%;padding:14px;border-radius:12px;background:#0a0a0a;border:1px solid #30363d;outline:none;
+      appearance:none;-webkit-appearance:none;-moz-appearance:none;font-size:16px;
     }
-    input::placeholder, textarea::placeholder{color:#9aa7b3}
+    input::placeholder,textarea::placeholder{color:#9aa7b3}
     input:-webkit-autofill{ -webkit-text-fill-color:#fff; box-shadow:0 0 0 1000px #0a0a0a inset; border:1px solid #30363d; caret-color:#fff; }
 
-    /* Layout */
+    /* Topbar & Drawer */
     .topbar{position:sticky;top:0;z-index:40;height:56px;display:flex;align-items:center;gap:12px;padding:0 14px;background:#0c111b;border-bottom:1px solid var(--line)}
     .title{font-weight:700}
     .grow{flex:1}
@@ -53,6 +49,7 @@
     .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .16s ease;z-index:45}
     .backdrop.show{opacity:1;pointer-events:auto}
 
+    /* App & pages */
     .app{min-height:calc(100dvh - 56px);padding:14px;display:flex;flex-direction:column;gap:14px}
     .page{display:none}
     .page.show{display:grid;gap:16px}
@@ -61,6 +58,7 @@
     .grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
     @media (max-width:560px){.grid{grid-template-columns:1fr}}
 
+    /* List Key */
     .list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden}
     .item{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:12px;background:#0e1420;border-bottom:1px solid var(--line)}
     .item:nth-child(2n){background:#0d131e}
@@ -68,27 +66,20 @@
     .pill{padding:3px 8px;border-radius:999px;border:1px solid var(--line);font-size:.8rem;white-space:nowrap}
     .ok{background:#10221a;border-color:#1f4e39;color:#9de7c4}
     .exp{background:#2a1414;border-color:#5d2a2a;color:#ffc8c8}
-
-    /* Switches */
-    .switch{display:inline-flex;align-items:center;gap:10px}
-    .switch input{position:absolute;opacity:0;width:0;height:0}
-    .switch .track{width:44px;height:26px;background:#1f2937;border:1px solid var(--line);border-radius:999px;position:relative;transition:background .15s,border-color .15s}
-    .switch .thumb{position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#cbd5e1;transition:left .15s,background .15s}
-    .switch input:checked + .track{background:#12211a;border-color:#1f4e39}
-    .switch input:checked + .track .thumb{left:20px;background:#9de7c4}
+    .actions{display:grid;grid-auto-flow:column;grid-auto-columns:max-content;gap:6px;align-items:center}
+    .actions .btn.small{padding:6px 8px;border-radius:10px}
 
     /* Guarding */
-    body.noauth .guarded{display:none !important}
-    body.authed .login-only{display:none !important}
-    body.noauth #menuBtn, body.noauth #btnSignOut{display:none !important}
-    body.noauth .topbar, body.noauth .drawer, body.noauth .backdrop{display:none !important}
-
-    /* Boot screen: sembunyikan semua sampai status auth jelas */
-    body.booting .page{display:none !important}
+    body.noauth .guarded{display:none!important}
+    body.authed .login-only{display:none!important}
+    body.noauth #menuBtn, body.noauth #btnSignOut{display:none!important}
+    body.noauth .topbar, body.noauth .drawer, body.noauth .backdrop{display:none!important}
+    body.booting .page{display:none!important}
 
     /* Login centering */
-    body.noauth .app{min-height:100dvh; display:grid; place-items:center; padding:20px}
-    .login-card{width:100%; max-width:420px; margin:0 auto}
+    body.noauth .app{min-height:100dvh;display:grid;place-items:center;padding:20px}
+    .login-card{width:100%;max-width:420px;margin:0 auto}
+    .login-title{text-align:center}
 
     /* Compact & reduce */
     body.compact .item{padding:8px 10px}
@@ -97,34 +88,36 @@
     body.reduce .btn, body.reduce .card{box-shadow:none!important}
 
     /* Read-only */
-    body.readonly .editable{opacity:.6; pointer-events:none}
+    body.readonly .editable{opacity:.6;pointer-events:none}
     body.readonly .item .btn[data-action]:not([data-action="copy"]){display:none}
-
-    /* Actions grid on list */
-    .actions{display:grid;grid-auto-flow:column;grid-auto-columns:max-content;gap:6px;align-items:center}
-    .actions .btn.small{padding:6px 8px;border-radius:10px}
 
     /* Toast center */
     #toast{
-      position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
-      background:#111827;border:1px solid #263248;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);display:none;z-index:1000; text-align:center; max-width:80vw
+      position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+      background:#111827;border:1px solid #263248;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);
+      display:none;z-index:1000;text-align:center;max-width:80vw
     }
+
+    /* Lite */
     .lite .btn,.lite .card{box-shadow:none}
+    .hide{display:none!important}
   </style>
 </head>
 <body class="noauth booting">
   <!-- Topbar -->
   <header class="topbar">
     <button id="menuBtn" class="btn" aria-label="Menu">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
       <span>Menu</span>
     </button>
     <div class="title">GxMods Key Panel</div>
     <div class="grow"></div>
-    <button id="btnSignOut" class="btn ghost">Sign Out</button>
+    <button id="btnSignOut" class="btn ghost hide">Sign Out</button>
   </header>
 
-  <!-- Drawer (tanpa login item) -->
+  <!-- Drawer (tanpa Login) -->
   <aside id="drawer" class="drawer" aria-hidden="true">
     <div class="brand"><strong>Menu</strong></div>
     <nav class="nav" id="nav">
@@ -136,17 +129,16 @@
   </aside>
   <div id="backdrop" class="backdrop"></div>
 
-  <!-- App -->
   <main id="app" class="app">
-    <!-- Dashboard -->
+    <!-- Dashboard (ringkasan DIHAPUS) -->
     <section class="page guarded" data-page="dashboard">
       <div class="grid">
         <div class="card">
           <h3>Status</h3>
-          <div class="row" style="display:flex;justify-content:space-between;align-items:center">
+          <div style="display:flex;justify-content:space-between;align-items:center">
             <span class="muted">Key aktif</span><strong id="kpiKeys">0</strong>
           </div>
-          <div class="row" style="display:flex;justify-content:space-between;align-items:center">
+          <div style="display:flex;justify-content:space-between;align-items:center">
             <span class="muted">Key expired</span><strong id="kpiExp">0</strong>
           </div>
         </div>
@@ -157,7 +149,7 @@
     <section class="page guarded" data-page="keys">
       <div class="card">
         <h3>Global Key</h3>
-        <div class="row editable" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <div class="editable" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           <input id="globalKey" type="text" placeholder="Kosongkan jika tidak pakai"/>
           <button id="btnSaveGlobal" class="btn small">Simpan</button>
           <button id="btnClearGlobal" class="btn small">Hapus</button>
@@ -166,11 +158,11 @@
 
       <div class="card">
         <h3>Buat Key</h3>
-        <div class="row editable" style="display:flex;gap:8px;flex-wrap:wrap">
+        <div class="editable" style="display:flex;gap:8px;flex-wrap:wrap">
           <input id="newKey" type="text" placeholder="Key (atau klik Generate)"/>
           <button id="btnGen" class="btn small">Generate</button>
         </div>
-        <div class="row editable" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <div class="editable" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           <label class="muted" for="exp" style="min-width:160px">Tanggal kadaluarsa (opsional)</label>
           <input id="exp" type="date" inputmode="none" placeholder="yyyy-mm-dd" style="max-width:220px"/>
           <span class="chip" data-add="7">+7 hari</span>
@@ -181,7 +173,7 @@
       </div>
 
       <div class="card">
-        <div class="row" style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
           <h3 style="margin:0">Daftar Key</h3>
           <input id="search" type="search" placeholder="Cari key…" style="min-width:160px;max-width:260px">
         </div>
@@ -194,70 +186,34 @@
       <div class="card">
         <h3>Pengaturan</h3>
 
-        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <div>
-            <strong>Padatkan daftar key</strong>
-            <div class="muted">Kurangi jarak & tinggi baris.</div>
-          </div>
-          <label class="switch">
-            <input id="compact" type="checkbox">
-            <span class="track"><i class="thumb"></i></span>
-          </label>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div><strong>Padatkan daftar key</strong><div class="muted">Kurangi jarak & tinggi baris.</div></div>
+          <label class="switch"><input id="compact" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
         </div>
 
-        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <div>
-            <strong>Kurangi animasi</strong>
-            <div class="muted">Hilangkan transisi & bayangan.</div>
-          </div>
-          <label class="switch">
-            <input id="reduce" type="checkbox">
-            <span class="track"><i class="thumb"></i></span>
-          </label>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div><strong>Kurangi animasi</strong><div class="muted">Hilangkan transisi & bayangan.</div></div>
+          <label class="switch"><input id="reduce" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
         </div>
 
-        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <div>
-            <strong>Konfirmasi saat hapus</strong>
-            <div class="muted">Minta konfirmasi sebelum menghapus key.</div>
-          </div>
-          <label class="switch">
-            <input id="confirmDelete" type="checkbox">
-            <span class="track"><i class="thumb"></i></span>
-          </label>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div><strong>Konfirmasi saat hapus</strong><div class="muted">Minta konfirmasi sebelum hapus key.</div></div>
+          <label class="switch"><input id="confirmDelete" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
         </div>
 
-        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <div>
-            <strong>Kunci otomatis (5 menit)</strong>
-            <div class="muted">Keluar otomatis jika tidak ada aktivitas.</div>
-          </div>
-          <label class="switch">
-            <input id="idleLock" type="checkbox">
-            <span class="track"><i class="thumb"></i></span>
-          </label>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div><strong>Kunci otomatis (5 menit)</strong><div class="muted">Keluar otomatis bila idle.</div></div>
+          <label class="switch"><input id="idleLock" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
         </div>
 
-        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <div>
-            <strong>Mode baca-only</strong>
-            <div class="muted">Nonaktifkan semua input & aksi edit.</div>
-          </div>
-          <label class="switch">
-            <input id="readOnly" type="checkbox">
-            <span class="track"><i class="thumb"></i></span>
-          </label>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div><strong>Mode baca-only</strong><div class="muted">Nonaktifkan semua edit & aksi.</div></div>
+          <label class="switch"><input id="readOnly" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
         </div>
 
-        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <div>
-            <strong>Getar saat aksi</strong>
-            <div class="muted">Getar singkat saat salin/simpan.</div>
-          </div>
-          <label class="switch">
-            <input id="haptic" type="checkbox">
-            <span class="track"><i class="thumb"></i></span>
-          </label>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div><strong>Getar saat aksi</strong><div class="muted">Haptic singkat ketika salin/simpan.</div></div>
+          <label class="switch"><input id="haptic" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
         </div>
       </div>
     </section>
@@ -267,25 +223,26 @@
       <div class="card">
         <h3>Tentang Panel</h3>
         <p class="muted">
-          Panel admin untuk mengelola Global Key dan key per pengguna. Data realtime dengan Firebase; UI ramah Android WebView, responsif, dark, dan ringan.
+          Panel admin untuk mengelola Global Key & key individual berbasis Firebase Realtime Database.
+          Fokus: aman (UI terkunci sebelum login), responsif untuk Android WebView, dan ringan di RAM rendah.
         </p>
       </div>
     </section>
 
-    <!-- Login (tengah) -->
+    <!-- Login (center) -->
     <section class="page login-only" data-page="login">
       <div class="card login-card">
-        <h3 style="text-align:center">Login</h3>
-        <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
+        <h3 class="login-title">Login</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
           <input id="email" type="email" placeholder="Email" autocomplete="username">
         </div>
-        <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
           <div style="position:relative;width:100%">
             <input id="password" type="password" placeholder="Password" autocomplete="current-password">
             <button id="togglePass" class="btn small" style="position:absolute;right:6px;top:6px">Lihat</button>
           </div>
         </div>
-        <div class="row" style="display:flex;justify-content:center">
+        <div style="display:flex;justify-content:center">
           <button id="btnLogin" class="btn">Sign In</button>
         </div>
       </div>
@@ -295,7 +252,7 @@
   <div id="toast"></div>
 
   <script type="module">
-    const ADMIN_UID = "4CCiNyEyTvSUPnY6Ugd9PzAU1df2"; /* ganti ke UID admin kamu */
+    const ADMIN_UID = "4CCiNyEyTvSUPnY6Ugd9PzAU1df2";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAJ2YitGgxTI8k440TmWUHgntkTLSqkX3c",
@@ -317,7 +274,8 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    await setPersistence(auth, browserLocalPersistence); // persist login across refresh
+    // persist login across refresh (tanpa top-level await, aman di WebView lama)
+    setPersistence(auth, browserLocalPersistence).catch(()=>{});
     const db   = getDatabase(app);
 
     const $ = (s,el=document)=>el.querySelector(s);
@@ -325,22 +283,28 @@
     const toast = (t)=>{ const el=$("#toast"); el.textContent=t; el.style.display="block"; clearTimeout(window._t); window._t=setTimeout(()=>el.style.display="none",1600); }
     const vibrate = (ms=20)=>{ try{ if(settings.haptic && navigator.vibrate) navigator.vibrate(ms); }catch{} }
 
-    const protectedRoutes = new Set(["dashboard","keys","settings"]);
-    const drawer=$("#drawer"), backdrop=$("#backdrop");
-    const openDrawer=()=>{drawer.classList.add("open"); backdrop.classList.add("show"); drawer.setAttribute("aria-hidden","false");};
-    const closeDrawer=()=>{drawer.classList.remove("open"); backdrop.classList.remove("show"); drawer.setAttribute("aria-hidden","true");};
-
-    // Anti long-press / context-menu
+    // Anti long-press / copy global (kecuali input/textarea)
     document.addEventListener("contextmenu", e=>e.preventDefault());
+    document.addEventListener("copy", e=>{
+      const tag=(document.activeElement?.tagName||"").toLowerCase();
+      if(tag!=="input" && tag!=="textarea"){ e.preventDefault(); toast("Teks dilindungi"); }
+    });
     document.addEventListener("selectstart", e=>{
-      const tag = (e.target?.tagName||"").toLowerCase();
+      const tag=(e.target?.tagName||"").toLowerCase();
       if(tag==="input" || tag==="textarea") return;
       e.preventDefault();
     });
 
-    // Lite mode
+    // Drawer
+    const drawer=$("#drawer"), backdrop=$("#backdrop");
+    const openDrawer=()=>{drawer.classList.add("open"); backdrop.classList.add("show"); drawer.setAttribute("aria-hidden","false");};
+    const closeDrawer=()=>{drawer.classList.remove("open"); backdrop.classList.remove("show"); drawer.setAttribute("aria-hidden","true");};
+    $("#menuBtn").onclick=openDrawer; backdrop.onclick=closeDrawer;
+
+    // Lite mode untuk RAM kecil
     try{ if('deviceMemory' in navigator && navigator.deviceMemory<=2){ document.body.classList.add('lite'); } }catch{}
 
+    const protectedRoutes = new Set(["dashboard","keys","settings"]);
     const isAuthed = ()=> auth.currentUser && auth.currentUser.uid===ADMIN_UID;
 
     function hardGuard(name){ return (protectedRoutes.has(name) && !isAuthed()) ? "login" : name; }
@@ -354,17 +318,11 @@
       try{ document.scrollingElement.scrollTo({top:0,behavior:"smooth"}); }catch{}
     }
 
-    $("#menuBtn").onclick=openDrawer; backdrop.onclick=closeDrawer;
-    $$(".nav a").forEach(a=>a.onclick=(e)=>{e.preventDefault(); route(a.dataset.route);});
-
-    // UI refs
-    const globalKey=$("#globalKey"), btnSaveGlobal=$("#btnSaveGlobal"), btnClearGlobal=$("#btnClearGlobal");
-    const newKey=$("#newKey"), btnGen=$("#btnGen"), exp=$("#exp"), btnAdd=$("#btnAdd");
-    const keyList=$("#keyList"), search=$("#search");
-    const kpiKeys=$("#kpiKeys"), kpiExp=$("#kpiExp");
-    const email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin");
-    const btnSignOut=$("#btnSignOut");
-    const togglePass=$("#togglePass");
+    function updateNav(authed){
+      document.body.classList.toggle("authed", !!authed);
+      document.body.classList.toggle("noauth", !authed);
+      $("#btnSignOut").classList.toggle("hide", !authed);
+    }
 
     // Settings state
     const settings = {
@@ -387,9 +345,9 @@
       document.body.classList.toggle('reduce', settings.reduce);
       document.body.classList.toggle('readonly', settings.readOnly);
       if(settings.readOnly){
-        $$(".editable input, .editable button").forEach(el=>{ el.setAttribute("disabled","disabled"); });
+        $$(".editable input, .editable button").forEach(el=>el.setAttribute("disabled","disabled"));
       }else{
-        $$(".editable input, .editable button").forEach(el=>{ el.removeAttribute("disabled"); });
+        $$(".editable input, .editable button").forEach(el=>el.removeAttribute("disabled"));
       }
       render();
     }
@@ -418,24 +376,25 @@
     });
 
     // Data listeners
-    const listeners = [];
+    let unsubs = [];
     function startData(){
       stopData();
-      listeners.push(onValue(ref(db,"auth/globalKey"), s=>{ globalKey.value = s.exists()? (s.val()||"") : ""; }));
-      listeners.push(onValue(ref(db,"auth/keys"), s=>{ cache = s.val()||{}; render(); }));
+      unsubs.push(onValue(ref(db,"auth/globalKey"), s=>{ $("#globalKey").value = s.exists()? (s.val()||"") : ""; }));
+      unsubs.push(onValue(ref(db,"auth/keys"), s=>{ cache = s.val()||{}; render(); }));
     }
     function stopData(){
-      try{ off(ref(db,"auth/globalKey")); off(ref(db,"auth/keys")); }catch{}
-      listeners.length=0;
+      try{
+        off(ref(db,"auth/globalKey"));
+        off(ref(db,"auth/keys"));
+      }catch{}
+      unsubs = [];
     }
 
-    // Auth flow: tampilkan halaman SELEPAS status auth jelas (no flash login)
+    // Auth flow — tunggu status, baru tampilkan
     onAuthStateChanged(auth, (user)=>{
       const ok = !!(user && user.uid===ADMIN_UID);
       document.body.classList.remove("booting");
-      document.body.classList.toggle("authed", ok);
-      document.body.classList.toggle("noauth", !ok);
-
+      updateNav(ok);
       if(ok){
         startData();
         route(localStorage.getItem("gx:route") || "dashboard");
@@ -447,6 +406,7 @@
     });
 
     // Login UX
+    const email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin"), togglePass=$("#togglePass");
     togglePass.addEventListener("click", ()=>{
       const type = password.getAttribute("type")==="password" ? "text" : "password";
       password.setAttribute("type", type);
@@ -457,31 +417,23 @@
       if(e.key==="Enter" && $(".page.show")?.dataset.page==="login"){ btnLogin.click(); }
     });
     btnLogin.addEventListener("click", async ()=>{
-      const em=(email.value||"").trim();
-      const pw=password.value||"";
+      const em=(email.value||"").trim(), pw=(password.value||"");
       if(!em || !pw){ toast("Isi email & password"); return; }
-      try{
-        btnLogin.disabled = true; btnLogin.textContent = "Masuk…";
+      try{ btnLogin.disabled=true; btnLogin.textContent="Masuk…";
         await signInWithEmailAndPassword(auth, em, pw);
         toast("Login sukses");
-      }catch{
-        toast("Login gagal");
-      }finally{
-        btnLogin.disabled = false; btnLogin.textContent = "Sign In";
-      }
+      }catch{ toast("Login gagal"); }
+      finally{ btnLogin.disabled=false; btnLogin.textContent="Sign In"; }
     });
     $("#btnSignOut").onclick = async ()=>{
-      try{
-        $("#btnSignOut").disabled = true;
-        await signOut(auth);
-        toast("Signed out");
-        route("login");
-      }catch{}finally{ $("#btnSignOut").disabled = false; }
+      try{ $("#btnSignOut").disabled=true; await signOut(auth); toast("Signed out"); route("login"); }
+      catch{} finally{ $("#btnSignOut").disabled=false; }
     };
 
     // Data & render
     let cache = {}; // { key: {exp:number} }
-
+    const keyList=$("#keyList"), search=$("#search");
+    const kpiKeys=$("#kpiKeys"), kpiExp=$("#kpiExp");
     function render(){
       const ks = Object.keys(cache||{});
       let expCount=0;
@@ -514,15 +466,10 @@
         right.appendChild(status);
 
         const mk=(txt,action)=>{ const b=document.createElement("button"); b.className="btn small"; b.textContent=txt; b.dataset.key=k; b.dataset.action=action; if(settings.readOnly && action!=="copy"){ b.classList.add("editable"); b.setAttribute("disabled","disabled"); } return b; };
-        const bCopy = mk("Copy","copy");
-        const bAdd7 = mk("+7","add7");
-        const bNo   = mk("No Exp","noexp");
-        const bDate = mk("Tanggal","setdate");
-        const bDel  = mk("Hapus","del"); bDel.style.background="#2a1212"; bDel.style.borderColor="#5d2a2a";
-        right.append(bCopy,bAdd7,bNo,bDate,bDel);
+        right.append(mk("Copy","copy"), mk("+7","add7"), mk("No Exp","noexp"), mk("Tanggal","setdate"));
+        const del=mk("Hapus","del"); del.style.background="#2a1212"; del.style.borderColor="#5d2a2a"; right.appendChild(del);
 
-        row.appendChild(left);
-        row.appendChild(right);
+        row.append(left,right);
         frag.appendChild(row);
       }
       if(!frag.childNodes.length){
@@ -538,14 +485,14 @@
       if(settings.readOnly && act!=="copy"){ toast("Baca-only aktif"); return; }
       (async()=>{
         try{
-          if(act==="copy"){ await navigator.clipboard.writeText(k); toast("Disalin"); }
+          if(act==="copy"){ await navigator.clipboard.writeText(k); vibrate(); toast("Disalin"); }
           else if(act==="add7"){
             const cur=cache[k]?.exp||0;
             const base=Math.max(cur||0, Date.now());
             await update(ref(db,"auth/keys/"+k), {exp: base + 7*864e5});
-            toast("+7 hari");
+            vibrate(); toast("+7 hari");
           }
-          else if(act==="noexp"){ await update(ref(db,"auth/keys/"+k), {exp:0}); toast("No Exp"); }
+          else if(act==="noexp"){ await update(ref(db,"auth/keys/"+k), {exp:0}); vibrate(); toast("No Exp"); }
           else if(act==="setdate"){
             const cur=cache[k]?.exp||0;
             const seed = cur? new Date(cur): new Date();
@@ -555,35 +502,37 @@
             if(v===null) return;
             const ms = v.trim()===""?0:(()=>{ const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return new Date(Y,M-1,D,23,59,59,999).getTime(); })();
             await update(ref(db,"auth/keys/"+k), {exp: ms});
-            toast("Tanggal di-set");
+            vibrate(); toast("Tanggal di-set");
           }
           else if(act==="del"){
             if(settings.confirmDelete){
               if(!confirm(`Hapus key:\n${k}?`)) return;
             }
-            await remove(ref(db,"auth/keys/"+k)); toast("Dihapus");
+            await remove(ref(db,"auth/keys/"+k)); vibrate(); toast("Dihapus");
           }
         }catch{ toast("Gagal"); }
       })();
     }, {passive:true});
 
-    // Chips kontrol exp cepat
+    // Chips +7 / No Exp
     document.addEventListener("click",(e)=>{
-      const chip = e.target.closest(".chip"); if(!chip) return;
-      const add = parseInt(chip.dataset.add,10);
-      if(add===0){ $("#exp").value=""; toast("Tanpa Exp"); }
-      else{
-        const d = new Date(); d.setDate(d.getDate()+add);
-        const pad=n=>String(n).padStart(2,"0");
-        $("#exp").value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-        toast(`+${add} hari`);
-      }
+      const chip=e.target.closest(".chip[data-add]"); if(!chip) return;
+      const add = Number(chip.dataset.add||0);
+      const ex = $("#exp");
+      if(add===0){ ex.value=""; toast("Tanpa Exp"); return; }
+      const base = ex.value ? new Date(ex.value) : new Date();
+      base.setDate(base.getDate()+add);
+      const pad=n=>String(n).padStart(2,"0");
+      ex.value = `${base.getFullYear()}-${pad(base.getMonth()+1)}-${pad(base.getDate())}`;
+      toast(`+${add} hari`);
+      vibrate();
     }, {passive:true});
 
-    // Generate & tambah
+    // Generate & Tambah (KONSISTEN TANPA encodeURIComponent)
     $("#btnGen").onclick = ()=>{
       const rand = ()=>Math.random().toString(36).slice(2,6).toUpperCase();
       $("#newKey").value = `${rand()}-${rand()}-${rand()}-${rand()}`;
+      $("#newKey").focus(); vibrate();
     };
     $("#btnAdd").onclick = async ()=>{
       if(settings.readOnly){ toast("Baca-only aktif"); return; }
@@ -592,22 +541,20 @@
       let ms=0; if(val){ const [Y,M,D]=val.split("-").map(n=>parseInt(n,10)); ms=new Date(Y,M-1,D,23,59,59,999).getTime(); }
       await update(ref(db,"auth/keys/"+k), {exp: ms});
       $("#newKey").value=""; $("#exp").value="";
-      toast("Ditambahkan");
+      vibrate(); toast("Ditambahkan");
     };
     $("#btnSaveGlobal").onclick = async ()=>{
       if(settings.readOnly){ toast("Baca-only aktif"); return; }
       await set(ref(db,"auth/globalKey"), ($("#globalKey").value||"").trim());
-      toast("Tersimpan");
+      vibrate(); toast("Tersimpan");
     };
     $("#btnClearGlobal").onclick = async ()=>{
       if(settings.readOnly){ toast("Baca-only aktif"); return; }
       await set(ref(db,"auth/globalKey"), "");
       $("#globalKey").value="";
-      toast("Dikosongkan");
+      vibrate(); toast("Dikosongkan");
     };
     $("#search")?.addEventListener("input", ()=>render(), {passive:true});
-
-    // Selesai booting di onAuthStateChanged; jangan route("login") di awal—biar nggak minta login lagi pas refresh.
   </script>
 </body>
 </html>
