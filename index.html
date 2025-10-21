@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0b0f14" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>GxMods Key Panel – Guarded</title>
+  <title>GxMods Key Panel</title>
   <style>
     /* ===== Reset & base */
     *,*::before,*::after{box-sizing:border-box}
@@ -19,9 +19,15 @@
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
       background:var(--bg);color:#e6edf3;-webkit-tap-highlight-color:transparent;
       touch-action:manipulation;
+      user-select:none; -webkit-user-select:none; -ms-user-select:none; -webkit-touch-callout:none;
     }
+    body.allow-select{user-select:text; -webkit-user-select:text; -webkit-touch-callout:auto}
     a{color:inherit;text-decoration:none}
     img,svg{display:block;max-width:100%}
+    .hide{display:none !important}
+
+    /* teks tetap bisa dipilih di input/textarea */
+    input,textarea{user-select:text; -webkit-user-select:text}
 
     /* ===== Dark inputs */
     body,button,input,select,textarea{color:#e6edf3}
@@ -29,7 +35,7 @@
     input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
     select, textarea{
       width:100%;padding:14px;border-radius:12px;background:#0a0a0a;border:1px solid #30363d;outline:none;
-      appearance:none;-webkit-appearance:none;-moz-appearance:none;font-size:16px; /* cegah zoom iOS/Android */
+      appearance:none;-webkit-appearance:none;-moz-appearance:none;font-size:16px;
     }
     input::placeholder, textarea::placeholder{color:#9aa7b3}
     input:-webkit-autofill{ -webkit-text-fill-color:#fff; box-shadow:0 0 0 1000px #0a0a0a inset; border:1px solid #30363d; caret-color:#fff; }
@@ -64,9 +70,22 @@
     @media (max-width:560px){.grid{grid-template-columns:1fr}}
 
     .list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden}
-    .item{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:12px;background:#0e1420;border-bottom:1px solid var(--line)}
+    /* tata letak item responsif & rapi */
+    .item{
+      display:grid;gap:10px;align-items:center;padding:12px;background:#0e1420;border-bottom:1px solid var(--line);
+      grid-template-columns:1fr auto minmax(240px,1fr);
+      grid-template-areas:"left status actions";
+    }
     .item:nth-child(2n){background:#0d131e}
     .item:last-child{border-bottom:none}
+    .item .left{grid-area:left}
+    .item .status{grid-area:status}
+    .item .actions{grid-area:actions;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+    @media (max-width:720px){
+      .item{grid-template-columns:1fr;grid-template-areas:"left" "status" "actions"}
+      .item .actions{justify-content:flex-start}
+    }
+
     .pill{padding:3px 8px;border-radius:999px;border:1px solid var(--line);font-size:.8rem;white-space:nowrap}
     .ok{background:#10221a;border-color:#1f4e39;color:#9de7c4}
     .exp{background:#2a1414;border-color:#5d2a2a;color:#ffc8c8}
@@ -81,17 +100,33 @@
     .switch input:checked + .track .thumb{left:20px;background:#9de7c4}
 
     /* ===== Guarding states */
-    body.noauth .guarded{display:none !important}      /* kunci semua konten sensitif */
-    body.authed .login-only{display:none !important}   /* sembunyikan login kalau sudah auth */
+    body.noauth .guarded{display:none !important}
+    body.authed .login-only{display:none !important}
     body.noauth #menuBtn, body.noauth #btnSignOut{display:none !important}
+    body.noauth .topbar, body.noauth #drawer, body.noauth #backdrop{display:none !important}
 
-    /* Booting: cegah flash/kedip non-login */
+    /* Booting */
     body.booting .page{display:none !important}
     body.booting [data-page="login"]{display:grid !important}
 
-    /* Lite & Reduce (opsional) */
+    /* Lite & Reduce */
     .lite .btn,.lite .card{box-shadow:none}
     .reduce *{transition:none!important;animation:none!important}
+
+    /* Login page centered */
+    [data-page="login"].show{min-height:calc(100dvh - 56px); place-content:center}
+
+    /* Centered Toast */
+    #toast{
+      position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
+      background:#111827;border:1px solid #263248;padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);
+      display:none; z-index:99; pointer-events:none; text-align:center; max-width:min(92vw,520px)
+    }
+
+    /* Dense mode tweaks */
+    .dense .item{padding:8px}
+    .dense .pill{font-size:.74rem;padding:2px 6px}
+    .dense .btn.small{padding:6px 8px}
   </style>
 </head>
 <body class="noauth booting">
@@ -114,7 +149,7 @@
       <a href="#keys" data-route="keys" data-auth="in">Daftar Key</a>
       <a href="#settings" data-route="settings" data-auth="in">Pengaturan</a>
       <a href="#about" data-route="about">Tentang</a>
-      <a href="#login" data-route="login" id="navLogin" data-auth="out">Login</a>
+      <!-- Link Login dihapus supaya tidak nongol di drawer -->
     </nav>
   </aside>
   <div id="backdrop" class="backdrop"></div>
@@ -132,12 +167,6 @@
           <div class="row" style="display:flex;justify-content:space-between;align-items:center">
             <span class="muted">Key expired</span><strong id="kpiExp">0</strong>
           </div>
-          <p class="muted">Angka dari Firebase Realtime DB.</p>
-        </div>
-
-        <div class="card">
-          <h3>Ringkasan</h3>
-          <p class="muted">Kelola Global Key & daftar key di tab <strong>Daftar Key</strong>. Input sudah tema gelap total.</p>
         </div>
       </div>
     </section>
@@ -152,7 +181,6 @@
           <button id="btnSaveGlobal" class="btn small">Simpan</button>
           <button id="btnClearGlobal" class="btn small">Hapus</button>
         </div>
-        <p class="muted">Nilai disimpan di <code>auth/globalKey</code>.</p>
       </div>
 
       <!-- Buat Key -->
@@ -180,8 +208,6 @@
         </div>
         <div id="keyList" class="list" role="list"></div>
       </div>
-
-      <div class="footer">Struktur: <code>auth/globalKey</code> & <code>auth/keys/{key} = {"exp":ms}</code>.</div>
     </section>
 
     <!-- Settings (guarded) -->
@@ -191,8 +217,8 @@
 
         <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
           <div>
-            <strong>List rapat</strong>
-            <div class="muted">Padatkan tinggi item di daftar key.</div>
+            <strong>Padatkan daftar key</strong>
+            <div class="muted">Tinggi item & button jadi lebih ringkas.</div>
           </div>
           <label class="switch">
             <input id="dense" type="checkbox">
@@ -203,7 +229,7 @@
         <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
           <div>
             <strong>Kurangi animasi</strong>
-            <div class="muted">Matikan transisi & bayangan, lebih enteng.</div>
+            <div class="muted">Matikan transisi & bayangan.</div>
           </div>
           <label class="switch">
             <input id="reduce" type="checkbox">
@@ -211,14 +237,47 @@
           </label>
         </div>
 
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div>
+            <strong>Urutkan expired dulu</strong>
+            <div class="muted">Prioritaskan yang kadaluarsa di atas.</div>
+          </div>
+          <label class="switch">
+            <input id="sortExpired" type="checkbox">
+            <span class="track"><i class="thumb"></i></span>
+          </label>
+        </div>
+
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div>
+            <strong>Sembunyikan Global Key</strong>
+            <div class="muted">Sembunyikan kartu Global Key bila tak dipakai.</div>
+          </div>
+          <label class="switch">
+            <input id="hideGlobal" type="checkbox">
+            <span class="track"><i class="thumb"></i></span>
+          </label>
+        </div>
+
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div>
+            <strong>Izinkan seleksi teks</strong>
+            <div class="muted">Matikan anti-salin bila perlu.</div>
+          </div>
+          <label class="switch">
+            <input id="allowSelect" type="checkbox">
+            <span class="track"><i class="thumb"></i></span>
+          </label>
+        </div>
+
       </div>
     </section>
 
-    <!-- About (bebas) -->
+    <!-- About -->
     <section class="page" data-page="about">
       <div class="card">
-        <h3>Tentang</h3>
-        <p class="muted">Optimasi RAM 2 GB: efek minimal, event delegation tunggal, dan lite mode otomatis.</p>
+        <h3>Tentang Panel</h3>
+        <p class="muted">Panel ini buat kelola Global Key & daftar key dengan fokus ke performa ringan (RAM 2GB oke), UI gelap, dan aksi cepat (copy, tambah masa aktif, set tanggal, hapus). Menu Pengaturan berisi opsi yang benar-benar berdampak visual & perilaku.</p>
       </div>
     </section>
 
@@ -235,18 +294,17 @@
             <button id="togglePass" class="btn small" style="position:absolute;right:6px;top:6px">Lihat</button>
           </div>
         </div>
-        <div class="row" style="display:flex;justify-content:flex-end">
+        <div class="row" style="display:flex;justify-content:center">
           <button id="btnLogin" class="btn">Sign In</button>
         </div>
-        <p class="muted">Hanya UID admin yang diizinkan.</p>
       </div>
     </section>
   </main>
 
-  <div id="toast" style="position:fixed;right:10px;bottom:10px;background:#111827;border:1px solid #263248;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);display:none"></div>
+  <div id="toast"></div>
 
   <script type="module">
-    /* ====== Firebase config */
+    /* ===== Firebase config (tanpa tambah proteksi ekstra) */
     const ADMIN_UID = "4CCiNyEyTvSUPnY6Ugd9PzAU1df2";
     const firebaseConfig = {
       apiKey: "AIzaSyAJ2YitGgxTI8k440TmWUHgntkTLSqkX3c",
@@ -260,11 +318,16 @@
     };
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+    import {
+      getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut,
+      setPersistence, browserLocalPersistence
+    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
     import { getDatabase, ref, onValue, set, update, remove, off } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    // Pastikan tetap login setelah refresh
+    setPersistence(auth, browserLocalPersistence).catch(()=>{});
     const db   = getDatabase(app);
 
     /* ===== Util & state */
@@ -293,57 +356,61 @@
       $$(".nav a").forEach(a=>a.classList.toggle("active",a.dataset.route===name));
       if(isAuthed()){ localStorage.setItem("gx:route", name); } else { localStorage.removeItem("gx:route"); }
       closeDrawer();
-      // ekstra: scroll to top tiap pindah
       try{ document.scrollingElement.scrollTo({top:0,behavior:"smooth"}); }catch{}
     }
 
     // Routing events
     $("#menuBtn").onclick=openDrawer; backdrop.onclick=closeDrawer;
     $$(".nav a").forEach(a=>a.onclick=(e)=>{e.preventDefault(); route(a.dataset.route);});
-    // Awal: paksa ke login (hindari flash halaman lain)
-    route("login");
+    route("login"); // awal
 
     // UI refs
     const globalKey=$("#globalKey"), btnSaveGlobal=$("#btnSaveGlobal"), btnClearGlobal=$("#btnClearGlobal");
     const newKey=$("#newKey"), btnGen=$("#btnGen"), exp=$("#exp"), btnAdd=$("#btnAdd");
     const keyList=$("#keyList"), search=$("#search");
     const kpiKeys=$("#kpiKeys"), kpiExp=$("#kpiExp");
-    const dense=$("#dense"), reduce=$("#reduce");
+    const dense=$("#dense"), reduce=$("#reduce"), sortExpired=$("#sortExpired"), hideGlobal=$("#hideGlobal"), allowSelect=$("#allowSelect");
     const email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin");
     const btnSignOut=$("#btnSignOut");
     const togglePass=$("#togglePass");
+    const globalKeyCard=$("#globalKeyCard");
 
     // Settings persist (init)
     dense.checked  = localStorage.getItem("gx:dense")==="1";
     reduce.checked = localStorage.getItem("gx:reduce")==="1";
-    if(reduce.checked){ document.body.classList.add('reduce'); document.documentElement.style.scrollBehavior='auto'; }
-    dense.onchange = ()=>{ localStorage.setItem("gx:dense", dense.checked?"1":"0"); render(); };
+    sortExpired.checked = localStorage.getItem("gx:sortExp")==="1";
+    hideGlobal.checked  = localStorage.getItem("gx:hideGlobal")==="1";
+    allowSelect.checked = localStorage.getItem("gx:allowSelect")==="1";
+
+    document.body.classList.toggle('dense', dense.checked);
+    document.body.classList.toggle('reduce', reduce.checked);
+    document.body.classList.toggle('allow-select', allowSelect.checked);
+    globalKeyCard.classList.toggle('hide', hideGlobal.checked);
+    if(reduce.checked){ document.documentElement.style.scrollBehavior='auto'; }
+
+    dense.onchange = ()=>{ document.body.classList.toggle('dense', dense.checked); localStorage.setItem("gx:dense", dense.checked?"1":"0"); render(); };
     reduce.onchange = ()=>{ document.body.classList.toggle('reduce', reduce.checked); document.documentElement.style.scrollBehavior = reduce.checked?"auto":"smooth"; localStorage.setItem("gx:reduce", reduce.checked?"1":"0"); };
+    sortExpired.onchange = ()=>{ localStorage.setItem("gx:sortExp", sortExpired.checked?"1":"0"); render(); };
+    hideGlobal.onchange  = ()=>{ globalKeyCard.classList.toggle('hide', hideGlobal.checked); localStorage.setItem("gx:hideGlobal", hideGlobal.checked?"1":"0"); };
+    allowSelect.onchange = ()=>{ document.body.classList.toggle('allow-select', allowSelect.checked); localStorage.setItem("gx:allowSelect", allowSelect.checked?"1":"0"); };
 
     function updateNav(authed){
       document.body.classList.remove("booting");
       document.body.classList.toggle("authed", !!authed);
       document.body.classList.toggle("noauth", !authed);
-
-      $$(".nav a").forEach(a=>{
-        const need=a.dataset.auth;
-        if(need==="in") a.classList.toggle("hide", !authed);
-        else if(need==="out") a.classList.toggle("hide", authed);
-      });
       btnSignOut.classList.toggle("hide", !authed);
     }
 
     // ===== Auth state & listeners cleanup
     const listeners = [];
     function startData(){
-      stopData(); // bersih dulu
+      stopData();
       listeners.push(onValue(ref(db,"auth/globalKey"), s=>{ globalKey.value = s.exists()? (s.val()||"") : ""; }));
       listeners.push(onValue(ref(db,"auth/keys"), s=>{ cache = s.val()||{}; render(); }));
     }
     function stopData(){
-      try{
-        off(ref(db,"auth/globalKey")); off(ref(db,"auth/keys"));
-      }catch{} listeners.length=0;
+      try{ off(ref(db,"auth/globalKey")); off(ref(db,"auth/keys")); }catch{}
+      listeners.length=0;
     }
 
     onAuthStateChanged(auth, (user)=>{
@@ -395,48 +462,64 @@
       }catch{}finally{ btnSignOut.disabled = false; }
     };
 
+    // ===== Anti tahan/salin di luar input
+    const allowCtx = (el)=> !!el && (el.closest('input,textarea,[contenteditable="true"]'));
+    document.addEventListener('copy',  e=>{ if(!document.body.classList.contains('allow-select') && !allowCtx(document.activeElement)) e.preventDefault(); });
+    document.addEventListener('cut',   e=>{ if(!document.body.classList.contains('allow-select') && !allowCtx(document.activeElement)) e.preventDefault(); });
+    document.addEventListener('contextmenu', e=>{ if(!document.body.classList.contains('allow-select') && !allowCtx(e.target)) e.preventDefault(); }, {passive:false});
+
     // ===== Data & render
     let cache = {}; // { key: {exp:number} }
 
     function render(){
       const ks = Object.keys(cache||{});
       let expCount=0;
-      for(const k of ks){ const v=cache[k]?.exp||0; if(v && Date.now()>v) expCount++; }
+      const now=Date.now();
+      for(const k of ks){ const v=cache[k]?.exp||0; if(v && now>v) expCount++; }
       kpiKeys.textContent = String(ks.length);
       kpiExp.textContent  = String(expCount);
 
       keyList.innerHTML="";
       const q = (search?.value||"").trim().toUpperCase();
       const frag = document.createDocumentFragment();
-      ks.sort();
+
+      ks.sort((a,b)=>{
+        if(sortExpired.checked){
+          const ea = (cache[a]?.exp||0) && now>(cache[a].exp);
+          const eb = (cache[b]?.exp||0) && now>(cache[b].exp);
+          if(ea!==eb) return eb - ea; // expired true dulu
+        }
+        return a.localeCompare(b);
+      });
+
       for(const k of ks){
         if(q && !k.toUpperCase().includes(q)) continue;
         const expMs=cache[k]?.exp||0;
-        const expired = expMs && Date.now()>expMs;
+        const expired = expMs && now>expMs;
 
         const row = document.createElement("div");
         row.className="item";
-        if(dense.checked) row.style.padding="10px 10px";
 
         const left = document.createElement("div");
+        left.className="left";
         left.style.display="grid"; left.style.gap="4px";
         const expStr = expMs? new Date(expMs).toLocaleDateString("id-ID",{day:"2-digit",month:"short",year:"numeric"}) : "Permanen";
         left.innerHTML = `<strong style="word-break:break-all">${k}</strong><span class="muted" style="font-size:.85rem">Expire: ${expStr}</span>`;
 
         const status = document.createElement("span");
-        status.className="pill "+(expired?"exp":"ok");
+        status.className="pill status "+(expired?"exp":"ok");
         status.textContent = expired?"Expired":"Aktif";
 
-        const right = document.createElement("div");
-        right.style.display="flex"; right.style.gap="6px"; right.style.flexWrap="wrap";
+        const actions = document.createElement("div");
+        actions.className="actions";
         const mk=(txt,action)=>{ const b=document.createElement("button"); b.className="btn small"; b.textContent=txt; b.dataset.key=k; b.dataset.action=action; return b; };
-        right.appendChild(mk("Copy","copy"));
-        right.appendChild(mk("+7","add7"));
-        right.appendChild(mk("No Exp","noexp"));
-        right.appendChild(mk("Tanggal…","setdate"));
-        const del=mk("Hapus","del"); del.style.background="#2a1212"; del.style.borderColor="#5d2a2a"; right.appendChild(del);
+        actions.appendChild(mk("Copy","copy"));
+        actions.appendChild(mk("+7","add7"));
+        actions.appendChild(mk("No Exp","noexp"));
+        actions.appendChild(mk("Tanggal…","setdate"));
+        const del=mk("Hapus","del"); del.style.background="#2a1212"; del.style.borderColor="#5d2a2a"; actions.appendChild(del);
 
-        row.appendChild(left); row.appendChild(status); row.appendChild(right);
+        row.appendChild(left); row.appendChild(status); row.appendChild(actions);
         frag.appendChild(row);
       }
       if(!frag.childNodes.length){
@@ -452,23 +535,23 @@
       (async()=>{
         try{
           if(act==="copy"){ await navigator.clipboard.writeText(k); toast("Disalin"); }
-          else if(act==="add7"){ 
-            const cur=cache[k]?.exp||0; 
-            const base=Math.max(cur||0, Date.now()); 
-            await update(ref(db,"auth/keys/"+k), {exp: base + 7*864e5}); 
-            toast("+7 hari"); 
+          else if(act==="add7"){
+            const cur=cache[k]?.exp||0;
+            const base=Math.max(cur||0, Date.now());
+            await update(ref(db,"auth/keys/"+k), {exp: base + 7*864e5});
+            toast("+7 hari");
           }
           else if(act==="noexp"){ await update(ref(db,"auth/keys/"+k), {exp:0}); toast("No Exp"); }
-          else if(act==="setdate"){ 
-            const cur=cache[k]?.exp||0; 
-            const seed = cur? new Date(cur): new Date(); 
-            const pad=n=>String(n).padStart(2,"0"); 
-            const def=`${seed.getFullYear()}-${pad(seed.getMonth()+1)}-${pad(seed.getDate())}`; 
-            const v=prompt("YYYY-MM-DD (kosong = No Exp)", def); 
-            if(v===null) return; 
-            const ms = v.trim()===""?0:(()=>{ const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return new Date(Y,M-1,D,23,59,59,999).getTime(); })(); 
-            await update(ref(db,"auth/keys/"+k), {exp: ms}); 
-            toast("Tanggal di-set"); 
+          else if(act==="setdate"){
+            const cur=cache[k]?.exp||0;
+            const seed = cur? new Date(cur): new Date();
+            const pad=n=>String(n).padStart(2,"0");
+            const def=`${seed.getFullYear()}-${pad(seed.getMonth()+1)}-${pad(seed.getDate())}`;
+            const v=prompt("YYYY-MM-DD (kosong = No Exp)", def);
+            if(v===null) return;
+            const ms = v.trim()===""?0:(()=>{ const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return new Date(Y,M-1,D,23,59,59,999).getTime(); })();
+            await update(ref(db,"auth/keys/"+k), {exp: ms});
+            toast("Tanggal di-set");
           }
           else if(act==="del"){ if(confirm(`Hapus key:\n${k}?`)){ await remove(ref(db,"auth/keys/"+k)); toast("Dihapus"); } }
         }catch{ toast("Gagal"); }
@@ -485,7 +568,7 @@
       const k=($("#newKey").value||"").trim(); if(!k) return toast("Isi key");
       const val = ($("#exp").value||"").trim();
       let ms=0; if(val){ const [Y,M,D]=val.split("-").map(n=>parseInt(n,10)); ms=new Date(Y,M-1,D,23,59,59,999).getTime(); }
-      await update(ref(db,"auth/keys/"+encodeURIComponent(k)), {exp: ms});
+      await update(ref(db,"auth/keys/"+k), {exp: ms});
       $("#newKey").value=""; $("#exp").value="";
       toast("Ditambahkan");
     };
@@ -493,8 +576,15 @@
     $("#btnClearGlobal").onclick = async ()=>{ await set(ref(db,"auth/globalKey"), ""); $("#globalKey").value=""; toast("Dikosongkan"); };
 
     $("#search")?.addEventListener("input", ()=>render(), {passive:true});
-
-    // Simpan/restore route hanya saat authed — sudah di handle di route()
+    // Chip tambah tanggal cepat
+    document.addEventListener("click",(e)=>{
+      const chip=e.target.closest(".chip"); if(!chip) return;
+      const add = parseInt(chip.dataset.add||"0",10);
+      if(add===0){ $("#exp").value=""; toast("Tanpa Exp"); return; }
+      const d = new Date(); d.setDate(d.getDate()+add);
+      const pad=n=>String(n).padStart(2,"0");
+      $("#exp").value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    }, {passive:true});
 
     // Selesai boot
     window.addEventListener("load", ()=>{ document.body.classList.remove("booting"); }, {once:true});
