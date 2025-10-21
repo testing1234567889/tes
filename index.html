@@ -4,76 +4,37 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0b0f14" />
-  <title>GxMods Key Panel – Drawer</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>GxMods Key Panel – Guarded</title>
   <style>
-    /* ===== Reset mini */
+    /* ===== Reset & base */
     *,*::before,*::after{box-sizing:border-box}
     html,body{height:100%}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-      background:#0b0f14;color:#e6edf3;-webkit-tap-highlight-color:transparent
-    }
-    a{color:inherit;text-decoration:none}
-    img,svg{display:block;max-width:100%}
-
     :root{
       --bg:#0b0f14;--card:#0f1622;--line:#1a2331;--muted:#9fb1c3;
       --pri:#7c3aed;--ok:#19c37d;--r:16px; --shadow:0 6px 24px rgba(0,0,0,.28);
     }
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      background:var(--bg);color:#e6edf3;-webkit-tap-highlight-color:transparent;
+      touch-action:manipulation;
+    }
+    a{color:inherit;text-decoration:none}
+    img,svg{display:block;max-width:100%}
 
-    /* ====== DARK FORCE OVERRIDE++ : semua teks & kontrol terang di atas gelap */
-    body,button,input,select,textarea{color:#e6edf3 !important}
-    .btn{color:#e6edf3 !important}
-    .chip{color:#e6edf3}
-
-    /* Input umum (kecuali tipe khusus di bawah) */
+    /* ===== Dark inputs */
+    body,button,input,select,textarea{color:#e6edf3}
+    .btn{color:#e6edf3}
     input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
     select, textarea{
-      width:100%;
-      padding:12px;
-      border-radius:12px;
-      background:#0a0a0a !important;
-      color:#ffffff !important;
-      border:1px solid #30363d !important;
-      outline:none;
-      appearance:none;-webkit-appearance:none;-moz-appearance:none;
+      width:100%;padding:14px;border-radius:12px;background:#0a0a0a;border:1px solid #30363d;outline:none;
+      appearance:none;-webkit-appearance:none;-moz-appearance:none;font-size:16px; /* cegah zoom iOS/Android */
     }
     input::placeholder, textarea::placeholder{color:#9aa7b3}
+    input:-webkit-autofill{ -webkit-text-fill-color:#fff; box-shadow:0 0 0 1000px #0a0a0a inset; border:1px solid #30363d; caret-color:#fff; }
 
-    /* Autofill Chrome/Edge/Brave */
-    input:-webkit-autofill,
-    input:-webkit-autofill:hover,
-    input:-webkit-autofill:focus{
-      -webkit-text-fill-color:#ffffff !important;
-      box-shadow:0 0 0 1000px #0a0a0a inset !important;
-      border:1px solid #30363d !important;
-      caret-color:#ffffff;
-    }
-
-    /* Date/Time picker tetap putih */
-    input[type="date"], input[type="time"], input[type="datetime-local"],
-    input[type="month"], input[type="week"]{
-      color-scheme: dark;
-      background:#0a0a0a !important;
-      color:#ffffff !important;
-      border:1px solid #30363d !important;
-    }
-    input[type="date"]::-webkit-datetime-edit,
-    input[type="date"]::-webkit-datetime-edit-text,
-    input[type="date"]::-webkit-datetime-edit-month-field,
-    input[type="date"]::-webkit-datetime-edit-day-field,
-    input[type="date"]::-webkit-datetime-edit-year-field{
-      color:#ffffff;
-    }
-    input[type="date"]::-webkit-calendar-picker-indicator{ filter: invert(1) opacity(.85); }
-    input[type="search"]::-webkit-search-cancel-button{ filter: invert(1); }
-
-    @media (prefers-reduced-motion: reduce){
-      *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-    }
-
-    /* ===== Topbar */
+    /* ===== Layout */
     .topbar{position:sticky;top:0;z-index:40;height:56px;display:flex;align-items:center;gap:12px;padding:0 14px;background:#0c111b;border-bottom:1px solid var(--line)}
     .title{font-weight:700}
     .grow{flex:1}
@@ -84,7 +45,6 @@
     .btn[disabled]{opacity:.6;pointer-events:none}
     .icon{width:20px;height:20px}
 
-    /* ===== Drawer */
     .drawer{position:fixed;inset:0 auto 0 0;width:min(78%,320px);background:#0e1420;border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .16s ease-out;z-index:50;contain:paint}
     .drawer.open{transform:translateX(0)}
     .drawer .brand{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid var(--line)}
@@ -95,18 +55,14 @@
     .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .16s ease;z-index:45}
     .backdrop.show{opacity:1;pointer-events:auto}
 
-    /* ===== App & pages */
     .app{min-height:calc(100dvh - 56px);padding:14px;display:flex;flex-direction:column;gap:14px}
     .page{display:none}
-    .page.show{display:grid;gap:16px}  /* jarak antar card dalam satu halaman */
+    .page.show{display:grid;gap:16px}
     .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:12px}
     .muted{color:var(--muted);font-size:.95rem}
     .grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
     @media (max-width:560px){.grid{grid-template-columns:1fr}}
-    .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-    .row.between{justify-content:space-between;align-items:center}
 
-    /* ===== List Key */
     .list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden}
     .item{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:12px;background:#0e1420;border-bottom:1px solid var(--line)}
     .item:nth-child(2n){background:#0d131e}
@@ -117,7 +73,6 @@
     .footer{margin-top:auto;color:var(--muted);font-size:.85rem;text-align:center;opacity:.9}
     .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#0f1622;cursor:pointer;user-select:none}
 
-    /* ===== Switch (untuk Pengaturan) */
     .switch{display:inline-flex;align-items:center;gap:10px}
     .switch input{position:absolute;opacity:0;width:0;height:0}
     .switch .track{width:44px;height:26px;background:#1f2937;border:1px solid var(--line);border-radius:999px;position:relative;transition:background .15s,border-color .15s}
@@ -125,17 +80,21 @@
     .switch input:checked + .track{background:#12211a;border-color:#1f4e39}
     .switch input:checked + .track .thumb{left:20px;background:#9de7c4}
 
-    /* Lite & Reduce */
-    .lite .btn{box-shadow:none}
-    .lite .card{box-shadow:none}
-    .reduce *{transition:none!important;animation:none!important}
-    .reduce .btn,.reduce .card{box-shadow:none!important}
-    .reduce .drawer,.reduce .backdrop{transition:none!important}
+    /* ===== Guarding states */
+    body.noauth .guarded{display:none !important}      /* kunci semua konten sensitif */
+    body.authed .login-only{display:none !important}   /* sembunyikan login kalau sudah auth */
+    body.noauth #menuBtn, body.noauth #btnSignOut{display:none !important}
 
-    .hide{display:none!important}
+    /* Booting: cegah flash/kedip non-login */
+    body.booting .page{display:none !important}
+    body.booting [data-page="login"]{display:grid !important}
+
+    /* Lite & Reduce (opsional) */
+    .lite .btn,.lite .card{box-shadow:none}
+    .reduce *{transition:none!important;animation:none!important}
   </style>
 </head>
-<body>
+<body class="noauth booting">
   <!-- Topbar -->
   <header class="topbar">
     <button id="menuBtn" class="btn" aria-label="Menu">
@@ -144,7 +103,7 @@
     </button>
     <div class="title">GxMods Key Panel</div>
     <div class="grow"></div>
-    <button id="btnSignOut" class="btn ghost hide">Sign Out</button>
+    <button id="btnSignOut" class="btn ghost">Sign Out</button>
   </header>
 
   <!-- Drawer -->
@@ -155,22 +114,22 @@
       <a href="#keys" data-route="keys" data-auth="in">Daftar Key</a>
       <a href="#settings" data-route="settings" data-auth="in">Pengaturan</a>
       <a href="#about" data-route="about">Tentang</a>
-      <a href="#login" data-route="login" id="navLogin" class="mobile-only" data-auth="out">Login</a>
+      <a href="#login" data-route="login" id="navLogin" data-auth="out">Login</a>
     </nav>
   </aside>
   <div id="backdrop" class="backdrop"></div>
 
   <!-- App -->
   <main id="app" class="app">
-    <!-- Dashboard -->
-    <section class="page show" data-page="dashboard">
+    <!-- Dashboard (guarded) -->
+    <section class="page guarded" data-page="dashboard">
       <div class="grid">
         <div class="card">
           <h3>Status</h3>
-          <div class="row" style="justify-content:space-between">
+          <div class="row" style="display:flex;justify-content:space-between;align-items:center">
             <span class="muted">Key aktif</span><strong id="kpiKeys">0</strong>
           </div>
-          <div class="row" style="justify-content:space-between">
+          <div class="row" style="display:flex;justify-content:space-between;align-items:center">
             <span class="muted">Key expired</span><strong id="kpiExp">0</strong>
           </div>
           <p class="muted">Angka dari Firebase Realtime DB.</p>
@@ -183,12 +142,12 @@
       </div>
     </section>
 
-    <!-- Keys -->
-    <section class="page" data-page="keys">
+    <!-- Keys (guarded) -->
+    <section class="page guarded" data-page="keys">
       <!-- Global Key -->
       <div class="card" id="globalKeyCard">
         <h3>Global Key</h3>
-        <div class="row">
+        <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
           <input id="globalKey" type="text" placeholder="Kosongkan jika tidak pakai"/>
           <button id="btnSaveGlobal" class="btn small">Simpan</button>
           <button id="btnClearGlobal" class="btn small">Hapus</button>
@@ -199,23 +158,23 @@
       <!-- Buat Key -->
       <div class="card">
         <h3>Buat Key</h3>
-        <div class="row">
+        <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
           <input id="newKey" type="text" placeholder="Key (atau klik Generate)"/>
           <button id="btnGen" class="btn small">Generate</button>
         </div>
-        <div class="row">
-          <label class="muted" for="exp">Tanggal kadaluarsa (opsional)</label>
-          <input id="exp" type="date" inputmode="none" placeholder="yyyy-mm-dd"/>
+        <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <label class="muted" for="exp" style="min-width:160px">Tanggal kadaluarsa (opsional)</label>
+          <input id="exp" type="date" inputmode="none" placeholder="yyyy-mm-dd" style="max-width:220px"/>
           <span class="chip" data-add="7">+7 hari</span>
           <span class="chip" data-add="0">Tanpa Exp</span>
-          <div class="grow"></div>
+          <div style="flex:1"></div>
           <button id="btnAdd" class="btn small">Tambah</button>
         </div>
       </div>
 
       <!-- Daftar Key -->
       <div class="card">
-        <div class="row between">
+        <div class="row" style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
           <h3 style="margin:0">Daftar Key</h3>
           <input id="search" type="search" placeholder="Cari key…" style="min-width:160px;max-width:260px">
         </div>
@@ -225,12 +184,12 @@
       <div class="footer">Struktur: <code>auth/globalKey</code> & <code>auth/keys/{key} = {"exp":ms}</code>.</div>
     </section>
 
-    <!-- Settings -->
-    <section class="page" data-page="settings">
+    <!-- Settings (guarded) -->
+    <section class="page guarded" data-page="settings">
       <div class="card">
         <h3>Pengaturan</h3>
 
-        <div class="row between">
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
           <div>
             <strong>List rapat</strong>
             <div class="muted">Padatkan tinggi item di daftar key.</div>
@@ -241,7 +200,7 @@
           </label>
         </div>
 
-        <div class="row between">
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
           <div>
             <strong>Kurangi animasi</strong>
             <div class="muted">Matikan transisi & bayangan, lebih enteng.</div>
@@ -255,7 +214,7 @@
       </div>
     </section>
 
-    <!-- About -->
+    <!-- About (bebas) -->
     <section class="page" data-page="about">
       <div class="card">
         <h3>Tentang</h3>
@@ -263,13 +222,20 @@
       </div>
     </section>
 
-    <!-- Login -->
-    <section class="page" data-page="login">
-      <div class="card">
+    <!-- Login (login-only) -->
+    <section class="page login-only show" data-page="login">
+      <div class="card" style="max-width:480px; margin-inline:auto">
         <h3>Login Admin</h3>
-        <div class="row"><input id="email" type="email" placeholder="Email" autocomplete="username"></div>
-        <div class="row"><input id="password" type="password" placeholder="Password" autocomplete="current-password"></div>
-        <div class="row" style="justify-content:flex-end">
+        <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
+          <input id="email" type="email" placeholder="Email" autocomplete="username">
+        </div>
+        <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
+          <div style="position:relative;width:100%">
+            <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+            <button id="togglePass" class="btn small" style="position:absolute;right:6px;top:6px">Lihat</button>
+          </div>
+        </div>
+        <div class="row" style="display:flex;justify-content:flex-end">
           <button id="btnLogin" class="btn">Sign In</button>
         </div>
         <p class="muted">Hanya UID admin yang diizinkan.</p>
@@ -295,7 +261,7 @@
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-    import { getDatabase, ref, onValue, set, update, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+    import { getDatabase, ref, onValue, set, update, remove, off } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -305,7 +271,8 @@
     const $ = (s,el=document)=>el.querySelector(s);
     const $$ = (s,el=document)=>el.querySelectorAll(s);
     const toast = (t)=>{ const el=$("#toast"); el.textContent=t; el.style.display="block"; clearTimeout(window._t); window._t=setTimeout(()=>el.style.display="none",2000); }
-    const route = (name)=>{ $$(".page").forEach(p=>p.classList.toggle("show",p.dataset.page===name)); $$(".nav a").forEach(a=>a.classList.toggle("active",a.dataset.route===name)); localStorage.setItem("gx:route",name); closeDrawer(); }
+
+    const protectedRoutes = new Set(["dashboard","keys","settings"]);
     const drawer=$("#drawer"), backdrop=$("#backdrop");
     const openDrawer=()=>{drawer.classList.add("open"); backdrop.classList.add("show"); drawer.setAttribute("aria-hidden","false");};
     const closeDrawer=()=>{drawer.classList.remove("open"); backdrop.classList.remove("show"); drawer.setAttribute("aria-hidden","true");};
@@ -313,10 +280,28 @@
     // Lite mode untuk RAM kecil
     try{ if('deviceMemory' in navigator && navigator.deviceMemory<=2){ document.body.classList.add('lite'); } }catch{}
 
-    // Routing
+    const isAuthed = ()=> auth.currentUser && auth.currentUser.uid===ADMIN_UID;
+
+    function hardGuard(name){
+      if(protectedRoutes.has(name) && !isAuthed()) return "login";
+      return name;
+    }
+
+    function route(name){
+      name = hardGuard(name);
+      $$(".page").forEach(p=>p.classList.toggle("show",p.dataset.page===name));
+      $$(".nav a").forEach(a=>a.classList.toggle("active",a.dataset.route===name));
+      if(isAuthed()){ localStorage.setItem("gx:route", name); } else { localStorage.removeItem("gx:route"); }
+      closeDrawer();
+      // ekstra: scroll to top tiap pindah
+      try{ document.scrollingElement.scrollTo({top:0,behavior:"smooth"}); }catch{}
+    }
+
+    // Routing events
     $("#menuBtn").onclick=openDrawer; backdrop.onclick=closeDrawer;
     $$(".nav a").forEach(a=>a.onclick=(e)=>{e.preventDefault(); route(a.dataset.route);});
-    route(localStorage.getItem("gx:route") || "dashboard");
+    // Awal: paksa ke login (hindari flash halaman lain)
+    route("login");
 
     // UI refs
     const globalKey=$("#globalKey"), btnSaveGlobal=$("#btnSaveGlobal"), btnClearGlobal=$("#btnClearGlobal");
@@ -326,56 +311,80 @@
     const dense=$("#dense"), reduce=$("#reduce");
     const email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin");
     const btnSignOut=$("#btnSignOut");
+    const togglePass=$("#togglePass");
 
-    // Settings persist (init state)
+    // Settings persist (init)
     dense.checked  = localStorage.getItem("gx:dense")==="1";
     reduce.checked = localStorage.getItem("gx:reduce")==="1";
-    if(reduce.checked){
-      document.body.classList.add('reduce');
-      document.documentElement.style.scrollBehavior='auto';
+    if(reduce.checked){ document.body.classList.add('reduce'); document.documentElement.style.scrollBehavior='auto'; }
+    dense.onchange = ()=>{ localStorage.setItem("gx:dense", dense.checked?"1":"0"); render(); };
+    reduce.onchange = ()=>{ document.body.classList.toggle('reduce', reduce.checked); document.documentElement.style.scrollBehavior = reduce.checked?"auto":"smooth"; localStorage.setItem("gx:reduce", reduce.checked?"1":"0"); };
+
+    function updateNav(authed){
+      document.body.classList.remove("booting");
+      document.body.classList.toggle("authed", !!authed);
+      document.body.classList.toggle("noauth", !authed);
+
+      $$(".nav a").forEach(a=>{
+        const need=a.dataset.auth;
+        if(need==="in") a.classList.toggle("hide", !authed);
+        else if(need==="out") a.classList.toggle("hide", authed);
+      });
+      btnSignOut.classList.toggle("hide", !authed);
     }
 
-    dense.onchange = ()=>{ localStorage.setItem("gx:dense", dense.checked?"1":"0"); render(); };
-    reduce.onchange = ()=>{ 
-      document.body.classList.toggle('reduce', reduce.checked);
-      document.documentElement.style.scrollBehavior = reduce.checked?"auto":"smooth";
-      localStorage.setItem("gx:reduce", reduce.checked?"1":"0");
-    };
-
-    // ===== Auth & Nav visibility
-    function updateNav(user){
-      document.querySelectorAll('.nav a').forEach(a=>{
-        const need=a.dataset.auth;
-        if(need==="in") a.classList.toggle("hide", !user);
-        else if(need==="out") a.classList.toggle("hide", !!user);
-      });
-      btnSignOut.classList.toggle("hide", !user);
+    // ===== Auth state & listeners cleanup
+    const listeners = [];
+    function startData(){
+      stopData(); // bersih dulu
+      listeners.push(onValue(ref(db,"auth/globalKey"), s=>{ globalKey.value = s.exists()? (s.val()||"") : ""; }));
+      listeners.push(onValue(ref(db,"auth/keys"), s=>{ cache = s.val()||{}; render(); }));
+    }
+    function stopData(){
+      try{
+        off(ref(db,"auth/globalKey")); off(ref(db,"auth/keys"));
+      }catch{} listeners.length=0;
     }
 
     onAuthStateChanged(auth, (user)=>{
       if(user && user.uid===ADMIN_UID){
         updateNav(true);
         startData();
-        const last = localStorage.getItem("gx:route") || "dashboard";
-        if(last==="login") route("dashboard"); else route(last);
+        route(localStorage.getItem("gx:route") || "dashboard");
       }else{
+        stopData();
         updateNav(false);
         route("login");
-        if(user && user.uid!==ADMIN_UID){ signOut(auth); toast("Bukan admin"); }
+        if(user && user.uid!==ADMIN_UID){ signOut(auth).catch(()=>{}); toast("Bukan admin"); }
       }
     });
 
-    document.getElementById("btnLogin").onclick = async ()=>{
+    // ===== Login UX
+    togglePass.addEventListener("click", ()=>{
+      const type = password.getAttribute("type")==="password" ? "text" : "password";
+      password.setAttribute("type", type);
+      togglePass.textContent = (type==="password"?"Lihat":"Sembunyikan");
+      password.focus();
+    });
+
+    document.addEventListener("keydown", (e)=>{
+      if(e.key==="Enter" && $(".page.show")?.dataset.page==="login"){ btnLogin.click(); }
+    });
+
+    btnLogin.addEventListener("click", async ()=>{
+      const em=(email.value||"").trim();
+      const pw=password.value||"";
+      if(!em || !pw){ toast("Isi email & password"); return; }
       try{
         btnLogin.disabled = true; btnLogin.textContent = "Masuk…";
-        await signInWithEmailAndPassword(auth, (email.value||"").trim(), password.value||"");
+        await signInWithEmailAndPassword(auth, em, pw);
         toast("Login sukses");
       }catch(err){
         toast("Login gagal");
       }finally{
         btnLogin.disabled = false; btnLogin.textContent = "Sign In";
       }
-    };
+    });
 
     btnSignOut.onclick = async ()=>{
       try{
@@ -386,12 +395,8 @@
       }catch{}finally{ btnSignOut.disabled = false; }
     };
 
-    // ===== Data
+    // ===== Data & render
     let cache = {}; // { key: {exp:number} }
-    function startData(){
-      onValue(ref(db,"auth/globalKey"), s=>{ globalKey.value = s.exists()? (s.val()||"") : ""; });
-      onValue(ref(db,"auth/keys"), s=>{ cache = s.val()||{}; render(); });
-    }
 
     function render(){
       const ks = Object.keys(cache||{});
@@ -400,9 +405,8 @@
       kpiKeys.textContent = String(ks.length);
       kpiExp.textContent  = String(expCount);
 
-      // List
       keyList.innerHTML="";
-      const q = (search.value||"").trim().toUpperCase();
+      const q = (search?.value||"").trim().toUpperCase();
       const frag = document.createDocumentFragment();
       ks.sort();
       for(const k of ks){
@@ -441,7 +445,7 @@
       keyList.appendChild(frag);
     }
 
-    // Actions untuk daftar key
+    // Actions daftar key
     document.addEventListener("click",(e)=>{
       const b=e.target.closest("button[data-action]"); if(!b) return;
       const k=b.dataset.key, act=b.dataset.action;
@@ -472,41 +476,28 @@
     }, {passive:true});
 
     // Kontrol form pembuatan key
-    document.getElementById("btnGen").onclick = ()=>{
+    $("#btnGen").onclick = ()=>{
       const rand = ()=>Math.random().toString(36).slice(2,6).toUpperCase();
-      document.getElementById("newKey").value = `${rand()}-${rand()}-${rand()}-${rand()}`;
-      document.getElementById("newKey").focus();
+      $("#newKey").value = `${rand()}-${rand()}-${rand()}-${rand()}`;
+      $("#newKey").focus();
     };
-    document.getElementById("btnAdd").onclick = async ()=>{
-      const k=(document.getElementById("newKey").value||"").trim(); if(!k) return toast("Isi key");
-      const val = (document.getElementById("exp").value||"").trim();
+    $("#btnAdd").onclick = async ()=>{
+      const k=($("#newKey").value||"").trim(); if(!k) return toast("Isi key");
+      const val = ($("#exp").value||"").trim();
       let ms=0; if(val){ const [Y,M,D]=val.split("-").map(n=>parseInt(n,10)); ms=new Date(Y,M-1,D,23,59,59,999).getTime(); }
       await update(ref(db,"auth/keys/"+encodeURIComponent(k)), {exp: ms});
-      document.getElementById("newKey").value=""; document.getElementById("exp").value="";
+      $("#newKey").value=""; $("#exp").value="";
       toast("Ditambahkan");
     };
-    document.getElementById("btnSaveGlobal").onclick = async ()=>{ await set(ref(db,"auth/globalKey"), (document.getElementById("globalKey").value||"").trim()); toast("Global key disimpan"); };
-    document.getElementById("btnClearGlobal").onclick = async ()=>{ await set(ref(db,"auth/globalKey"), ""); document.getElementById("globalKey").value=""; toast("Dikosongkan"); };
+    $("#btnSaveGlobal").onclick = async ()=>{ await set(ref(db,"auth/globalKey"), ($("#globalKey").value||"").trim()); toast("Global key disimpan"); };
+    $("#btnClearGlobal").onclick = async ()=>{ await set(ref(db,"auth/globalKey"), ""); $("#globalKey").value=""; toast("Dikosongkan"); };
 
-    document.getElementById("search").addEventListener("input", ()=>render(), {passive:true});
+    $("#search")?.addEventListener("input", ()=>render(), {passive:true});
 
-    // Chip +7 / No Exp (akumulatif)
-    document.addEventListener("click",(e)=>{
-      const chip=e.target.closest(".chip[data-add]"); if(!chip) return;
-      const v = Number(chip.dataset.add||0);
-      const exp=document.getElementById("exp");
-      if(v===0){ exp.value=""; toast("Tanpa Exp"); return; }
-      const base = exp.value ? new Date(exp.value) : new Date();
-      base.setDate(base.getDate()+v);
-      const Y=base.getFullYear(), M=String(base.getMonth()+1).padStart(2,"0"), D=String(base.getDate()).padStart(2,"0");
-      exp.value = `${Y}-${M}-${D}`; toast(`+${v} hari`);
-    }, {passive:true});
+    // Simpan/restore route hanya saat authed — sudah di handle di route()
 
-    // Open last route
-    (function initRoute(){
-      const last = localStorage.getItem("gx:route");
-      if(last) route(last);
-    })();
+    // Selesai boot
+    window.addEventListener("load", ()=>{ document.body.classList.remove("booting"); }, {once:true});
   </script>
 </body>
 </html>
