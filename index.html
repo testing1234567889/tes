@@ -106,7 +106,7 @@
     body.booting .page{display:none !important}
     #boot{position:fixed;inset:0;display:grid;place-items:center;background:var(--bg);z-index:100;font-size:14px;color:var(--muted)}
 
-    /* “Kurangi efek” mode: hilangkan efek berat, animasi tetap halus */
+    /* “Kurangi efek” mode */
     .reduce .btn,.reduce .card{box-shadow:none}
     .reduce .backdrop{background:rgba(0,0,0,.3)}
     .lite .btn,.lite .card{box-shadow:none}
@@ -129,7 +129,7 @@
     .modal-card{width:min(92vw,420px);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end}
 
-    /* Mini progress bar (tidak dipakai lagi di Home, tapi disimpan jika suatu saat perlu) */
+    /* Mini progress bar (disimpan untuk nanti) */
     .bar{height:10px;border-radius:999px;background:color-mix(in oklab, var(--card), black 8%);overflow:hidden;border:1px solid var(--line)}
     .bar > i{display:block;height:100%;background:linear-gradient(90deg,#16a34a,#22c55e)}
   </style>
@@ -168,7 +168,7 @@
 
     <!-- Keys -->
     <section class="page guarded" data-page="keys">
-      <!-- Global Key (opsional) -->
+      <!-- Global Key -->
       <div class="card" id="globalKeyCard">
         <h3>Global Key</h3>
         <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
@@ -322,7 +322,7 @@
   </div>
 
   <script type="module">
-    /* Firebase (tanpa proteksi ekstra) */
+    /* Firebase */
     const ADMIN_UID = "4CCiNyEyTvSUPnY6Ugd9PzAU1df2";
     const firebaseConfig = {
       apiKey: "AIzaSyAJ2YitGgxTI8k440TmWUHgntkTLSqkX3c",
@@ -355,7 +355,7 @@
     const toEOD = (Y,M,D)=> new Date(Y,M-1,D,23,59,59,999).getTime();
     const fromInputDate = (v)=>{const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return {Y,M,D};};
 
-    /* No-op audit (fitur audit dinonaktifkan) */
+    /* No-op audit */
     function audit(){/*disabled*/}
 
     const protectedRoutes = new Set(["dashboard","keys","settings"]);
@@ -694,7 +694,6 @@
     }, {passive:true});
 
     /* Form controls */
-    const btnAdd = $("#btnAdd");
     btnAdd.onclick = async ()=>{
       const k=(newKey.value||"").trim(); if(!k) return toast("Isi key");
       const val=(exp.value||"").trim();
@@ -705,7 +704,6 @@
       newKey.value=""; exp.value=""; toast("Ditambahkan");
     };
 
-    const btnSaveGlobal=$("#btnSaveGlobal"), btnClearGlobal=$("#btnClearGlobal"), globalKey=$("#globalKey");
     btnSaveGlobal.onclick = async ()=>{ selfWriteAt=Date.now(); await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); audit("saveGlobal",{}); toast("Global key disimpan"); };
     btnClearGlobal.onclick = async ()=>{ selfWriteAt=Date.now(); await set(ref(db,"auth/globalKey"), ""); globalKey.value=""; audit("clearGlobal",{}); toast("Dikosongkan"); };
 
@@ -726,6 +724,13 @@
 
     // Lite mode: perangkat RAM kecil
     try{ if('deviceMemory' in navigator && navigator.deviceMemory<=2){ document.body.classList.add('lite'); } }catch{}
+
+    // ===== Fallback anti “memuat terus” =====
+    // 1) Jika error tidak tertangkap
+    window.addEventListener('error', ()=>{ document.body.classList.remove('booting'); $("#boot")?.remove(); }, {once:true});
+    window.addEventListener('unhandledrejection', ()=>{ document.body.classList.remove('booting'); $("#boot")?.remove(); }, {once:true});
+    // 2) Timeout safety
+    setTimeout(()=>{ if(document.body.classList.contains('booting')){ document.body.classList.remove('booting'); $("#boot")?.remove(); route('login'); } }, 2500);
   </script>
 </body>
 </html>
