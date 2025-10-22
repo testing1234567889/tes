@@ -12,6 +12,7 @@
     :root{
       --bg:#0b0f14;--card:#0f1622;--line:#1a2331;--muted:#9fb1c3;
       --pri:#7c3aed;--ok:#19c37d;--r:16px; --shadow:0 6px 24px rgba(0,0,0,.28);
+      --bn-h:60px;
     }
     body{
       margin:0;
@@ -37,6 +38,7 @@
     input::placeholder, textarea::placeholder{color:#9aa7b3}
     input:-webkit-autofill{ -webkit-text-fill-color:#fff; box-shadow:0 0 0 1000px #0a0a0a inset; border:1px solid #30363d; caret-color:#fff; }
 
+    /* Topbar */
     .topbar{position:sticky;top:0;z-index:40;height:56px;display:flex;align-items:center;gap:12px;padding:0 14px;background:#0c111b;border-bottom:1px solid var(--line)}
     .title{font-weight:700}
     .grow{flex:1}
@@ -47,6 +49,7 @@
     .btn[disabled]{opacity:.6;pointer-events:none}
     .icon{width:20px;height:20px}
 
+    /* Drawer */
     .drawer{position:fixed;inset:0 auto 0 0;width:min(78%,320px);background:#0e1420;border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .16s ease-out;z-index:50;contain:paint}
     .drawer.open{transform:translateX(0)}
     .drawer .brand{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid var(--line)}
@@ -57,7 +60,9 @@
     .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .16s ease;z-index:45}
     .backdrop.show{opacity:1;pointer-events:auto}
 
-    .app{min-height:calc(100dvh - 56px);padding:14px;display:flex;flex-direction:column;gap:14px}
+    /* App area (padding bawah untuk bottom nav) */
+    .app{min-height:calc(100dvh - 56px);padding:14px 14px calc(14px + var(--bn-h) + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
+    body.noauth .app{padding-bottom:14px}
     .page{display:none}
     .page.show{display:grid;gap:16px}
     .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:12px}
@@ -84,7 +89,7 @@
     .pill{padding:3px 8px;border-radius:999px;border:1px solid var(--line);font-size:.8rem;white-space:nowrap}
     .ok{background:#10221a;border-color:#1f4e39;color:#9de7c4}
     .exp{background:#2a1414;border-color:#5d2a2a;color:#ffc8c8}
-    .footer{margin-top:auto;color:var(--muted);font-size:.85rem;text-align:center;opacity:.9}
+
     .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#0f1622;cursor:pointer;user-select:none}
 
     .switch{display:inline-flex;align-items:center;gap:10px}
@@ -94,23 +99,23 @@
     .switch input:checked + .track{background:#12211a;border-color:#1f4e39}
     .switch input:checked + .track .thumb{left:20px;background:#9de7c4}
 
+    /* Guard states */
     body.noauth .guarded{display:none !important}
     body.authed .login-only{display:none !important}
     body.noauth #menuBtn, body.noauth #btnSignOut{display:none !important}
     body.noauth .topbar, body.noauth #drawer, body.noauth #backdrop{display:none !important}
 
-    /* Booting: sembunyikan semua page, tampilkan splash overlay */
+    /* Booting splash */
     body.booting .page{display:none !important}
-    #boot{
-      position:fixed; inset:0; display:grid; place-items:center;
-      background:var(--bg); z-index:100; font-size:14px; color:var(--muted);
-    }
+    #boot{position:fixed; inset:0; display:grid; place-items:center; background:var(--bg); z-index:100; font-size:14px; color:var(--muted)}
 
     .lite .btn,.lite .card{box-shadow:none}
     .reduce *{transition:none!important;animation:none!important}
 
+    /* Login page centered */
     [data-page="login"].show{min-height:calc(100dvh - 56px); place-content:center}
 
+    /* Centered Toast */
     #toast{
       position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
       background:#111827;border:1px solid #263248;padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);
@@ -120,11 +125,26 @@
     .dense .item{padding:8px}
     .dense .pill{font-size:.74rem;padding:2px 6px}
     .dense .btn.small{padding:6px 8px}
+
+    /* Bottom Navigation */
+    .bottomnav{
+      position:fixed; left:0; right:0; bottom:0; height:var(--bn-h);
+      background:#0c111b; border-top:1px solid var(--line);
+      display:grid; grid-template-columns:repeat(2,1fr); z-index:41; padding-bottom:env(safe-area-inset-bottom);
+    }
+    .bottomnav a{
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:4px; font-size:.85rem; color:var(--muted);
+    }
+    .bottomnav a .bi{width:22px;height:22px}
+    .bottomnav a.active{color:#fff}
+    body.noauth .bottomnav{display:none !important}
   </style>
 </head>
 <body class="noauth booting">
+  <!-- Topbar -->
   <header class="topbar">
-    <button id="menuBtn" class="btn" aria-label="Menu">
+    <button id="menuBtn" class="btn" aria-label="Menu" aria-haspopup="true" aria-controls="drawer" aria-expanded="false">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       <span>Menu</span>
     </button>
@@ -133,18 +153,21 @@
     <button id="btnSignOut" class="btn ghost">Sign Out</button>
   </header>
 
-  <aside id="drawer" class="drawer" aria-hidden="true">
+  <!-- Drawer (tabindex -1 + inert saat tertutup) -->
+  <aside id="drawer" class="drawer" aria-hidden="true" tabindex="-1">
     <div class="brand"><strong>Menu</strong></div>
     <nav class="nav" id="nav">
       <a href="#dashboard" data-route="dashboard" class="active" data-auth="in">Dashboard</a>
-      <a href="#keys" data-route="keys" data-auth="in">Daftar Key</a>
+      <!-- Daftar Key dipindahkan ke bottom nav -->
       <a href="#settings" data-route="settings" data-auth="in">Pengaturan</a>
       <a href="#about" data-route="about">Tentang</a>
     </nav>
   </aside>
   <div id="backdrop" class="backdrop"></div>
 
+  <!-- App -->
   <main id="app" class="app">
+    <!-- Dashboard -->
     <section class="page guarded" data-page="dashboard">
       <div class="grid">
         <div class="card">
@@ -159,6 +182,7 @@
       </div>
     </section>
 
+    <!-- Keys -->
     <section class="page guarded" data-page="keys">
       <div class="card" id="globalKeyCard">
         <h3>Global Key</h3>
@@ -194,6 +218,7 @@
       </div>
     </section>
 
+    <!-- Settings -->
     <section class="page guarded" data-page="settings">
       <div class="card">
         <h3>Pengaturan</h3>
@@ -256,6 +281,7 @@
       </div>
     </section>
 
+    <!-- About -->
     <section class="page" data-page="about">
       <div class="card">
         <h3>Tentang Panel</h3>
@@ -263,7 +289,7 @@
       </div>
     </section>
 
-    <!-- Login awal TIDAK "show" supaya tidak kedip -->
+    <!-- Login -->
     <section class="page login-only" data-page="login">
       <div class="card" style="max-width:480px; margin-inline:auto">
         <h3>Login Admin</h3>
@@ -283,12 +309,26 @@
     </section>
   </main>
 
+  <!-- Bottom Navigation -->
+  <nav id="bottomnav" class="bottomnav" role="navigation" aria-label="Navigasi utama">
+    <a href="#dashboard" data-route="dashboard" id="bn-home" aria-current="page">
+      <svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10h14V10"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="#keys" data-route="keys" id="bn-keys">
+      <svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="8" r="3"/><path d="M10 8h10l-2 2 2 2-2 2 2 2"/></svg>
+      <span>Daftar Key</span>
+    </a>
+  </nav>
+
   <!-- Splash boot -->
   <div id="boot"><span class="muted">Memuat…</span></div>
 
+  <!-- Toast -->
   <div id="toast"></div>
 
   <script type="module">
+    /* Firebase (tanpa proteksi ekstra) */
     const ADMIN_UID = "4CCiNyEyTvSUPnY6Ugd9PzAU1df2";
     const firebaseConfig = {
       apiKey: "AIzaSyAJ2YitGgxTI8k440TmWUHgntkTLSqkX3c",
@@ -313,17 +353,46 @@
     setPersistence(auth, browserLocalPersistence).catch(()=>{});
     const db   = getDatabase(app);
 
+    /* Utils */
     const $ = (s,el=document)=>el.querySelector(s);
     const $$ = (s,el=document)=>el.querySelectorAll(s);
     const toast = (t)=>{ const el=$("#toast"); el.textContent=t; el.style.display="block"; clearTimeout(window._t); window._t=setTimeout(()=>el.style.display="none",2000); }
 
     const protectedRoutes = new Set(["dashboard","keys","settings"]);
-    const drawer=$("#drawer"), backdrop=$("#backdrop");
-    const openDrawer=()=>{drawer.classList.add("open"); backdrop.classList.add("show"); drawer.setAttribute("aria-hidden","false");};
-    const closeDrawer=()=>{drawer.classList.remove("open"); backdrop.classList.remove("show"); drawer.setAttribute("aria-hidden","true");};
 
-    try{ if('deviceMemory' in navigator && navigator.deviceMemory<=2){ document.body.classList.add('lite'); } }catch{}
+    /* Drawer control + a11y */
+    const menuBtn = $("#menuBtn");
+    const drawer  = $("#drawer");
+    const backdrop= $("#backdrop");
 
+    // state awal drawer tertutup, inert aktif bila tersedia
+    drawer.setAttribute("aria-hidden","true");
+    try{ drawer.inert = true; }catch{}
+
+    function openDrawer(){
+      drawer.classList.add("open");
+      backdrop.classList.add("show");
+      drawer.removeAttribute("aria-hidden");
+      try{ drawer.inert = false; }catch{}
+      menuBtn.setAttribute("aria-expanded","true");
+      const first = drawer.querySelector(".nav a") || drawer;
+      (first instanceof HTMLElement ? first : drawer).focus();
+    }
+
+    function closeDrawer(){
+      if (drawer.contains(document.activeElement)) { menuBtn.focus(); }
+      drawer.classList.remove("open");
+      backdrop.classList.remove("show");
+      drawer.setAttribute("aria-hidden","true");
+      try{ drawer.inert = true; }catch{}
+      menuBtn.setAttribute("aria-expanded","false");
+    }
+
+    menuBtn.onclick = openDrawer;
+    backdrop.onclick = closeDrawer;
+    document.addEventListener("keydown",(e)=>{ if(e.key==="Escape" && drawer.classList.contains("open")){ e.preventDefault(); closeDrawer(); }});
+
+    /* Routing */
     const isAuthed = ()=> auth.currentUser && auth.currentUser.uid===ADMIN_UID;
 
     function hardGuard(name){
@@ -331,18 +400,31 @@
       return name;
     }
 
+    function updateBottomNav(name){
+      $$("#bottomnav a").forEach(a=>{
+        const active = a.dataset.route===name;
+        a.classList.toggle("active", active);
+        a.setAttribute("aria-current", active ? "page" : "false");
+      });
+    }
+
     function route(name){
       name = hardGuard(name);
       $$(".page").forEach(p=>p.classList.toggle("show",p.dataset.page===name));
       $$(".nav a").forEach(a=>a.classList.toggle("active",a.dataset.route===name));
+      updateBottomNav(name);
       if(isAuthed()){ localStorage.setItem("gx:route", name); } else { localStorage.removeItem("gx:route"); }
       closeDrawer();
       try{ document.scrollingElement.scrollTo({top:0,behavior:"smooth"}); }catch{}
     }
 
-    $("#menuBtn").onclick=openDrawer; backdrop.onclick=closeDrawer;
+    // Drawer nav
     $$(".nav a").forEach(a=>a.onclick=(e)=>{e.preventDefault(); route(a.dataset.route);});
 
+    // Bottom nav
+    $$("#bottomnav a").forEach(a=>a.addEventListener("click",(e)=>{ e.preventDefault(); route(a.dataset.route); }, {passive:false}));
+
+    /* UI refs */
     const globalKey=$("#globalKey"), btnSaveGlobal=$("#btnSaveGlobal"), btnClearGlobal=$("#btnClearGlobal");
     const newKey=$("#newKey"), btnGen=$("#btnGen"), exp=$("#exp"), btnAdd=$("#btnAdd");
     const keyList=$("#keyList"), search=$("#search");
@@ -353,6 +435,7 @@
     const togglePass=$("#togglePass");
     const globalKeyCard=$("#globalKeyCard");
 
+    /* Settings persist */
     dense.checked  = localStorage.getItem("gx:dense")==="1";
     reduce.checked = localStorage.getItem("gx:reduce")==="1";
     sortExpired.checked = localStorage.getItem("gx:sortExp")==="1";
@@ -377,6 +460,7 @@
       btnSignOut.classList.toggle("hide", !authed);
     }
 
+    /* Data listeners */
     const listeners = [];
     function startData(){
       stopData();
@@ -388,6 +472,7 @@
       listeners.length=0;
     }
 
+    /* Auth state */
     onAuthStateChanged(auth, (user)=>{
       if(user && user.uid===ADMIN_UID){
         updateNav(true);
@@ -399,11 +484,12 @@
         route("login");
         if(user && user.uid!==ADMIN_UID){ signOut(auth).catch(()=>{}); toast("Bukan admin"); }
       }
-      // Lepas splash setelah halaman dipilih → tidak ada kedip login
+      // Lepas splash setelah halaman dipilih → tanpa kedip login
       document.body.classList.remove("booting");
       document.getElementById("boot")?.remove();
     });
 
+    /* Login UX */
     togglePass.addEventListener("click", ()=>{
       const type = password.getAttribute("type")==="password" ? "text" : "password";
       password.setAttribute("type", type);
@@ -423,7 +509,7 @@
         btnLogin.disabled = true; btnLogin.textContent = "Masuk…";
         await signInWithEmailAndPassword(auth, em, pw);
         toast("Login sukses");
-      }catch(err){
+      }catch{
         toast("Login gagal");
       }finally{
         btnLogin.disabled = false; btnLogin.textContent = "Sign In";
@@ -439,11 +525,13 @@
       }catch{}finally{ btnSignOut.disabled = false; }
     };
 
+    /* Anti tahan/salin di luar input */
     const allowCtx = (el)=> !!el && (el.closest('input,textarea,[contenteditable="true"]'));
     document.addEventListener('copy',  e=>{ if(!document.body.classList.contains('allow-select') && !allowCtx(document.activeElement)) e.preventDefault(); });
     document.addEventListener('cut',   e=>{ if(!document.body.classList.contains('allow-select') && !allowCtx(document.activeElement)) e.preventDefault(); });
     document.addEventListener('contextmenu', e=>{ if(!document.body.classList.contains('allow-select') && !allowCtx(e.target)) e.preventDefault(); }, {passive:false});
 
+    /* Render keys */
     let cache = {};
 
     function render(){
@@ -451,8 +539,8 @@
       let expCount=0;
       const now=Date.now();
       for(const k of ks){ const v=cache[k]?.exp||0; if(v && now>v) expCount++; }
-      kpiKeys.textContent = String(ks.length);
-      kpiExp.textContent  = String(expCount);
+      $("#kpiKeys").textContent = String(ks.length);
+      $("#kpiExp").textContent  = String(expCount);
 
       keyList.innerHTML="";
       const q = (search?.value||"").trim().toUpperCase();
@@ -462,7 +550,7 @@
         if(sortExpired.checked){
           const ea = (cache[a]?.exp||0) && now>(cache[a].exp);
           const eb = (cache[b]?.exp||0) && now>(cache[b].exp);
-          if(ea!==eb) return eb - ea;
+          if(ea!==eb) return eb - ea; // expired duluan
         }
         return a.localeCompare(b);
       });
@@ -503,6 +591,7 @@
       keyList.appendChild(frag);
     }
 
+    /* Key actions */
     document.addEventListener("click",(e)=>{
       const b=e.target.closest("button[data-action]"); if(!b) return;
       const k=b.dataset.key, act=b.dataset.action;
@@ -532,6 +621,7 @@
       })();
     }, {passive:true});
 
+    /* Form controls */
     $("#btnGen").onclick = ()=>{
       const rand = ()=>Math.random().toString(36).slice(2,6).toUpperCase();
       $("#newKey").value = `${rand()}-${rand()}-${rand()}-${rand()}`;
@@ -549,14 +639,7 @@
     $("#btnClearGlobal").onclick = async ()=>{ await set(ref(db,"auth/globalKey"), ""); $("#globalKey").value=""; toast("Dikosongkan"); };
 
     $("#search")?.addEventListener("input", ()=>render(), {passive:true});
-    document.addEventListener("click",(e)=>{
-      const chip=e.target.closest(".chip"); if(!chip) return;
-      const add = parseInt(chip.dataset.add||"0",10);
-      if(add===0){ $("#exp").value=""; toast("Tanpa Exp"); return; }
-      const d = new Date(); d.setDate(d.getDate()+add);
-      const pad=n=>String(n).padStart(2,"0");
-      $("#exp").value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-    }, {passive:true});
+
   </script>
 </body>
 </html>
