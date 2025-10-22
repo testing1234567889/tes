@@ -11,12 +11,19 @@
     html,body{height:100%}
     :root{
       --bg:#0b0f14;--card:#0f1622;--line:#1a2331;--muted:#9fb1c3;
-      --pri:#7c3aed;--ok:#19c37d;--warn:#f59e0b;--r:16px; --shadow:0 6px 24px rgba(0,0,0,.28);
+      --text:#e6edf3;--pri:#7c3aed;--ok:#19c37d;--warn:#f59e0b;
+      --r:16px; --shadow:0 6px 24px rgba(0,0,0,.28);
       --bn-h:60px;
     }
+    /* Light mode vars (aktif saat body.light) */
+    body.light{
+      --bg:#f6f7fb;--card:#ffffff;--line:#e6e9ef;--muted:#526375;
+      --text:#101318;--pri:#6d28d9;--ok:#16a34a;--warn:#d97706;
+    }
+
     body{
       margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-      background:var(--bg);color:#e6edf3;-webkit-tap-highlight-color:transparent;
+      background:var(--bg);color:var(--text);-webkit-tap-highlight-color:transparent;
       touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none
     }
     body.allow-select{user-select:text;-webkit-user-select:text;-webkit-touch-callout:auto}
@@ -24,38 +31,50 @@
     img,svg{display:block;max-width:100%}
     .hide{display:none !important}
     input,textarea{user-select:text;-webkit-user-select:text}
+    .help{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border:1px solid var(--line);border-radius:999px;font-size:.75rem;color:var(--muted);cursor:help;margin-left:6px}
 
     /* Inputs */
-    body,button,input,select,textarea{color:#e6edf3}
-    .btn{color:#e6edf3}
+    body,button,input,select,textarea{color:var(--text)}
+    .btn{color:var(--text)}
     input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
     select,textarea{
-      width:100%;padding:14px;border-radius:12px;background:#0a0a0a;border:1px solid #30363d;outline:none;
+      width:100%;padding:14px;border-radius:12px;background:color-mix(in oklab, var(--card), black 12%);border:1px solid var(--line);outline:none;
       appearance:none;-webkit-appearance:none;-moz-appearance:none;font-size:16px
     }
+    body.light input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+    body.light select, body.light textarea{
+      background:#fff;border-color:#dbe1ea
+    }
     input::placeholder,textarea::placeholder{color:#9aa7b3}
-    input:-webkit-autofill{-webkit-text-fill-color:#fff;box-shadow:0 0 0 1000px #0a0a0a inset;border:1px solid #30363d;caret-color:#fff}
+    body.light input::placeholder, body.light textarea::placeholder{color:#7b8a98}
+    input:-webkit-autofill{-webkit-text-fill-color:var(--text);box-shadow:0 0 0 1000px color-mix(in oklab, var(--card), black 12%) inset;border:1px solid var(--line);caret-color:var(--text)}
 
     /* Topbar */
-    .topbar{position:sticky;top:0;z-index:40;height:56px;display:flex;align-items:center;gap:12px;padding:0 14px;background:#0c111b;border-bottom:1px solid var(--line)}
+    .topbar{position:sticky;top:0;z-index:60;height:56px;display:flex;align-items:center;gap:12px;padding:0 14px;background:color-mix(in oklab, var(--card), black 4%);border-bottom:1px solid var(--line)}
     .title{font-weight:700}
     .grow{flex:1}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:#0f1622;box-shadow:var(--shadow);cursor:pointer}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);cursor:pointer;transition:transform .08s ease}
     .btn.ghost{background:transparent}
     .btn.small{padding:8px 10px;border-radius:10px}
     .btn:active{transform:translateY(1px)}
     .btn[disabled]{opacity:.6;pointer-events:none}
     .icon{width:20px;height:20px}
 
+    /* Sync badge */
+    .sync{display:inline-flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
+    .dot{width:8px;height:8px;border-radius:50%}
+    .dot.on{background:#16a34a}
+    .dot.off{background:#ef4444}
+
     /* Drawer */
-    .drawer{position:fixed;inset:0 auto 0 0;width:min(78%,320px);background:#0e1420;border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .16s ease-out;z-index:50;contain:paint}
+    .drawer{position:fixed;inset:0 auto 0 0;width:min(78%,320px);background:var(--card);border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .16s ease-out;z-index:70;contain:paint}
     .drawer.open{transform:translateX(0)}
     .drawer .brand{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid var(--line)}
     .nav{padding:8px}
     .nav a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:1px solid transparent}
-    .nav a:hover{background:#0f1622}
-    .nav a.active{border-color:#213048;background:#0f1622}
-    .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .16s ease;z-index:45}
+    .nav a:hover{background:color-mix(in oklab, var(--card), black 8%)}
+    .nav a.active{border-color:#213048;background:color-mix(in oklab, var(--card), black 8%)}
+    .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .16s ease;z-index:65}
     .backdrop.show{opacity:1;pointer-events:auto}
 
     /* App */
@@ -70,8 +89,8 @@
 
     /* Key list */
     .list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden}
-    .item{padding:12px;background:#0e1420;border-bottom:1px solid var(--line)}
-    .item:nth-child(2n){background:#0d131e}
+    .item{padding:12px;background:color-mix(in oklab, var(--card), black 2%);border-bottom:1px solid var(--line)}
+    .item:nth-child(2n){background:color-mix(in oklab, var(--card), black 6%)}
     .item:last-child{border-bottom:none}
     .row1{display:flex;align-items:center;gap:10px}
     .row1 .grow{flex:1;min-width:0}
@@ -85,7 +104,7 @@
     .soon{background:#2b220c;border-color:#5a4310;color:#ffe5a3}
     .exp{background:#2a1414;border-color:#5d2a2a;color:#ffc8c8}
 
-    .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#0f1622;cursor:pointer;user-select:none}
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--card);cursor:pointer;user-select:none}
     .chip.active{outline:2px solid #213048}
 
     .switch{display:inline-flex;align-items:center;gap:10px}
@@ -94,6 +113,9 @@
     .switch .thumb{position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#cbd5e1;transition:left .15s,background .15s}
     .switch input:checked + .track{background:#12211a;border-color:#1f4e39}
     .switch input:checked + .track .thumb{left:20px;background:#9de7c4}
+    body.light .switch .track{background:#e7ecf4;border-color:#dbe1ea}
+    body.light .switch input:checked + .track{background:#dcfce7;border-color:#a7f3d0}
+    body.light .switch input:checked + .track .thumb{background:#059669}
 
     /* Guards */
     body.noauth .guarded{display:none !important}
@@ -112,23 +134,27 @@
     [data-page="login"].show{min-height:calc(100dvh - 56px);place-content:center}
 
     /* Toast center */
-    #toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#111827;border:1px solid #263248;padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);display:none;z-index:99;pointer-events:none;text-align:center;max-width:min(92vw,520px)}
+    #toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:color-mix(in oklab, var(--card), black 6%);border:1px solid var(--line);padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);display:none;z-index:99;pointer-events:none;text-align:center;max-width:min(92vw,520px)}
 
     .dense .item{padding:8px}
     .dense .pill{font-size:.74rem;padding:2px 6px}
     .dense .btn.small{padding:6px 8px}
 
     /* Bottom Nav */
-    .bottomnav{position:fixed;left:0;right:0;bottom:0;height:var(--bn-h);background:#0c111b;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(2,1fr);z-index:41;padding-bottom:env(safe-area-inset-bottom)}
+    .bottomnav{position:fixed;left:0;right:0;bottom:0;height:var(--bn-h);background:color-mix(in oklab, var(--card), black 4%);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(2,1fr);z-index:55;padding-bottom:env(safe-area-inset-bottom)}
     .bottomnav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:.85rem;color:var(--muted)}
     .bottomnav a .bi{width:22px;height:22px}
-    .bottomnav a.active{color:#fff}
+    .bottomnav a.active{color:var(--text)}
 
-    /* Modal */
+    /* Modal base */
     .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:90}
     .modal.show{display:flex}
-    .modal-card{width:min(92vw,420px);background:#0f1622;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
+    .modal-card{width:min(92vw,420px);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end}
+
+    /* Mini progress bar */
+    .bar{height:10px;border-radius:999px;background:color-mix(in oklab, var(--card), black 8%);overflow:hidden;border:1px solid var(--line)}
+    .bar > i{display:block;height:100%;background:linear-gradient(90deg,#16a34a,#22c55e)}
   </style>
 </head>
 <body class="noauth booting">
@@ -140,6 +166,9 @@
     </button>
     <div class="title">GxMods Key Panel</div>
     <div class="grow"></div>
+    <div class="sync" id="syncInfo" title="Status sinkronisasi">
+      <span class="dot off" id="dot"></span><span id="syncText">Offline</span>
+    </div>
     <button id="btnSignOut" class="btn ghost">Sign Out</button>
   </header>
 
@@ -156,7 +185,7 @@
 
   <!-- App -->
   <main id="app" class="app">
-    <!-- Dashboard -->
+    <!-- Dashboard / Home -->
     <section class="page guarded" data-page="dashboard">
       <div class="grid">
         <div class="card">
@@ -167,13 +196,19 @@
           <div class="row" style="display:flex;justify-content:space-between;align-items:center">
             <span class="muted">Key expired</span><strong id="kpiExp">0</strong>
           </div>
+          <div class="row" style="display:flex;gap:10px;align-items:center">
+            <div class="muted" style="min-width:120px">Aktif vs Expired</div>
+            <div class="bar" style="flex:1"><i id="barFill" style="width:0%"></i></div>
+            <div class="muted" id="barLabel">0%</div>
+          </div>
+          <div class="row muted" id="weekStats">Statistik mingguan: -</div>
         </div>
       </div>
     </section>
 
     <!-- Keys -->
     <section class="page guarded" data-page="keys">
-      <!-- Global Key (bisa disembunyikan) -->
+      <!-- Global Key (opsional) -->
       <div class="card" id="globalKeyCard">
         <h3>Global Key</h3>
         <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
@@ -183,7 +218,7 @@
         </div>
       </div>
 
-      <!-- Buat Key (selalu tampil, tidak ikut hideGlobal) -->
+      <!-- Buat Key (tetap tampil) -->
       <div class="card" id="createKeyCard">
         <h3 style="text-align:center">Buat Key</h3>
         <div class="row" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
@@ -213,6 +248,7 @@
           <span class="chip filter" data-filter="active">Aktif</span>
           <span class="chip filter" data-filter="soon">Segera Habis</span>
           <span class="chip filter" data-filter="expired">Expired</span>
+          <span class="chip filter" data-filter="permanent">Tanpa Exp</span>
         </div>
         <div id="keyList" class="list" role="list"></div>
       </div>
@@ -224,28 +260,33 @@
         <h3>Pengaturan</h3>
 
         <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <div><strong>Padatkan daftar key</strong><div class="muted">Tinggi item & button jadi ringkas.</div></div>
+          <div><strong>Padatkan daftar key</strong><span class="help" title="Tinggi item & tombol diperkecil.">?</span></div>
           <label class="switch"><input id="dense" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
         </div>
 
         <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <div><strong>Kurangi animasi</strong><div class="muted">Matikan transisi & bayangan.</div></div>
+          <div><strong>Kurangi animasi</strong><span class="help" title="Matikan transisi & bayangan.">?</span></div>
           <label class="switch"><input id="reduce" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
         </div>
 
         <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <div><strong>Urutkan expired dulu</strong><div class="muted">Prioritaskan yang kadaluarsa di atas.</div></div>
+          <div><strong>Urutkan expired dulu</strong><span class="help" title="Item kadaluarsa tampil di atas.">?</span></div>
           <label class="switch"><input id="sortExpired" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
         </div>
 
         <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <div><strong>Sembunyikan Global Key</strong><div class="muted">Sembunyikan kartu Global Key bila tak dipakai.</div></div>
+          <div><strong>Sembunyikan Global Key</strong><span class="help" title="Hanya kartu 'Global Key' yang disembunyikan.">?</span></div>
           <label class="switch"><input id="hideGlobal" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
         </div>
 
         <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <div><strong>Izinkan seleksi teks</strong><div class="muted">Matikan anti-salin bila perlu.</div></div>
+          <div><strong>Izinkan seleksi teks</strong><span class="help" title="Matikan anti-salin jika perlu copy manual.">?</span></div>
           <label class="switch"><input id="allowSelect" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
+        </div>
+
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div><strong>Tema terang (Light Mode)</strong><span class="help" title="Ganti ke tampilan terang.">?</span></div>
+          <label class="switch"><input id="lightMode" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
         </div>
       </div>
     </section>
@@ -254,6 +295,19 @@
     <section class="page guarded" data-page="audit">
       <div class="card">
         <h3>Audit Ringan</h3>
+        <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <input id="auditSearch" type="search" placeholder="Cari di audit (key / aksi / uid)..." style="max-width:280px">
+          <span class="chip af" data-type="all">Semua</span>
+          <span class="chip af" data-type="add">Tambah</span>
+          <span class="chip af" data-type="extend7">+7</span>
+          <span class="chip af" data-type="setExp">Set Tanggal</span>
+          <span class="chip af" data-type="noexp">No Exp</span>
+          <span class="chip af" data-type="delete">Hapus</span>
+          <span class="chip af" data-type="saveGlobal">Save Global</span>
+          <span class="chip af" data-type="clearGlobal">Clear Global</span>
+          <input id="auditFrom" type="date" title="Dari tanggal">
+          <input id="auditTo" type="date" title="Sampai tanggal">
+        </div>
         <div id="auditList" class="list" role="list"></div>
       </div>
     </section>
@@ -262,7 +316,7 @@
     <section class="page" data-page="about">
       <div class="card">
         <h3>Tentang Panel</h3>
-        <p class="muted">Kelola Global Key & daftar key dengan UI ringan. Pengaturan disinkronkan lintas perangkat. Tersedia filter status, highlight yang segera kedaluwarsa, dan audit ringan.</p>
+        <p class="muted">Kelola Global Key & daftar key dengan UI ringan. Pengaturan disinkronkan lintas perangkat. Tersedia filter status, highlight yang segera kedaluwarsa, statistik ringkas, dan audit ringan. Semua dialog modern; login tetap persisten saat refresh.</p>
       </div>
     </section>
 
@@ -305,7 +359,7 @@
   <div id="toast"></div>
 
   <!-- Modal Set Tanggal -->
-  <div id="modal" class="modal" aria-hidden="true">
+  <div id="modalDateWrap" class="modal" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <h3 id="modalTitle">Set Tanggal Kadaluarsa</h3>
       <div class="muted">Format: <b>Tanggal Bulan Tahun</b></div>
@@ -313,6 +367,18 @@
       <div class="modal-actions">
         <button id="modalCancel" class="btn ghost">Batal</button>
         <button id="modalSave" class="btn">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Konfirmasi -->
+  <div id="modalConfirmWrap" class="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <h3 id="confirmTitle">Konfirmasi</h3>
+      <div id="confirmMsg" class="muted">Yakin?</div>
+      <div class="modal-actions">
+        <button id="confirmCancel" class="btn ghost">Batal</button>
+        <button id="confirmOk" class="btn">Lanjut</button>
       </div>
     </div>
   </div>
@@ -350,6 +416,7 @@
     const fmtDate = (ms)=> ms ? new Date(ms).toLocaleDateString("id-ID", { day:"2-digit", month:"long", year:"numeric" }) : "Permanen";
     const toEOD = (Y,M,D)=> new Date(Y,M-1,D,23,59,59,999).getTime();
     const fromInputDate = (v)=>{const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return {Y,M,D};};
+    const nowMs = ()=>Date.now();
 
     const protectedRoutes = new Set(["dashboard","keys","settings","audit"]);
 
@@ -402,10 +469,12 @@
     const newKey=$("#newKey"), btnGen=$("#btnGen"), exp=$("#exp"), btnAdd=$("#btnAdd"), createKeyCard=$("#createKeyCard");
     const keyList=$("#keyList"), search=$("#search");
     const kpiKeys=$("#kpiKeys"), kpiExp=$("#kpiExp");
-    const dense=$("#dense"), reduce=$("#reduce"), sortExpired=$("#sortExpired"), hideGlobal=$("#hideGlobal"), allowSelect=$("#allowSelect");
+    const barFill=$("#barFill"), barLabel=$("#barLabel"), weekStats=$("#weekStats");
+    const dense=$("#dense"), reduce=$("#reduce"), sortExpired=$("#sortExpired"), hideGlobal=$("#hideGlobal"), allowSelect=$("#allowSelect"), lightMode=$("#lightMode");
     const email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin");
     const btnSignOut=$("#btnSignOut");
     const globalKeyCard=$("#globalKeyCard");
+    const syncInfo=$("#syncInfo"), dot=$("#dot"), syncText=$("#syncText");
 
     /* ===== Settings Sync (Local + Remote) ===== */
     const SETTINGS_PATH = (uid)=>`auth/settings/${uid}`;
@@ -416,6 +485,7 @@
         sortExpired: localStorage.getItem("gx:sortExp")==="1",
         hideGlobal: localStorage.getItem("gx:hideGlobal")==="1",
         allowSelect: localStorage.getItem("gx:allowSelect")==="1",
+        light: localStorage.getItem("gx:light")==="1",
         statusFilter: localStorage.getItem("gx:statusFilter")||"all",
         updatedAt: parseInt(localStorage.getItem("gx:settingsUpdatedAt")||"0",10)||0
       };
@@ -426,15 +496,17 @@
       localStorage.setItem("gx:sortExp", obj.sortExpired?"1":"0");
       localStorage.setItem("gx:hideGlobal", obj.hideGlobal?"1":"0");
       localStorage.setItem("gx:allowSelect", obj.allowSelect?"1":"0");
+      localStorage.setItem("gx:light", obj.light?"1":"0");
       localStorage.setItem("gx:statusFilter", obj.statusFilter||"all");
       localStorage.setItem("gx:settingsUpdatedAt", String(obj.updatedAt||Date.now()));
     }
     function applySettingsToDOM(obj){
       dense.checked = !!obj.dense; reduce.checked=!!obj.reduce; sortExpired.checked=!!obj.sortExpired;
-      hideGlobal.checked=!!obj.hideGlobal; allowSelect.checked=!!obj.allowSelect;
+      hideGlobal.checked=!!obj.hideGlobal; allowSelect.checked=!!obj.allowSelect; lightMode.checked=!!obj.light;
       document.body.classList.toggle('dense', dense.checked);
       document.body.classList.toggle('reduce', reduce.checked);
       document.body.classList.toggle('allow-select', allowSelect.checked);
+      document.body.classList.toggle('light', lightMode.checked);
       globalKeyCard.classList.toggle('hide', hideGlobal.checked);
       document.documentElement.style.scrollBehavior = reduce.checked?"auto":"smooth";
       setFilterChip(obj.statusFilter||"all");
@@ -445,7 +517,7 @@
     function currentSettings(){
       return {
         dense: dense.checked, reduce: reduce.checked, sortExpired: sortExpired.checked,
-        hideGlobal: hideGlobal.checked, allowSelect: allowSelect.checked,
+        hideGlobal: hideGlobal.checked, allowSelect: allowSelect.checked, light: lightMode.checked,
         statusFilter: getFilter(), updatedAt: Date.now()
       };
     }
@@ -468,32 +540,63 @@
     }
     let syncTimer=null;
     function scheduleSync(uid){ clearTimeout(syncTimer); syncTimer=setTimeout(()=>pushSettings(uid), 250); }
-    [dense,reduce,sortExpired,hideGlobal,allowSelect].forEach(el=>{
+    ;[dense,reduce,sortExpired,hideGlobal,allowSelect,lightMode].forEach(el=>{
       el.addEventListener("change", ()=>{
-        applySettingsToDOM(currentSettings()); writeLocalSettings(currentSettings());
+        const data=currentSettings(); applySettingsToDOM(data); writeLocalSettings(data);
         if(isAuthed()) scheduleSync(auth.currentUser.uid);
         if(el===sortExpired) render();
       });
     });
 
-    /* Data listeners */
+    /* Data listeners + offline cache */
     let cache = {}; // { key: {exp:number} }
-    let audits = []; // [{...}]
+    let audits = [];
+    let lastSyncAt = 0;
+    let selfWriteAt = 0; // suppress remote toast
     const listeners=[];
     function startData(){
       stopData();
       listeners.push(onValue(ref(db,"auth/globalKey"), s=>{ globalKey.value = s.exists()? (s.val()||"") : ""; }));
-      listeners.push(onValue(ref(db,"auth/keys"), s=>{ cache = s.val()||{}; render(); }));
+      listeners.push(onValue(ref(db,"auth/keys"), s=>{
+        const v = s.val()||{};
+        const serialized = JSON.stringify(v);
+        if(JSON.stringify(cache)!==serialized){
+          cache = v;
+          localStorage.setItem("gx:cacheKeys", serialized);
+          render();
+          lastSyncAt = Date.now(); updateSyncBadge(true);
+          if(Date.now()-selfWriteAt>1200){ toast("Data diperbarui"); }
+        }
+      }));
       listeners.push(onValue(ref(db,"auth/auditLog"), s=>{
         const v = s.val()||{};
-        audits = Object.values(v).sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,300);
-        renderAudit();
+        audits = Object.values(v).sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,500);
+        localStorage.setItem("gx:auditCache", JSON.stringify(audits));
+        renderAudit(); updateWeekStats();
       }));
     }
     function stopData(){
       try{ off(ref(db,"auth/globalKey")); off(ref(db,"auth/keys")); off(ref(db,"auth/auditLog")); }catch{}
       listeners.length=0;
     }
+
+    // Load offline cache first (jaga-jaga)
+    try{
+      const c = localStorage.getItem("gx:cacheKeys"); if(c){ cache = JSON.parse(c); render(); }
+      const a = localStorage.getItem("gx:auditCache"); if(a){ audits = JSON.parse(a); renderAudit(); updateWeekStats(); }
+    }catch{}
+
+    // Online/offline indicator
+    function updateSyncBadge(online){
+      const d = $("#dot"); const t=$("#syncText");
+      if(online===undefined){ online = navigator.onLine; }
+      d.classList.toggle("on", online); d.classList.toggle("off", !online);
+      const label = online ? ("Online · "+(lastSyncAt? new Date(lastSyncAt).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}) : "--:--")) : "Offline";
+      t.textContent = label;
+    }
+    window.addEventListener("online", ()=>{ updateSyncBadge(true); toast("Kembali online"); });
+    window.addEventListener("offline", ()=>{ updateSyncBadge(false); toast("Offline – menampilkan cache"); });
+    updateSyncBadge();
 
     /* Auth state */
     onAuthStateChanged(auth, (user)=>{
@@ -547,43 +650,63 @@
     });
 
     /* ===== Modal Set Tanggal ===== */
-    const modal=$("#modal"), modalDate=$("#modalDate"), modalSave=$("#modalSave"), modalCancel=$("#modalCancel");
+    const modalDateWrap=$("#modalDateWrap"), modalDate=$("#modalDate"), modalSave=$("#modalSave"), modalCancel=$("#modalCancel");
     let modalKey=null;
     function openModalSetDate(key, currMs){
       modalKey=key;
       const d = currMs? new Date(currMs) : new Date();
       const pad=n=>String(n).padStart(2,"0");
       modalDate.value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-      modal.classList.add("show"); modal.setAttribute("aria-hidden","false");
+      modalDateWrap.classList.add("show"); modalDateWrap.setAttribute("aria-hidden","false");
       modalDate.focus();
     }
-    function closeModal(){ modalKey=null; modal.classList.remove("show"); modal.setAttribute("aria-hidden","true"); }
-    modalCancel.onclick=closeModal;
-    modal.addEventListener("click",(e)=>{ if(e.target===modal) closeModal(); });
-    document.addEventListener("keydown",(e)=>{ if(e.key==="Escape" && modal.classList.contains("show")) closeModal(); });
+    function closeModalDate(){ modalKey=null; modalDateWrap.classList.remove("show"); modalDateWrap.setAttribute("aria-hidden","true"); }
+    modalCancel.onclick=closeModalDate;
+    modalDateWrap.addEventListener("click",(e)=>{ if(e.target===modalDateWrap) closeModalDate(); });
+    document.addEventListener("keydown",(e)=>{ if(e.key==="Escape" && modalDateWrap.classList.contains("show")) closeModalDate(); });
     modalSave.onclick = async ()=>{
-      if(!modalKey) return closeModal();
-      const v=(modalDate.value||"").trim(); if(!v) return closeModal();
+      if(!modalKey) return closeModalDate();
+      const v=(modalDate.value||"").trim(); if(!v) return closeModalDate();
       const {Y,M,D}=fromInputDate(v); const ms=toEOD(Y,M,D);
+      selfWriteAt=Date.now();
       await update(ref(db,"auth/keys/"+modalKey), {exp: ms}).then(()=>audit("setExp",{key:modalKey,exp:ms}));
-      toast("Tanggal di-set"); closeModal();
+      toast("Tanggal di-set"); closeModalDate();
     };
 
-    /* ===== Audit helper ===== */
-    function audit(type, extra={}){
-      const entry = {
-        type, ts: Date.now(), by: (auth.currentUser&&auth.currentUser.uid)||"unknown", ...extra
-      };
-      push(ref(db,"auth/auditLog"), entry).catch(()=>{});
+    /* ===== Modal Konfirmasi ===== */
+    const modalConfirmWrap=$("#modalConfirmWrap"), confirmMsg=$("#confirmMsg"), confirmOk=$("#confirmOk"), confirmCancel=$("#confirmCancel");
+    let confirmResolver=null;
+    function confirmDialog(msg="Yakin?"){
+      confirmMsg.textContent = msg;
+      modalConfirmWrap.classList.add("show"); modalConfirmWrap.setAttribute("aria-hidden","false");
+      return new Promise((res)=>{
+        confirmResolver = (v)=>{ modalConfirmWrap.classList.remove("show"); modalConfirmWrap.setAttribute("aria-hidden","true"); res(v); };
+      });
     }
+    confirmCancel.onclick=()=>confirmResolver&&confirmResolver(false);
+    confirmOk.onclick=()=>confirmResolver&&confirmResolver(true);
+    modalConfirmWrap.addEventListener("click",(e)=>{ if(e.target===modalConfirmWrap) confirmResolver&&confirmResolver(false); });
 
-    /* Render keys */
+    /* Render keys + stats */
     function render(){
       const ks = Object.keys(cache||{});
-      let expCount=0; const now=Date.now();
-      for(const k of ks){ const v=cache[k]?.exp||0; if(v && now>v) expCount++; }
+      let expCount=0; let soonCount=0; let activeCount=0; let permCount=0;
+      const now=Date.now();
+      for(const k of ks){
+        const v=cache[k]?.exp||0;
+        if(v===0){ permCount++; activeCount++; continue; }
+        if(now>v) { expCount++; continue; }
+        if((v-now)<=3*864e5) { soonCount++; }
+        activeCount++;
+      }
       kpiKeys.textContent = String(ks.length);
       kpiExp.textContent  = String(expCount);
+
+      // progress bar aktif vs expired
+      const total = Math.max(ks.length,1);
+      const pct = Math.round((activeCount-expCount)/total*100);
+      barFill.style.width = pct+"%";
+      barLabel.textContent = pct+"% aktif";
 
       keyList.innerHTML="";
       const q = (search?.value||"").trim().toUpperCase();
@@ -603,12 +726,13 @@
         const expMs = cache[k]?.exp||0;
         const expired = expMs && now>expMs;
         const soon = !expired && expMs && (expMs - now) <= (3*864e5);
+        const permanent = expMs===0;
 
         // Filter status
-        if(filt==="active" && (expired || !expMs && false)){} // no-op
-        if(filt==="active" && expired) continue;
+        if(filt==="active" && (expired)) continue;
         if(filt==="soon" && !soon) continue;
         if(filt==="expired" && !expired) continue;
+        if(filt==="permanent" && !permanent) continue;
 
         if(q && !k.toUpperCase().includes(q)) continue;
 
@@ -644,6 +768,19 @@
       keyList.appendChild(frag);
     }
 
+    /* Weekly stats from audit (7 hari terakhir) */
+    function updateWeekStats(){
+      const since = Date.now() - 7*864e5;
+      let add=0, ext=0, exp=0;
+      for(const a of audits){
+        if(!a.ts || a.ts<since) break;
+        if(a.type==="add") add++;
+        else if(a.type==="extend7") ext++;
+        else if(a.type==="delete") exp++;
+      }
+      weekStats.textContent = `Statistik mingguan: +${add} tambah, +${ext} perpanjang, ${exp} hapus`;
+    }
+
     /* Key actions */
     document.addEventListener("click",(e)=>{
       const b=e.target.closest("button[data-action]"); if(!b) return;
@@ -656,21 +793,24 @@
             const cur=cache[k]?.exp||0;
             const base=Math.max(cur||0, Date.now());
             const ms = base + 7*864e5;
+            selfWriteAt=Date.now();
             await update(ref(db,"auth/keys/"+k), {exp: ms});
             audit("extend7",{key:k,exp:ms});
             toast("+7 hari");
           } else if(act==="noexp"){
+            selfWriteAt=Date.now();
             await update(ref(db,"auth/keys/"+k), {exp:0});
             audit("noexp",{key:k});
             toast("No Exp");
           } else if(act==="setdate"){
             openModalSetDate(k, cache[k]?.exp||0);
           } else if(act==="del"){
-            if(confirm(`Hapus key:\n${k}?`)){
-              await remove(ref(db,"auth/keys/"+k));
-              audit("delete",{key:k});
-              toast("Dihapus");
-            }
+            const ok = await confirmDialog(`Hapus key: ${k}?`);
+            if(!ok) return;
+            selfWriteAt=Date.now();
+            await remove(ref(db,"auth/keys/"+k));
+            audit("delete",{key:k});
+            toast("Dihapus");
           }
         }catch{ toast("Gagal"); }
       })();
@@ -686,12 +826,13 @@
       const k=(newKey.value||"").trim(); if(!k) return toast("Isi key");
       const val=(exp.value||"").trim();
       let ms=0; if(val){ const {Y,M,D}=fromInputDate(val); ms=toEOD(Y,M,D); }
+      selfWriteAt=Date.now();
       await update(ref(db,"auth/keys/"+k), {exp: ms});
       audit("add",{key:k,exp:ms});
       newKey.value=""; exp.value=""; toast("Ditambahkan");
     };
-    btnSaveGlobal.onclick = async ()=>{ await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); audit("saveGlobal",{}); toast("Global key disimpan"); };
-    btnClearGlobal.onclick = async ()=>{ await set(ref(db,"auth/globalKey"), ""); globalKey.value=""; audit("clearGlobal",{}); toast("Dikosongkan"); };
+    btnSaveGlobal.onclick = async ()=>{ selfWriteAt=Date.now(); await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); audit("saveGlobal",{}); toast("Global key disimpan"); };
+    btnClearGlobal.onclick = async ()=>{ selfWriteAt=Date.now(); await set(ref(db,"auth/globalKey"), ""); globalKey.value=""; audit("clearGlobal",{}); toast("Dikosongkan"); };
 
     // Chips cepat tanggal
     document.addEventListener("click",(e)=>{
@@ -703,31 +844,53 @@
       exp.value=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
     });
 
-    // Pencarian live (sinkron saat mengetik)
+    // Pencarian live
     const doLiveSearch = ()=> render();
     search?.addEventListener("input", doLiveSearch, {passive:true});
     search?.addEventListener("keyup", doLiveSearch, {passive:true});
 
-    /* Audit render */
+    /* Audit render + filter */
+    const auditSearch=$("#auditSearch"), auditFrom=$("#auditFrom"), auditTo=$("#auditTo");
+    document.addEventListener("click",(e)=>{
+      const af=e.target.closest(".chip.af"); if(!af) return;
+      $$(".chip.af").forEach(x=>x.classList.toggle("active", x===af));
+      renderAudit();
+    });
+    [auditSearch,auditFrom,auditTo].forEach(el=>el.addEventListener("input", ()=>renderAudit(), {passive:true}));
+
     function renderAudit(){
       const el=$("#auditList"); el.innerHTML="";
-      if(!audits.length){ const x=document.createElement("div"); x.className="item"; x.innerHTML='<span class="muted">Belum ada aktivitas.</span>'; el.appendChild(x); return; }
+      const type = ($(".chip.af.active")?.dataset.type)||"all";
+      const q = (auditSearch.value||"").toLowerCase();
+      const from = auditFrom.value? new Date(auditFrom.value+"T00:00:00").getTime():0;
+      const to   = auditTo.value?   new Date(auditTo.value+"T23:59:59").getTime():Infinity;
+
       const frag=document.createDocumentFragment();
+      let shown=0;
       for(const a of audits){
+        if(type!=="all" && a.type!==type) continue;
+        if(a.ts && (a.ts<from || a.ts>to)) continue;
+        const textBase =
+          a.type==="add"       ? `Tambah key ${a.key} (Expire: ${fmtDate(a.exp||0)})` :
+          a.type==="extend7"   ? `Perpanjang +7 hari: ${a.key} (Expire: ${fmtDate(a.exp||0)})` :
+          a.type==="noexp"     ? `Set No Exp: ${a.key}` :
+          a.type==="setExp"    ? `Set tanggal: ${a.key} (Expire: ${fmtDate(a.exp||0)})` :
+          a.type==="delete"    ? `Hapus key ${a.key}` :
+          a.type==="saveGlobal"? `Simpan Global Key` :
+          a.type==="clearGlobal"?`Kosongkan Global Key` : a.type;
+
+        const line = `${textBase} | by:${a.by||"-"}`;
+        if(q && !line.toLowerCase().includes(q)) continue;
+
         const d = a.ts ? new Date(a.ts) : null;
         const dd = d ? d.toLocaleDateString("id-ID",{day:"2-digit",month:"long",year:"numeric"}) : "-";
-        let text="";
-        if(a.type==="add")       text=`Tambah key ${a.key} (Expire: ${fmtDate(a.exp||0)})`;
-        else if(a.type==="extend7") text=`Perpanjang +7 hari: ${a.key} (Expire: ${fmtDate(a.exp||0)})`;
-        else if(a.type==="noexp") text=`Set No Exp: ${a.key}`;
-        else if(a.type==="setExp") text=`Set tanggal: ${a.key} (Expire: ${fmtDate(a.exp||0)})`;
-        else if(a.type==="delete") text=`Hapus key ${a.key}`;
-        else if(a.type==="saveGlobal") text=`Simpan Global Key`;
-        else if(a.type==="clearGlobal") text=`Kosongkan Global Key`;
-        else text=a.type;
         const item=document.createElement("div"); item.className="item";
-        item.innerHTML = `<div class="row1"><strong class="grow">${text}</strong><span class="pill">${dd}</span></div>`;
+        item.innerHTML = `<div class="row1"><strong class="grow">${textBase}</strong><span class="pill">${dd}</span></div><div class="row2 muted">UID: ${a.by||"-"}</div>`;
         frag.appendChild(item);
+        shown++;
+      }
+      if(shown===0){
+        const x=document.createElement("div"); x.className="item"; x.innerHTML='<span class="muted">Tidak ada data.</span>'; frag.appendChild(x);
       }
       el.appendChild(frag);
     }
