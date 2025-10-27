@@ -2,55 +2,39 @@
 <html lang="id">
 <head>
   <meta charset="utf-8" />
-  <!-- Tambah interactive-widget biar keyboard HP gak dorong layout -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=overlays-content" />
   <meta name="theme-color" content="#0b0f14" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>GxMods Key Panel</title>
+
   <style>
-    *,*::before,*::after{box-sizing:border-box}
-    html,body{height:100%}
+    /* ======= Design tokens ======= */
     :root{
-      --bg:#0b0f14;--card:#0f1622;--line:#1a2331;--muted:#9fb1c3;
-      --text:#e6edf3;--pri:#7c3aed;--ok:#19c37d;--warn:#f59e0b;
-      --r:16px; --shadow:0 6px 24px rgba(0,0,0,.28);
-      --bn-h:60px;
+      --bg:#0b0f14;--card:#0f1622;--line:#1a2331;--muted:#9fb1c3;--text:#e6edf3;
+      --pri:#7c3aed;--ok:#19c37d;--warn:#f59e0b;--danger:#ef4444;
+      --r:16px;--bn-h:60px;--shadow:0 6px 24px rgba(0,0,0,.28);
     }
-
-    body{
-      margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-      background:var(--bg);color:var(--text);-webkit-tap-highlight-color:transparent;
-      touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none
-    }
-    body.allow-select{user-select:text;-webkit-user-select:text;-webkit-touch-callout:auto}
-    a{color:inherit;text-decoration:none}
-    img,svg{display:block;max-width:100%}
-    .hide{display:none !important}
-    input,textarea{user-select:text;-webkit-user-select:text}
-
-    /* Inputs */
-    body,button,input,select,textarea{color:var(--text)}
-    .btn{color:var(--text)}
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-tap-highlight-color:transparent}
+    a{color:inherit;text-decoration:none} img,svg{display:block;max-width:100%}
+    .muted{color:var(--muted)} .hide{display:none !important}
+    input,textarea,select{color:var(--text);user-select:text;-webkit-user-select:text}
     input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
-    select,textarea{
-      width:100%;padding:14px;border-radius:12px;background:color-mix(in oklab, var(--card), black 12%);border:1px solid var(--line);outline:none;
-      appearance:none;-webkit-appearance:none;-moz-appearance:none;font-size:16px
-    }
+    select,textarea{width:100%;padding:14px;border-radius:12px;background:color-mix(in oklab, var(--card), black 12%);border:1px solid var(--line);outline:none;font-size:16px}
     input::placeholder,textarea::placeholder{color:#9aa7b3}
 
-    /* Topbar */
+    /* ======= Topbar ======= */
     .topbar{position:sticky;top:0;z-index:60;height:56px;display:flex;align-items:center;gap:12px;padding:0 14px;background:color-mix(in oklab, var(--card), black 4%);border-bottom:1px solid var(--line)}
-    .title{font-weight:700}
-    .grow{flex:1}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);cursor:pointer;transition:transform .08s ease}
-    .btn.ghost{background:transparent}
+    .title{font-weight:700} .grow{flex:1}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);cursor:pointer;transition:transform .08s ease;color:var(--text)}
     .btn.small{padding:8px 10px;border-radius:10px}
+    .btn.ghost{background:transparent}
     .btn:active{transform:translateY(1px)}
     .btn[disabled]{opacity:.6;pointer-events:none}
     .icon{width:20px;height:20px}
 
-    /* Drawer */
-    .drawer{position:fixed;inset:0 auto 0 0;width:min(78%,320px);background:var(--card);border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .16s ease-out;z-index:70;contain:paint}
+    /* ======= Drawer ======= */
+    .drawer{position:fixed;inset:0 auto 0 0;width:min(78%,320px);background:var(--card);border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .16s ease-out;z-index:70}
     .drawer.open{transform:translateX(0)}
     .drawer .brand{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid var(--line)}
     .nav{padding:8px}
@@ -60,17 +44,13 @@
     .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .16s ease;z-index:65}
     .backdrop.show{opacity:1;pointer-events:auto}
 
-    /* App */
+    /* ======= App ======= */
     .app{min-height:calc(100dvh - 56px);padding:14px 14px calc(14px + var(--bn-h) + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
     body.noauth .app{padding-bottom:14px}
-    .page{display:none}
-    .page.show{display:grid;gap:16px}
+    .page{display:none} .page.show{display:grid;gap:16px}
     .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:12px}
-    .muted{color:var(--muted);font-size:.95rem}
-    .grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
-    @media (max-width:560px){.grid{grid-template-columns:1fr}}
 
-    /* Key list */
+    /* ======= List ======= */
     .list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden}
     .item{padding:12px;background:color-mix(in oklab, var(--card), black 2%);border-bottom:1px solid var(--line)}
     .item:nth-child(2n){background:color-mix(in oklab, var(--card), black 6%)}
@@ -80,16 +60,14 @@
     .row1 strong{word-break:break-all}
     .row2{margin-top:4px}
     .row3{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
-    @media (max-width:720px){ .row3{justify-content:center} }
-
     .pill{padding:3px 8px;border-radius:999px;border:1px solid var(--line);font-size:.8rem;white-space:nowrap}
     .ok{background:#10221a;border-color:#1f4e39;color:#9de7c4}
     .soon{background:#2b220c;border-color:#5a4310;color:#ffe5a3}
     .exp{background:#2a1414;border-color:#5d2a2a;color:#ffc8c8}
 
+    /* ======= Chips / switches ======= */
     .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--card);cursor:pointer;user-select:none}
     .chip.active{outline:2px solid #213048}
-
     .switch{display:inline-flex;align-items:center;gap:10px}
     .switch input{position:absolute;opacity:0;width:0;height:0}
     .switch .track{width:44px;height:26px;background:#1f2937;border:1px solid var(--line);border-radius:999px;position:relative;transition:background .15s,border-color .15s}
@@ -97,29 +75,19 @@
     .switch input:checked + .track{background:#12211a;border-color:#1f4e39}
     .switch input:checked + .track .thumb{left:20px;background:#9de7c4}
 
-    /* Guards */
+    /* ======= Guards ======= */
     body.noauth .guarded{display:none !important}
     body.authed .login-only{display:none !important}
     body.noauth #menuBtn,body.noauth #btnSignOut{display:none !important}
     body.noauth .topbar,body.noauth #drawer,body.noauth #backdrop,body.noauth #bottomnav{display:none !important}
 
-    /* Boot splash */
+    /* ======= Boot & Toast ======= */
     body.booting .page{display:none !important}
     #boot{position:fixed;inset:0;display:grid;place-items:center;background:var(--bg);z-index:100;font-size:14px;color:var(--muted)}
-
-    /* “Kurangi efek” mode */
-    .reduce .btn,.reduce .card{box-shadow:none}
-    .reduce .backdrop{background:rgba(0,0,0,.3)}
-    .lite .btn,.lite .card{box-shadow:none}
-
-    /* Login center */
-    [data-page="login"].show{min-height:calc(100dvh - 56px);place-content:center}
-
-    /* Toast center (+ tombol Undo) */
     #toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:color-mix(in oklab, var(--card), black 6%);border:1px solid var(--line);padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);display:none;z-index:99;text-align:center;max-width:min(92vw,520px)}
     #toast .link{border:1px solid var(--line);border-radius:10px;padding:6px 10px;display:inline-block;margin-left:8px}
 
-    /* Bottom Nav + badge expired */
+    /* ======= Bottom Nav & Badges ======= */
     .bottomnav{position:fixed;left:0;right:0;bottom:0;height:var(--bn-h);background:color-mix(in oklab, var(--card), black 4%);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(2,1fr);z-index:55;padding-bottom:env(safe-area-inset-bottom)}
     .bottomnav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:.85rem;color:var(--muted);position:relative}
     .bottomnav a .bi{width:22px;height:22px}
@@ -127,15 +95,19 @@
     .badge{position:absolute;top:6px;right:18px;min-width:18px;height:18px;border-radius:999px;background:var(--pri);color:white;font-size:11px;display:grid;place-items:center;padding:0 6px;line-height:1;border:1px solid var(--line)}
     .badge.hide{display:none}
 
-    /* Modal base */
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:90}
-    .modal.show{display:flex}
-    .modal-card{width:min(92vw,420px);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
-    .modal-actions{display:flex;gap:10px;justify-content:flex-end}
+    /* ======= Bottom Sheet (Date picker) ======= */
+    .sheet{position:fixed;left:0;right:0;bottom:0;transform:translateY(100%);transition:transform .18s ease-out;background:var(--card);border-top:1px solid var(--line);border-radius:16px 16px 0 0;padding:16px;z-index:90}
+    .sheet.show{transform:translateY(0)}
+    .sheet .handle{width:46px;height:5px;border-radius:999px;background:#253043;margin:6px auto 12px}
 
-    /* Mini progress bar (cadangan) */
-    .bar{height:10px;border-radius:999px;background:color-mix(in oklab, var(--card), black 8%);overflow:hidden;border:1px solid var(--line)}
-    .bar > i{display:block;height:100%;background:linear-gradient(90deg,#16a34a,#22c55e)}
+    /* ======= Skeleton Loader ======= */
+    .skeleton{position:relative;overflow:hidden;background:color-mix(in oklab, var(--card), black 8%)}
+    .skeleton::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.05),transparent);animation:shimmer 1.2s infinite}
+    @keyframes shimmer{100%{transform:translateX(100%)}}
+
+    /* ======= Pull-to-refresh indicator ======= */
+    .ptr{position:sticky;top:-52px;height:48px;display:grid;place-items:center;color:var(--muted);opacity:0;transform:translateY(-10px);transition:opacity .12s, transform .12s}
+    .ptr.show{opacity:1;transform:translateY(0)}
   </style>
 </head>
 <body class="noauth booting">
@@ -156,6 +128,7 @@
     <nav class="nav" id="nav">
       <a href="#settings" data-route="settings" data-auth="in">Pengaturan</a>
       <a href="#about" data-route="about">Tentang</a>
+      <a href="#install" id="installBtn" class="hide">Install App</a>
     </nav>
   </aside>
   <div id="backdrop" class="backdrop"></div>
@@ -166,12 +139,14 @@
     <section class="page guarded" data-page="dashboard">
       <div class="card">
         <h3>Home</h3>
-        <p class="muted">Kelola key di tab <b>Daftar Key</b>. UI diringkas supaya enteng di HP.</p>
+        <p class="muted">Kelola key di tab <b>Daftar Key</b>. UI dipadatkan biar jempol santai.</p>
       </div>
     </section>
 
     <!-- Keys -->
-    <section class="page guarded" data-page="keys">
+    <section class="page guarded" data-page="keys" id="keysPage">
+      <div class="ptr" id="ptr">↓ Tarik untuk refresh</div>
+
       <!-- Global Key -->
       <div class="card" id="globalKeyCard">
         <h3>Global Key</h3>
@@ -186,27 +161,22 @@
       <!-- Buat Key -->
       <div class="card" id="createKeyCard" style="position:relative">
         <h3 style="text-align:center">Buat Key</h3>
-        <!-- Generate tombol kanan sesuai preferensi -->
         <button id="btnGen" class="btn small ghost" style="position:absolute;right:14px;top:12px">Generate</button>
 
-        <!-- Baris input key -->
         <div class="row" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center">
           <input id="newKey" type="text" placeholder="Key baru (contoh: VIP-XXXX-1234)" style="flex:1;min-width:220px;max-width:560px" autocomplete="off" />
         </div>
 
-        <!-- Baris tanggal -->
         <div class="row" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center">
           <label class="muted" for="exp">Tanggal kadaluarsa (opsional)</label>
-          <input id="exp" type="date" inputmode="none" placeholder="dd-mm-yyyy" style="max-width:220px"/>
+          <input id="exp" type="date" inputmode="none" style="max-width:220px"/>
         </div>
 
-        <!-- Baris chip tanggal cepat -->
         <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center">
           <span class="chip" data-add="7">+7 hari</span>
           <span class="chip" data-add="0">Tanpa Exp</span>
         </div>
 
-        <!-- Baris tombol Tambah -->
         <div class="row" style="display:flex;justify-content:center">
           <button id="btnAdd" class="btn small">Tambah</button>
         </div>
@@ -225,7 +195,12 @@
           <span class="chip filter" data-filter="expired">Expired</span>
           <span class="chip filter" data-filter="permanent">Tanpa Exp</span>
         </div>
-        <div id="keyList" class="list" role="list"></div>
+        <div id="keyList" class="list" role="list">
+          <!-- Skeleton awal -->
+          <div class="item skeleton" style="height:64px"></div>
+          <div class="item skeleton" style="height:64px"></div>
+          <div class="item skeleton" style="height:64px"></div>
+        </div>
       </div>
     </section>
 
@@ -235,7 +210,7 @@
         <h3>Pengaturan</h3>
 
         <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <div><strong>Kurangi efek</strong><span class="muted" style="margin-left:8px">Animasi tetap halus, efek berat diminimalkan.</span></div>
+          <div><strong>Kurangi efek</strong><span class="muted" style="margin-left:8px">Animasi halus, efek berat dikurangi.</span></div>
           <label class="switch"><input id="reduce" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
         </div>
 
@@ -260,7 +235,7 @@
     <section class="page" data-page="about">
       <div class="card">
         <h3>Tentang Panel</h3>
-        <p class="muted">Data sinkron lintas perangkat via Firebase Realtime Database. Admin whitelist multi-role didukung.</p>
+        <p class="muted">Frontend statis, sinkron realtime via Firebase Realtime Database. PWA opsional, offline shell jika Service Worker didukung.</p>
       </div>
     </section>
 
@@ -284,7 +259,7 @@
     </section>
   </main>
 
-  <!-- Bottom Navigation -->
+  <!-- Bottom Nav -->
   <nav id="bottomnav" class="bottomnav" role="navigation" aria-label="Navigasi utama">
     <a href="#dashboard" data-route="dashboard" id="bn-home" aria-current="page">
       <svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10h14V10"/></svg>
@@ -303,33 +278,20 @@
   <!-- Toast -->
   <div id="toast"></div>
 
-  <!-- Modal Set Tanggal -->
-  <div id="modalDateWrap" class="modal" aria-hidden="true">
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <h3 id="modalTitle">Set Tanggal Kadaluarsa</h3>
-      <div class="muted">Format: <b>Tanggal Bulan Tahun</b></div>
-      <input id="modalDate" type="date">
-      <div class="modal-actions">
-        <button id="modalCancel" class="btn ghost">Batal</button>
-        <button id="modalSave" class="btn">Simpan</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Konfirmasi -->
-  <div id="modalConfirmWrap" class="modal" aria-hidden="true">
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
-      <h3 id="confirmTitle">Konfirmasi</h3>
-      <div id="confirmMsg" class="muted">Yakin?</div>
-      <div class="modal-actions">
-        <button id="confirmCancel" class="btn ghost">Batal</button>
-        <button id="confirmOk" class="btn">Lanjut</button>
-      </div>
+  <!-- Bottom Sheet: Set Tanggal -->
+  <div id="sheetDate" class="sheet" aria-hidden="true">
+    <div class="handle"></div>
+    <h3 style="text-align:center;margin:4px 0 10px">Set Tanggal Kadaluarsa</h3>
+    <div class="muted" style="text-align:center;margin-bottom:8px">Format: <b>Tanggal Bulan Tahun</b></div>
+    <input id="sheetDateInput" type="date" style="margin-bottom:10px">
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button id="sheetCancel" class="btn ghost">Batal</button>
+      <button id="sheetSave" class="btn">Simpan</button>
     </div>
   </div>
 
   <script type="module">
-    /* Firebase (tetap sama seperti file kamu) */
+    /* =================== Firebase Config =================== */
     const ADMIN_UID = "4CCiNyEyTvSUPnY6Ugd9PzAU1df2";
     const firebaseConfig = {
       apiKey: "AIzaSyAJ2YitGgxTI8k440TmWUHgntkTLSqkX3c",
@@ -347,18 +309,22 @@
       getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut,
       setPersistence, browserLocalPersistence
     } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-    import { getDatabase, ref, onValue, set, update, remove, off } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+    import {
+      getDatabase, ref, onValue, set, update, remove, off, get
+    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     setPersistence(auth, browserLocalPersistence).catch(()=>{});
     const db   = getDatabase(app);
 
-    /* Utils */
+    /* =================== Small Utils =================== */
     const $  = (s,el=document)=>el.querySelector(s);
     const $$ = (s,el=document)=>el.querySelectorAll(s);
-    const toastEl=$("#toast");
-    let toastTimer=null;
+    const h  = (ms=15)=>{ try{ navigator.vibrate && navigator.vibrate(ms); }catch{} }; // haptics
+
+    // Toast
+    const toastEl=$("#toast"); let toastTimer=null;
     const toast = (t,{undo=null}={})=>{
       toastEl.innerHTML = "";
       const span = document.createElement("span");
@@ -366,97 +332,47 @@
       toastEl.appendChild(span);
       if(typeof undo==="function"){
         const b=document.createElement("button");
-        b.className="link";
-        b.textContent="Undo";
+        b.className="link"; b.textContent="Undo";
         b.onclick=()=>{ try{ undo(); }finally{ toastEl.style.display="none"; } };
         toastEl.appendChild(b);
       }
-      toastEl.style.display="block";
+      toastEl.style.display="block"; h(12);
       clearTimeout(toastTimer);
       toastTimer=setTimeout(()=>toastEl.style.display="none", undo?6000:2000);
     };
+
     const fmtDate = (ms)=> ms ? new Date(ms).toLocaleDateString("id-ID", { day:"2-digit", month:"long", year:"numeric" }) : "Permanen";
     const toEOD = (Y,M,D)=> new Date(Y,M-1,D,23,59,59,999).getTime();
     const fromInputDate = (v)=>{const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return {Y,M,D};};
-    const sanitizeKey=(k)=> (k||"")
-      .normalize("NFKC")
-      .replace(/\s+/g,"")
-      .replace(/[^\w\-.:@]/g,"")   // huruf/angka/underscore/titik/titikdua/at/minus
-      .toUpperCase();
+    const sanitizeKey=(k)=> (k||"").normalize("NFKC").replace(/\s+/g,"").replace(/[^\w\-.:@]/g,"").toUpperCase();
 
+    // Routing guards
     const protectedRoutes = new Set(["dashboard","keys","settings"]);
-
-    /* Drawer a11y */
-    const menuBtn = $("#menuBtn");
-    const drawer  = $("#drawer");
-    const backdrop= $("#backdrop");
-    drawer.setAttribute("aria-hidden","true");
-    try{ drawer.inert = true; }catch{}
-
-    function openDrawer(){
-      drawer.classList.add("open"); backdrop.classList.add("show");
-      drawer.removeAttribute("aria-hidden"); try{ drawer.inert = false; }catch{}
-      menuBtn.setAttribute("aria-expanded","true");
-      const first = drawer.querySelector(".nav a") || drawer; (first instanceof HTMLElement ? first : drawer).focus();
-    }
-    function closeDrawer(){
-      if (drawer.contains(document.activeElement)) { menuBtn.focus(); }
-      drawer.classList.remove("open"); backdrop.classList.remove("show");
-      drawer.setAttribute("aria-hidden","true"); try{ drawer.inert = true; }catch{}
-      menuBtn.setAttribute("aria-expanded","false");
-    }
-    menuBtn.onclick=openDrawer; backdrop.onclick=closeDrawer;
-    document.addEventListener("keydown",(e)=>{ if(e.key==="Escape" && drawer.classList.contains("open")){ e.preventDefault(); closeDrawer(); }});
-
-    /* Multi-admin whitelist (RTDB: auth/admins/{uid} -> true atau "role") */
-    let ADMINS = {}; // {uid: true|"owner"|"editor"|"viewer"}
-    onValue(ref(db,"auth/admins"), s=>{ ADMINS = s.val()||{}; });
-
-    const isAuthed = ()=>{
-      const u=auth.currentUser;
-      if(!u) return false;
-      return (u.uid===ADMIN_UID) || !!ADMINS[u.uid];
-    };
-    const roleOf = (uid)=> uid===ADMIN_UID ? "owner" : (ADMINS?.[uid]===true ? "owner" : (ADMINS?.[uid]||null));
-    const canEdit = ()=> {
-      const u=auth.currentUser;
-      if(!u) return false;
-      const r=roleOf(u.uid);
-      return !!r && r!=="viewer";
-    };
-
-    /* Routing */
     function hardGuard(name){ return protectedRoutes.has(name)&&!isAuthed() ? "login" : name; }
-    function updateBottomNav(name){
-      $$("#bottomnav a").forEach(a=>{
-        const active = a.dataset.route===name;
-        a.classList.toggle("active", active);
-        a.setAttribute("aria-current", active ? "page" : "false");
-      });
-    }
-    function route(name){
-      name = hardGuard(name);
-      $$(".page").forEach(p=>p.classList.toggle("show",p.dataset.page===name));
-      $$(".nav a").forEach(a=>a.classList.toggle("active",a.dataset.route===name));
-      updateBottomNav(name);
-      if(isAuthed()){ localStorage.setItem("gx:route", name); } else { localStorage.removeItem("gx:route"); }
-      closeDrawer();
-      try{ document.scrollingElement.scrollTo({top:0,behavior:"smooth"}); }catch{}
-    }
-    $$(".nav a").forEach(a=>a.onclick=(e)=>{e.preventDefault(); route(a.dataset.route);});
-    $$("#bottomnav a").forEach(a=>a.addEventListener("click",(e)=>{ e.preventDefault(); route(a.dataset.route); }, {passive:false}));
 
-    /* UI refs */
+    // Drawer
+    const menuBtn=$("#menuBtn"), drawer=$("#drawer"), backdrop=$("#backdrop");
+    function openDrawer(){ drawer.classList.add("open"); backdrop.classList.add("show"); }
+    function closeDrawer(){ drawer.classList.remove("open"); backdrop.classList.remove("show"); }
+    menuBtn.onclick=openDrawer; backdrop.onclick=closeDrawer;
+
+    /* =================== Multi-admin Whitelist =================== */
+    let ADMINS = {}; // {uid: true | "owner" | "editor" | "viewer"}
+    onValue(ref(db,"auth/admins"), s=>{ ADMINS = s.val()||{}; });
+    const isAuthed = ()=> auth.currentUser && ((auth.currentUser.uid===ADMIN_UID) || !!ADMINS[auth.currentUser.uid]);
+    const roleOf = (uid)=> uid===ADMIN_UID ? "owner" : (ADMINS?.[uid]===true ? "owner" : (ADMINS?.[uid]||null));
+    const canEdit = ()=>{ const u=auth.currentUser; if(!u) return false; const r=roleOf(u.uid); return !!r && r!=="viewer"; };
+
+    /* =================== UI Refs =================== */
     const globalKey=$("#globalKey"), btnSaveGlobal=$("#btnSaveGlobal"), btnClearGlobal=$("#btnClearGlobal"), btnShareGlobal=$("#btnShareGlobal");
-    const newKey=$("#newKey"), exp=$("#exp"), btnAdd=$("#btnAdd"), createKeyCard=$("#createKeyCard"), btnGen=$("#btnGen");
-    const keyList=$("#keyList"), search=$("#search");
+    const newKey=$("#newKey"), exp=$("#exp"), btnAdd=$("#btnAdd"), btnGen=$("#btnGen");
+    const keyList=$("#keyList"), search=$("#search"), keysPage=$("#keysPage");
     const sortExpired=$("#sortExpired"), hideGlobal=$("#hideGlobal"), allowSelect=$("#allowSelect"), reduce=$("#reduce");
     const email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin");
-    const btnSignOut=$("#btnSignOut");
-    const globalKeyCard=$("#globalKeyCard");
-    const bnExp=$("#bn-exp");
+    const btnSignOut=$("#btnSignOut"), globalKeyCard=$("#globalKeyCard"), bnExp=$("#bn-exp");
+    const installLink=$("#installBtn");
 
-    /* ===== Settings Sync (Local + Remote) ===== */
+    /* =================== Settings Sync (Local + Remote) =================== */
     const SETTINGS_PATH = (uid)=>`auth/settings/${uid}`;
     function readLocalSettings(){
       return {
@@ -468,42 +384,29 @@
         updatedAt: parseInt(localStorage.getItem("gx:settingsUpdatedAt")||"0",10)||0
       };
     }
-    function writeLocalSettings(obj){
-      localStorage.setItem("gx:reduce", obj.reduce?"1":"0");
-      localStorage.setItem("gx:sortExp", obj.sortExpired?"1":"0");
-      localStorage.setItem("gx:hideGlobal", obj.hideGlobal?"1":"0");
-      localStorage.setItem("gx:allowSelect", obj.allowSelect?"1":"0");
-      localStorage.setItem("gx:statusFilter", obj.statusFilter||"all");
-      localStorage.setItem("gx:settingsUpdatedAt", String(obj.updatedAt||Date.now()));
+    function writeLocalSettings(o){
+      localStorage.setItem("gx:reduce", o.reduce?"1":"0");
+      localStorage.setItem("gx:sortExp", o.sortExpired?"1":"0");
+      localStorage.setItem("gx:hideGlobal", o.hideGlobal?"1":"0");
+      localStorage.setItem("gx:allowSelect", o.allowSelect?"1":"0");
+      localStorage.setItem("gx:statusFilter", o.statusFilter||"all");
+      localStorage.setItem("gx:settingsUpdatedAt", String(o.updatedAt||Date.now()));
     }
-    function applySettingsToDOM(obj){
-      reduce.checked=!!obj.reduce; sortExpired.checked=!!obj.sortExpired;
-      hideGlobal.checked=!!obj.hideGlobal; allowSelect.checked=!!obj.allowSelect;
+    function applySettingsToDOM(o){
+      reduce.checked=!!o.reduce; sortExpired.checked=!!o.sortExpired;
+      hideGlobal.checked=!!o.hideGlobal; allowSelect.checked=!!o.allowSelect;
       document.body.classList.toggle('reduce', reduce.checked);
       document.body.classList.toggle('allow-select', allowSelect.checked);
       globalKeyCard.classList.toggle('hide', hideGlobal.checked);
-      setFilterChip(obj.statusFilter||"all");
+      setFilterChip(o.statusFilter||"all");
     }
     applySettingsToDOM(readLocalSettings());
-
     let pushing=false, remoteReady=false;
-    function currentSettings(){
-      return {
-        reduce: reduce.checked, sortExpired: sortExpired.checked,
-        hideGlobal: hideGlobal.checked, allowSelect: allowSelect.checked,
-        statusFilter: getFilter(), updatedAt: Date.now()
-      };
-    }
-    function pushSettings(uid){
-      if(!uid) return;
-      const data=currentSettings(); pushing=true;
-      set(ref(db, SETTINGS_PATH(uid)), data).catch(()=>{}).finally(()=>{pushing=false});
-      writeLocalSettings(data);
-    }
+    function currentSettings(){ return { reduce:reduce.checked, sortExpired:sortExpired.checked, hideGlobal:hideGlobal.checked, allowSelect:allowSelect.checked, statusFilter:getFilter(), updatedAt:Date.now() }; }
+    function pushSettings(uid){ if(!uid) return; const data=currentSettings(); pushing=true; set(ref(db, SETTINGS_PATH(uid)), data).catch(()=>{}).finally(()=>{pushing=false}); writeLocalSettings(data); }
     function startSettingsSync(uid){
       onValue(ref(db, SETTINGS_PATH(uid)), (s)=>{
-        const remote = s.val()||{}; const local=readLocalSettings();
-        const rAt=remote.updatedAt||0, lAt=local.updatedAt||0;
+        const remote=s.val()||{}; const local=readLocalSettings(); const rAt=remote.updatedAt||0, lAt=local.updatedAt||0;
         if(pushing){ remoteReady=true; return; }
         if(rAt===0 && lAt>0){ pushSettings(uid); remoteReady=true; return; }
         if(rAt>lAt){ writeLocalSettings(remote); applySettingsToDOM(remote); }
@@ -511,8 +414,7 @@
         remoteReady=true;
       });
     }
-    let syncTimer=null;
-    function scheduleSync(uid){ clearTimeout(syncTimer); syncTimer=setTimeout(()=>pushSettings(uid), 250); }
+    let syncTimer=null; const scheduleSync=(uid)=>{ clearTimeout(syncTimer); syncTimer=setTimeout(()=>pushSettings(uid), 250); };
     ;[reduce,sortExpired,hideGlobal,allowSelect].forEach(el=>{
       el.addEventListener("change", ()=>{
         const data=currentSettings(); applySettingsToDOM(data); writeLocalSettings(data);
@@ -521,7 +423,7 @@
       });
     });
 
-    /* Data listeners + offline cache */
+    /* =================== Data Listeners + Offline Cache =================== */
     let cache = {}; // { key: {exp:number} }
     let selfWriteAt = 0;
     function startData(){
@@ -538,15 +440,10 @@
         }
       });
     }
-    function stopData(){
-      try{ off(ref(db,"auth/globalKey")); off(ref(db,"auth/keys")); }catch{}
-    }
-    // Offline cache dulu
-    try{
-      const c = localStorage.getItem("gx:cacheKeys"); if(c){ cache = JSON.parse(c); render(); }
-    }catch{}
+    function stopData(){ try{ off(ref(db,"auth/globalKey")); off(ref(db,"auth/keys")); }catch{} }
+    try{ const c = localStorage.getItem("gx:cacheKeys"); if(c){ cache = JSON.parse(c); render(); } }catch{}
 
-    /* Auth state */
+    /* =================== Auth State =================== */
     onAuthStateChanged(auth, (user)=>{
       if(user && isAuthed()){
         startSettingsSync(user.uid);
@@ -562,98 +459,83 @@
       document.body.classList.toggle("authed", !!authed);
       document.body.classList.toggle("noauth", !authed);
       btnSignOut.classList.toggle("hide", !authed);
-      // Lock aksi bila role viewer
       const editable = canEdit();
-      btnAdd.disabled = !editable;
-      btnGen.disabled = !editable;
-      btnSaveGlobal.disabled = !editable;
-      btnClearGlobal.disabled = !editable;
-      btnShareGlobal.disabled = !editable && !navigator.canShare;
+      btnAdd.disabled=!editable; btnGen.disabled=!editable; btnSaveGlobal.disabled=!editable; btnClearGlobal.disabled=!editable; btnShareGlobal.disabled=!editable && !navigator.canShare;
     }
 
-    /* Login UX */
+    /* =================== Routing =================== */
+    function updateBottomNav(name){
+      $$("#bottomnav a").forEach(a=>{
+        const active = a.dataset.route===name;
+        a.classList.toggle("active", active);
+        a.setAttribute("aria-current", active ? "page" : "false");
+      });
+    }
+    function route(name){
+      name=hardGuard(name);
+      $$(".page").forEach(p=>p.classList.toggle("show",p.dataset.page===name));
+      $$(".nav a").forEach(a=>a.classList.toggle("active",a.dataset.route===name));
+      updateBottomNav(name);
+      if(isAuthed()) localStorage.setItem("gx:route", name); else localStorage.removeItem("gx:route");
+      closeDrawer();
+      try{ document.scrollingElement.scrollTo({top:0,behavior:"smooth"}); }catch{}
+    }
+    $$(".nav a").forEach(a=>a.onclick=(e)=>{e.preventDefault(); route(a.dataset.route);});
+    $$("#bottomnav a").forEach(a=>a.addEventListener("click",(e)=>{ e.preventDefault(); route(a.dataset.route); }, {passive:false}));
+
+    /* =================== Login UX =================== */
     $("#togglePass").addEventListener("click", ()=>{
-      const pw=$("#password"); const t=pw.getAttribute("type")==="password"?"text":"password";
-      pw.setAttribute("type", t); $("#togglePass").textContent=(t==="password"?"Lihat":"Sembunyikan"); pw.focus();
+      const pw=$("#password"); const t=pw.type==="password"?"text":"password";
+      pw.type=t; $("#togglePass").textContent=(t==="password"?"Lihat":"Sembunyikan"); pw.focus();
     });
     document.addEventListener("keydown",(e)=>{ if(e.key==="Enter" && $(".page.show")?.dataset.page==="login"){ btnLogin.click(); }});
     btnLogin.addEventListener("click", async ()=>{
       const em=(email.value||"").trim(); const pw=password.value||"";
-      if(!em||!pw){ toast("Isi email & password"); return; }
+      if(!em||!pw){ toast("Isi email & password"); h(30); return; }
       try{ btnLogin.disabled=true; btnLogin.textContent="Masuk…"; await signInWithEmailAndPassword(auth, em, pw); toast("Login sukses"); }
-      catch{ toast("Login gagal"); }
+      catch{ toast("Login gagal"); h(50); }
       finally{ btnLogin.disabled=false; btnLogin.textContent="Sign In"; }
     });
     btnSignOut.onclick = async ()=>{ try{ btnSignOut.disabled=true; await signOut(auth); toast("Signed out"); route("login"); }catch{}finally{ btnSignOut.disabled=false; } };
 
-    /* Anti salin di luar input */
-    const allowCtx=(el)=>!!el&&(el.closest('input,textarea,[contenteditable="true"]'));
-    document.addEventListener('copy',e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(document.activeElement)) e.preventDefault(); });
-    document.addEventListener('cut', e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(document.activeElement)) e.preventDefault(); });
-    document.addEventListener('contextmenu', e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(e.target)) e.preventDefault(); }, {passive:false});
-
-    /* ===== Filter status chips ===== */
+    /* =================== Filters & Chips =================== */
     function getFilter(){ return localStorage.getItem("gx:statusFilter") || "all"; }
-    function setFilterChip(val){
-      localStorage.setItem("gx:statusFilter", val);
-      $$(".chip.filter").forEach(c=>c.classList.toggle("active", c.dataset.filter===val));
-    }
+    function setFilterChip(val){ localStorage.setItem("gx:statusFilter", val); $$(".chip.filter").forEach(c=>c.classList.toggle("active", c.dataset.filter===val)); }
     document.addEventListener("click",(e)=>{
       const f = e.target.closest(".chip.filter"); if(!f)return;
       const val=f.dataset.filter; setFilterChip(val); render();
       if(isAuthed()) scheduleSync(auth.currentUser.uid);
     });
 
-    /* ===== Modal Set Tanggal ===== */
-    const modalDateWrap=$("#modalDateWrap"), modalDate=$("#modalDate"), modalSave=$("#modalSave"), modalCancel=$("#modalCancel");
-    let modalKey=null;
-    function openModalSetDate(key, currMs){
-      modalKey=key;
-      const d = currMs? new Date(currMs) : new Date();
+    /* =================== Bottom Sheet (Tanggal) =================== */
+    const sheet=$("#sheetDate"), sheetInput=$("#sheetDateInput"), sheetSave=$("#sheetSave"), sheetCancel=$("#sheetCancel");
+    let sheetKey=null;
+    const openSheet=(key,ms)=>{
+      sheetKey=key;
+      const d = ms? new Date(ms) : new Date();
       const pad=n=>String(n).padStart(2,"0");
-      modalDate.value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-      modalDateWrap.classList.add("show"); modalDateWrap.setAttribute("aria-hidden","false");
-      modalDate.focus();
-    }
-    function closeModalDate(){ modalKey=null; modalDateWrap.classList.remove("show"); modalDateWrap.setAttribute("aria-hidden","true"); }
-    modalCancel.onclick=closeModalDate;
-    modalDateWrap.addEventListener("click",(e)=>{ if(e.target===modalDateWrap) closeModalDate(); });
-    document.addEventListener("keydown",(e)=>{ if(e.key==="Escape" && modalDateWrap.classList.contains("show")) closeModalDate(); });
-    modalSave.onclick = async ()=>{
-      if(!modalKey) return closeModalDate();
-      const v=(modalDate.value||"").trim(); if(!v) return closeModalDate();
+      sheetInput.value=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+      sheet.classList.add("show"); sheet.setAttribute("aria-hidden","false"); h(10);
+    };
+    const closeSheet=()=>{ sheetKey=null; sheet.classList.remove("show"); sheet.setAttribute("aria-hidden","true"); };
+    sheetCancel.onclick=closeSheet; sheetSave.onclick=async ()=>{
+      if(!sheetKey) return closeSheet();
+      const v=(sheetInput.value||"").trim(); if(!v) return closeSheet();
       const {Y,M,D}=fromInputDate(v); const ms=toEOD(Y,M,D);
       selfWriteAt=Date.now();
-      await update(ref(db,"auth/keys/"+modalKey), {exp: ms});
-      toast("Tanggal di-set"); closeModalDate();
+      await update(ref(db,"auth/keys/"+sheetKey), {exp: ms});
+      toast("Tanggal di-set"); closeSheet();
     };
+    sheet.addEventListener("click",(e)=>{ if(e.target===sheet) closeSheet(); });
 
-    /* ===== Modal Konfirmasi ===== */
-    const modalConfirmWrap=$("#modalConfirmWrap"), confirmMsg=$("#confirmMsg"), confirmOk=$("#confirmOk"), confirmCancel=$("#confirmCancel");
-    let confirmResolver=null;
-    function confirmDialog(msg="Yakin?"){
-      confirmMsg.textContent = msg;
-      modalConfirmWrap.classList.add("show"); modalConfirmWrap.setAttribute("aria-hidden","false");
-      return new Promise((res)=>{
-        confirmResolver = (v)=>{ modalConfirmWrap.classList.remove("show"); modalConfirmWrap.setAttribute("aria-hidden","true"); res(v); };
-      });
-    }
-    confirmCancel.onclick=()=>confirmResolver&&confirmResolver(false);
-    confirmOk.onclick=()=>confirmResolver&&confirmResolver(true);
-    modalConfirmWrap.addEventListener("click",(e)=>{ if(e.target===modalConfirmWrap) confirmResolver&&confirmResolver(false); });
-
-    /* Render keys (+ badge expired + role gating pada aksi) */
+    /* =================== Render Keys =================== */
     let lastDeleted = null; // {k, val}
     function render(){
-      const ks = Object.keys(cache||{});
-      const now=Date.now();
-
+      const ks = Object.keys(cache||{}); const now=Date.now();
       keyList.innerHTML="";
       const q = (search?.value||"").trim().toUpperCase();
       const filt = getFilter();
       const frag = document.createDocumentFragment();
-
-      // hitung badge expired
       let expiredCount=0;
 
       const sorted = ks.sort((a,b)=>{
@@ -673,7 +555,6 @@
 
         if(expired) expiredCount++;
 
-        // Filter status
         if(filt==="active" && (expired)) continue;
         if(filt==="soon" && !soon) continue;
         if(filt==="expired" && !expired) continue;
@@ -683,25 +564,16 @@
 
         const row=document.createElement("div"); row.className="item";
 
-        // Row 1: key + Copy + pill status
         const head=document.createElement("div"); head.className="row1";
         const keySpan=document.createElement("strong"); keySpan.className="grow"; keySpan.textContent=k;
 
-        const copyBtn=document.createElement("button"); copyBtn.className="btn small"; copyBtn.textContent="Copy";
-        copyBtn.dataset.key=k; copyBtn.dataset.action="copy";
+        const copyBtn=document.createElement("button"); copyBtn.className="btn small"; copyBtn.textContent="Copy"; copyBtn.dataset.key=k; copyBtn.dataset.action="copy";
+        const status=document.createElement("span"); status.className="pill "+(expired?"exp":(soon?"soon":"ok")); status.textContent = expired?"Expired":(soon?"Segera Habis":"Aktif");
 
-        const status=document.createElement("span"); status.className="pill "+(expired?"exp":(soon?"soon":"ok"));
-        status.textContent = expired?"Expired":(soon?"Segera Habis":"Aktif");
+        head.appendChild(keySpan); head.appendChild(copyBtn); head.appendChild(status);
 
-        head.appendChild(keySpan);
-        head.appendChild(copyBtn);
-        head.appendChild(status);
+        const sub=document.createElement("div"); sub.className="row2 muted"; sub.textContent = "Expire: "+fmtDate(expMs);
 
-        // Row 2: tanggal
-        const sub=document.createElement("div"); sub.className="row2 muted";
-        sub.textContent = "Expire: "+fmtDate(expMs);
-
-        // Row 3: actions (+ share, undo-ready delete)
         const actions=document.createElement("div"); actions.className="row3";
         const mk=(txt,action)=>{ const b=document.createElement("button"); b.className="btn small"; b.textContent=txt; b.dataset.key=k; b.dataset.action=action; return b; };
         const btnNoExp=mk("No Exp","noexp");
@@ -709,13 +581,9 @@
         const btnShare=mk("Share","share");
         const del=mk("Hapus","del"); del.style.background="#2a1212"; del.style.borderColor="#5d2a2a";
 
-        // Non-editor (viewer) tidak boleh ubah
         if(!canEdit()){ btnNoExp.disabled=true; btnDate.disabled=true; del.disabled=true; }
 
-        actions.appendChild(btnNoExp);
-        actions.appendChild(btnDate);
-        actions.appendChild(btnShare);
-        actions.appendChild(del);
+        actions.appendChild(btnNoExp); actions.appendChild(btnDate); actions.appendChild(btnShare); actions.appendChild(del);
 
         row.appendChild(head); row.appendChild(sub); row.appendChild(actions);
         frag.appendChild(row);
@@ -726,23 +594,18 @@
       }
       keyList.appendChild(frag);
 
-      // update badge expired pada bottom nav
-      if(expiredCount>0){
-        bnExp.textContent = expiredCount>99 ? "99+" : String(expiredCount);
-        bnExp.classList.remove("hide");
-      }else{
-        bnExp.classList.add("hide");
-      }
+      if(expiredCount>0){ bnExp.textContent = expiredCount>99 ? "99+" : String(expiredCount); bnExp.classList.remove("hide"); }
+      else{ bnExp.classList.add("hide"); }
     }
 
-    /* Key actions (+ share + undo delete) */
+    /* =================== Key Actions (copy/share/date/delete) =================== */
     document.addEventListener("click",(e)=>{
       const b=e.target.closest("button[data-action]"); if(!b) return;
       const k=b.dataset.key, act=b.dataset.action;
       (async()=>{
         try{
           if(act==="copy"){
-            await navigator.clipboard.writeText(k); toast("Disalin");
+            await navigator.clipboard.writeText(k); toast("Disalin"); h(8);
           } else if(act==="share"){
             const text=`KEY: ${k}`;
             if(navigator.share){ try{ await navigator.share({title:"GxMods Key", text}); }catch{} }
@@ -754,12 +617,10 @@
             toast("No Exp");
           } else if(act==="setdate"){
             if(!canEdit()) return;
-            openModalSetDate(k, cache[k]?.exp||0);
+            openSheet(k, cache[k]?.exp||0);
           } else if(act==="del"){
             if(!canEdit()) return;
-            const ok = await confirmDialog(`Hapus key: ${k}?`);
-            if(!ok) return;
-            // simpan untuk undo
+            if(!confirm(`Hapus key: ${k}?`)) return;
             lastDeleted = { k, val: cache[k] ? { ...cache[k] } : null };
             selfWriteAt=Date.now();
             await remove(ref(db,"auth/keys/"+k));
@@ -767,70 +628,151 @@
               if(lastDeleted && lastDeleted.k===k && lastDeleted.val){
                 selfWriteAt=Date.now();
                 await update(ref(db,"auth/keys/"+k), lastDeleted.val);
-                lastDeleted=null;
-                toast("Dikembalikan");
+                lastDeleted=null; toast("Dikembalikan");
               }
             }});
           }
-        }catch{ toast("Gagal"); }
+        }catch{ toast("Gagal"); h(40); }
       })();
     }, {passive:true});
 
-    /* Form controls */
+    /* =================== Form Controls =================== */
     btnAdd.onclick = async ()=>{
       if(!canEdit()) return;
-      let raw=(newKey.value||"");
-      const k=sanitizeKey(raw);
-      if(!k){ toast("Isi key"); return; }
-      const val=(exp.value||"").trim();
-      let ms=0; if(val){ const {Y,M,D}=fromInputDate(val); ms=toEOD(Y,M,D); }
+      const k=sanitizeKey(newKey.value||"");
+      if(!k){ toast("Isi key"); h(30); return; }
+      const val=(exp.value||"").trim(); let ms=0; if(val){ const {Y,M,D}=fromInputDate(val); ms=toEOD(Y,M,D); }
       selfWriteAt=Date.now();
       await update(ref(db,"auth/keys/"+k), {exp: ms});
       newKey.value=""; exp.value=""; toast("Ditambahkan");
     };
-
-    // Generate key kanan (alfabet tanpa I/O, angka tanpa 0/1 biar mudah dibaca)
-    function genSeg(len=4){
-      const CH="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-      let s=""; for(let i=0;i<len;i++){ s+=CH[Math.floor(Math.random()*CH.length)]; } return s;
-    }
-    btnGen.onclick = ()=>{
-      const v=`VIP-${genSeg()}-${genSeg()}`;
-      newKey.value=v; newKey.focus();
-    };
+    function genSeg(len=4){ const CH="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let s=""; for(let i=0;i<len;i++){ s+=CH[Math.floor(Math.random()*CH.length)]; } return s; }
+    btnGen.onclick = ()=>{ const v=`VIP-${genSeg()}-${genSeg()}`; newKey.value=v; newKey.focus(); h(8); };
 
     btnSaveGlobal.onclick = async ()=>{ if(!canEdit()) return; selfWriteAt=Date.now(); await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); toast("Global key disimpan"); };
     btnClearGlobal.onclick = async ()=>{ if(!canEdit()) return; selfWriteAt=Date.now(); await set(ref(db,"auth/globalKey"), ""); globalKey.value=""; toast("Dikosongkan"); };
     btnShareGlobal.onclick = async ()=>{
-      const v=(globalKey.value||"").trim();
-      if(!v){ toast("Global key kosong"); return; }
+      const v=(globalKey.value||"").trim(); if(!v){ toast("Global key kosong"); return; }
       const text="GLOBAL KEY: "+v;
       if(navigator.share){ try{ await navigator.share({title:"GxMods Global Key", text}); }catch{} }
       else { await navigator.clipboard.writeText(text); toast("Disalin (share tidak didukung)"); }
     };
-
-    // Chips cepat tanggal
     document.addEventListener("click",(e)=>{
       const chip=e.target.closest(".chip[data-add]"); if(!chip) return;
       const add=parseInt(chip.dataset.add||"0",10);
       if(add===0){ exp.value=""; toast("Tanpa Exp"); return; }
-      const d=new Date(); d.setDate(d.getDate()+add);
-      const pad=n=>String(n).padStart(2,"0");
+      const d=new Date(); d.setDate(d.getDate()+add); const pad=n=>String(n).padStart(2,"0");
       exp.value=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
     });
 
-    // Pencarian — debounce 200ms
+    // Pencarian — debounce
     const debounce=(fn,ms)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
     const liveSearch = debounce(render,200);
     search?.addEventListener("input", liveSearch, {passive:true});
     search?.addEventListener("keyup", liveSearch, {passive:true});
 
-    // Lite mode: perangkat RAM kecil
-    try{ if('deviceMemory' in navigator && navigator.deviceMemory<=2){ document.body.classList.add('lite'); } }catch{}
+    /* =================== Pull to refresh (keys page) =================== */
+    const ptr=$("#ptr"); let startY=null, pulled=false;
+    keysPage.addEventListener("touchstart",(e)=>{ if(document.scrollingElement.scrollTop===0){ startY=e.touches[0].clientY; pulled=false; } }, {passive:true});
+    keysPage.addEventListener("touchmove",(e)=>{
+      if(startY==null) return;
+      const dy = e.touches[0].clientY - startY;
+      if(dy>40){ ptr.classList.add("show"); pulled=true; }
+    }, {passive:true});
+    keysPage.addEventListener("touchend", async ()=>{
+      if(pulled){ ptr.textContent="⟳ Menyegarkan…"; h(12);
+        try{ const snap=await get(ref(db,"auth/keys")); cache=snap.val()||cache; render(); toast("Refreshed"); }
+        catch{}
+        finally{ setTimeout(()=>{ptr.textContent="↓ Tarik untuk refresh"; ptr.classList.remove("show");}, 400); }
+      } else { ptr.classList.remove("show"); }
+      startY=null; pulled=false;
+    }, {passive:true});
 
-    // ===== Fallback anti “memuat terus” =====
-    window.addEventListener('error', ()=>{ document.body.classList.remove('booting'); $("#boot")?.remove(); }, {once:true});
-    window.addEventListener('unhandledrejection', ()=>{ document.body.classList.remove('booting'); $("#boot")?.remove(); }, {once:true});
+    /* =================== A11y/Anti-salin =================== */
+    const allowCtx=(el)=>!!el&&(el.closest('input,textarea,[contenteditable="true"]'));
+    document.addEventListener('copy',e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(document.activeElement)) e.preventDefault(); });
+    document.addEventListener('cut', e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(document.activeElement)) e.preventDefault(); });
+    document.addEventListener('contextmenu', e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(e.target)) e.preventDefault(); }, {passive:false});
+
+    /* =================== Install (A2HS) & Manifest inline =================== */
+    let deferredPrompt=null;
+    window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredPrompt=e; installLink.classList.remove("hide"); });
+    installLink.addEventListener('click', async (e)=>{
+      e.preventDefault();
+      if(!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice; deferredPrompt=null; installLink.classList.add("hide");
+    });
+
+    // Buat manifest on the fly (1 file only)
+    (function injectManifest(){
+      const manifest = {
+        name: "GxMods Key Panel",
+        short_name: "GxKey",
+        start_url: ".",
+        scope: ".",
+        display: "standalone",
+        background_color: "#0b0f14",
+        theme_color: "#0b0f14",
+        icons: [
+          {
+            "src": "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" rx="28" fill="#0b0f14"/><path d="M30 68l24 24 44-60" fill="none" stroke="#7c3aed" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/></svg>'),
+            "sizes": "128x128",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+          }
+        ],
+        shortcuts: [
+          { name:"Daftar Key", url:"#keys", description:"Buka daftar key" },
+          { name:"Buat Key",   url:"#keys", description:"Buat key baru" }
+        ]
+      };
+      const blob=new Blob([JSON.stringify(manifest)],{type:"application/manifest+json"});
+      const url=URL.createObjectURL(blob);
+      const link=document.createElement("link"); link.rel="manifest"; link.href=url; document.head.appendChild(link);
+    })();
+
+    /* =================== Service Worker (inline attempt) =================== */
+    (async function swInline(){
+      if(!('serviceWorker' in navigator)) return;
+      try{
+        // Jika ada sw.js di root (opsional), pakai itu
+        const hasSw = await fetch("./sw.js", {method:"HEAD"}).then(r=>r.ok).catch(()=>false);
+        if(hasSw){ await navigator.serviceWorker.register("./sw.js"); return; }
+
+        // Inline SW via Blob (tidak didukung semua browser; aman diabaikan jika gagal)
+        const swCode = `
+          const CACHE = "gxmods-keypanel-v1";
+          const ASSETS = ["./", location.href];
+          self.addEventListener("install", e=>{
+            e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()));
+          });
+          self.addEventListener("activate", e=>{
+            e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+          });
+          self.addEventListener("fetch", e=>{
+            const req=e.request;
+            if(req.method!=="GET") return;
+            e.respondWith(
+              caches.match(req).then(cached=>{
+                const net=fetch(req).then(res=>{
+                  const resClone=res.clone();
+                  caches.open(CACHE).then(c=>c.put(req, resClone));
+                  return res;
+                }).catch(()=>cached);
+                return cached||net;
+              })
+            );
+          });
+        `;
+        const swUrl = URL.createObjectURL(new Blob([swCode], {type:"text/javascript"}));
+        await navigator.serviceWorker.register(swUrl).catch(()=>{ /* diamkan, lanjut tanpa SW */ });
+      }catch{/* no-op */}
+    })();
+
+    /* =================== Boot safety =================== */
+    window.addEventListener('error', ()=>{ document.body.classList.remove("booting"); $("#boot")?.remove(); }, {once:true});
+    window.addEventListener('unhandledrejection', ()=>{ document.body.classList.remove("booting"); $("#boot")?.remove(); }, {once:true});
     setTimeout(()=>{ if(document.body.classList.contains('booting')){ document.body.classList.remove('booting'); $("#boot")?.remove(); route('login'); } }, 2500);
   </script>
 </body>
