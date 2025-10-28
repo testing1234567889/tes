@@ -50,15 +50,16 @@
     .icon{width:20px;height:20px}
 
     /* Drawer */
-    .drawer{position:fixed;inset:0 auto 0 0;width:min(78%,320px);background:var(--card);border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .16s ease-out;z-index:70;contain:paint}
+    .drawer{position:fixed;inset:0 auto 0 0;width:min(78%,320px);background:var(--card);border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .16s ease-out;z-index:70;contain:paint;display:flex;flex-direction:column}
     .drawer.open{transform:translateX(0)}
     .drawer .brand{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid var(--line)}
-    .nav{padding:8px}
+    .nav{padding:8px;flex:1 1 auto;overflow:auto}
     .nav a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:1px solid transparent}
     .nav a:hover{background:color-mix(in oklab, var(--card), black 8%)}
     .nav a.active{border-color:#213048;background:color-mix(in oklab, var(--card), black 8%)}
     .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .16s ease;z-index:65}
     .backdrop.show{opacity:1;pointer-events:auto}
+    .drawer-footer{padding:12px 14px;border-top:1px solid var(--line);font-size:.92rem;color:var(--muted);display:flex;justify-content:flex-end;align-items:center}
 
     /* App */
     .app{min-height:calc(100dvh - 56px);padding:14px 14px calc(14px + var(--bn-h) + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
@@ -151,44 +152,7 @@
 @media (min-width:640px){.row3 .btn{flex:0 0 auto}}
 .btn.danger{background:#2a1212;border-color:#5d2a2a}
 
-  
-/* === Background polish (dark, subtle pattern) === */
-body::before{
-  content:"";
-  position:fixed; inset:0; z-index:0; pointer-events:none;
-  background:
-    radial-gradient(1200px 500px at 50% -200px, #101826 0%, transparent 60%),
-    radial-gradient(900px 420px at 120% 20%, #0b1320 0%, transparent 60%),
-    radial-gradient(800px 360px at -20% 80%, #0a1422 0%, transparent 60%);
-  opacity:.95;
-}
-body::after{
-  content:"";
-  position:fixed; inset:0; z-index:0; pointer-events:none;
-  background:
-    repeating-linear-gradient(0deg, rgba(255,255,255,.04), rgba(255,255,255,.04) 1px, transparent 1px, transparent 34px),
-    repeating-linear-gradient(90deg, rgba(255,255,255,.03), rgba(255,255,255,.03) 1px, transparent 1px, transparent 34px);
-  opacity:.06;
-}
-/* ensure app layers are above bg */
-.topbar, .app, .bottomnav, .drawer, .backdrop, .modal, #boot, #toast{ position:relative; z-index:1; }
-
-/* === Drawer account + footer === */
-.drawer{position:fixed; inset:0 auto 0 0; width:min(78%,320px); background:var(--card); border-right:1px solid var(--line); transform:translateX(-100%); transition:transform .16s ease-out; z-index:70; contain:paint; }
-.drawer .account{padding:14px; display:flex; flex-direction:column; gap:4px; border-bottom:1px solid var(--line)}
-.drawer .account .hint{color:var(--muted); font-size:.9rem}
-.drawer .account .email{font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-.drawer .sep{height:1px; background:var(--line); margin:8px 0}
-.drawer-footer{position:absolute; left:0; right:0; bottom:0; padding:12px 14px; border-top:1px solid var(--line); color:var(--muted); font-size:.9rem}
-
-/* === Buttons with icon slots (no emoji) === */
-.btn .ico{width:16px; height:16px; display:inline-block}
-.btn.inline{display:inline-flex; align-items:center; gap:8px}
-
-
-:focus-visible{ outline:2px solid #213048; outline-offset:2px; border-radius:12px }
-
-</style>
+  </style>
 </head>
 <body class="noauth booting">
   <!-- Topbar -->
@@ -204,20 +168,14 @@ body::after{
 
   <!-- Drawer -->
   <aside id="drawer" class="drawer" aria-hidden="true" tabindex="-1">
-  <div class="brand"><strong>Menu</strong></div>
-  <div class="account">
-    <div class="hint">Email</div>
-    <div id="accEmail" class="email">Belum login</div>
-  </div>
-  <div class="sep" aria-hidden="true"></div>
-  <nav class="nav" id="nav">
-    <a href="#settings" data-route="settings" data-auth="in">Pengaturan</a>
-    <a href="#about" data-route="about">Tentang</a>
-  </nav>
-  <div class="drawer-footer">
-    <span id="appVersion">v1.0.0</span>
-  </div>
-</aside>
+    <div class="brand"><strong>Menu</strong></div>
+    <nav class="nav" id="nav">
+      <a href="#settings" data-route="settings" data-auth="in">Pengaturan</a>
+      <a href="#about" data-route="about">Tentang</a>
+    </nav>
+    <!-- Footer versi di bawah drawer -->
+    <div class="drawer-footer"><span>v0.0.1 beta</span></div>
+  </aside>
   <div id="backdrop" class="backdrop"></div>
 
   <!-- App -->
@@ -317,6 +275,11 @@ body::after{
     <!-- Settings -->
     <section class="page guarded" data-page="settings">
       <div class="card">
+        <!-- Email login di atas Pengaturan -->
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div class="muted">Login sebagai <b id="acctEmail">-</b></div>
+        </div>
+
         <h3>Pengaturan</h3>
 
         <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
@@ -438,8 +401,6 @@ body::after{
     setPersistence(auth, browserLocalPersistence).catch(()=>{});
     const db   = getDatabase(app);
 
-    const APP_VERSION = "v1.0.0";
-
     /* Utils */
     const $  = (s,el=document)=>el.querySelector(s);
     const $$ = (s,el=document)=>el.querySelectorAll(s);
@@ -530,6 +491,7 @@ body::after{
     const email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin");
     const btnSignOut=$("#btnSignOut");
     const globalKeyCard=$("#globalKeyCard");
+    const acctEmail=$("#acctEmail");
 
     /* ===== Settings Sync (Local + Remote) ===== */
     const SETTINGS_PATH = (uid)=>`auth/settings/${uid}`;
@@ -621,14 +583,22 @@ body::after{
       const c = localStorage.getItem("gx:cacheKeys"); if(c){ cache = JSON.parse(c); render(); }
     }catch{}
 
+    /* Helper: tampilkan email akun */
+    function setAccountEmail(u){
+      if(!acctEmail) return;
+      acctEmail.textContent = (u && u.email) ? u.email : "-";
+    }
+
     /* Auth state */
     onAuthStateChanged(auth, (user)=>{
       if(user && isAuthed()){
         startSettingsSync(user.uid);
         updateNav(true); startData();
+        setAccountEmail(user);
         route(localStorage.getItem("gx:route") || "dashboard");
       }else{
         stopData(); updateNav(false); route("login");
+        setAccountEmail(null);
         if(user && !isAuthed()){ signOut(auth).catch(()=>{}); toast("Bukan admin"); }
       }
       document.body.classList.remove("booting"); $("#boot")?.remove();
@@ -799,10 +769,10 @@ body::after{
         // Row 3: actions (tanpa Undo)
         const actions=document.createElement("div"); actions.className="row3";
         const mk=(txt,action)=>{ const b=document.createElement("button"); b.className="btn small"; b.textContent=txt; b.dataset.key=k; b.dataset.action=action; return b; };
-        const btnNoExp=mk("No Exp","noexp");
-        const btnDate =mk("Tanggal…","setdate");
-        const btnShare=mk("Share","share");
-        const del=mk("Hapus","del"); del.classList.add("danger");
+        const btnNoExp=mk("♾️ No Exp","noexp");
+        const btnDate =mk("🗓️ Tanggal…","setdate");
+        const btnShare=mk("🔗 Share","share");
+        const del=mk("🗑️ Hapus","del"); del.classList.add("danger");
 
         actions.appendChild(btnNoExp);
         actions.appendChild(btnDate);
