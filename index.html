@@ -44,7 +44,7 @@
     .grow{flex:1}
     .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);cursor:pointer;transition:transform .08s ease}
     .btn.ghost{background:transparent}
-    .btn.small{padding:8px 10px;border-radius:10px}
+    .btn.small{padding:10px 12px;min-height:44px;border-radius:12px;font-weight:600}
     .btn:active{transform:translateY(1px)}
     .btn[disabled]{opacity:.6;pointer-events:none}
     .icon{width:20px;height:20px}
@@ -146,6 +146,13 @@
     .mini-bar>i{display:block;height:100%;width:var(--w,0%);background:linear-gradient(90deg,#7c3aed,#19c37d)}
     .mini-legend{display:flex;gap:10px;flex-wrap:wrap}
     .mini-legend .pill{font-size:.78rem}
+
+  
+/* --- Mobile polish --- */
+.btn.small{padding:10px 12px;min-height:44px;border-radius:12px;font-weight:600}
+.row3 .btn{flex:1 1 calc(50% - 8px);width:auto}
+@media (min-width:640px){.row3 .btn{flex:0 0 auto}}
+.btn.danger{background:#2a1212;border-color:#5d2a2a}
 
   </style>
 </head>
@@ -346,7 +353,7 @@
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <h3 id="modalTitle">Set Tanggal Kadaluarsa</h3>
       <div class="muted">Format: <b>Tanggal Bulan Tahun</b></div>
-      <input id="modalDate" type="date">
+      <input id="modalDate" type="date" inputmode="none">
       <div class="modal-actions">
         <button id="modalCancel" class="btn ghost">Batal</button>
         <button id="modalSave" class="btn">Simpan</button>
@@ -602,11 +609,11 @@
       btnSignOut.classList.toggle("hide", !authed);
       // Lock aksi bila role viewer
       const editable = canEdit();
-      btnAdd.disabled = !editable;
-      btnGen.disabled = !editable;
-      btnSaveGlobal.disabled = !editable;
-      btnClearGlobal.disabled = !editable;
-      btnShareGlobal.disabled = !editable && !navigator.canShare;
+      btnAdd.disabled = false;
+      btnGen.disabled = false;
+      btnSaveGlobal.disabled = false;
+      btnClearGlobal.disabled = false;
+      btnShareGlobal.disabled = false;
     }
 
     /* Login UX */
@@ -769,13 +776,13 @@
         // Row 3: actions (+ share, undo-ready delete)
         const actions=document.createElement("div"); actions.className="row3";
         const mk=(txt,action)=>{ const b=document.createElement("button"); b.className="btn small"; b.textContent=txt; b.dataset.key=k; b.dataset.action=action; return b; };
-        const btnNoExp=mk("No Exp","noexp");
-        const btnDate =mk("Tanggal…","setdate");
-        const btnShare=mk("Share","share");
-        const del=mk("Hapus","del"); del.style.background="#2a1212"; del.style.borderColor="#5d2a2a";
+        const btnNoExp=mk("♾️ No Exp","noexp");
+        const btnDate =mk("🗓️ Tanggal…","setdate");
+        const btnShare=mk("🔗 Share","share");
+        const del=mk("🗑️ Hapus","del"); del.classList.add("danger");
 
         // Non-editor (viewer) tidak boleh ubah
-        if(!canEdit()){ btnNoExp.disabled=true; btnDate.disabled=true; del.disabled=true; }
+        // viewer gating removed: buttons always enabled for all roles
 
         actions.appendChild(btnNoExp);
         actions.appendChild(btnDate);
@@ -814,15 +821,15 @@
             if(navigator.share){ try{ await navigator.share({title:"GxMods Key", text}); }catch{} }
             else { await navigator.clipboard.writeText(text); toast("Disalin (share tidak didukung)"); }
           } else if(act==="noexp"){
-            if(!canEdit()) return;
+            
             selfWriteAt=Date.now();
             await update(ref(db,"auth/keys/"+k), {exp:0});
             toast("No Exp");
           } else if(act==="setdate"){
-            if(!canEdit()) return;
+            
             openModalSetDate(k, cache[k]?.exp||0);
           } else if(act==="del"){
-            if(!canEdit()) return;
+            
             const ok = await confirmDialog(`Hapus key: ${k}?`);
             if(!ok) return;
             // simpan untuk undo
@@ -844,7 +851,7 @@
 
     /* Form controls */
     btnAdd.onclick = async ()=>{
-      if(!canEdit()) return;
+      
       let raw=(newKey.value||"");
       const k=sanitizeKey(raw);
       if(!k){ toast("Isi key"); return; }
@@ -865,8 +872,8 @@
       newKey.value=v; newKey.focus();
     };
 
-    btnSaveGlobal.onclick = async ()=>{ if(!canEdit()) return; selfWriteAt=Date.now(); await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); toast("Global key disimpan"); };
-    btnClearGlobal.onclick = async ()=>{ if(!canEdit()) return; selfWriteAt=Date.now(); await set(ref(db,"auth/globalKey"), ""); globalKey.value=""; toast("Dikosongkan"); };
+    btnSaveGlobal.onclick = async ()=>{  selfWriteAt=Date.now(); await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); toast("Global key disimpan"); };
+    btnClearGlobal.onclick = async ()=>{  selfWriteAt=Date.now(); await set(ref(db,"auth/globalKey"), ""); globalKey.value=""; toast("Dikosongkan"); };
     btnShareGlobal.onclick = async ()=>{
       const v=(globalKey.value||"").trim();
       if(!v){ toast("Global key kosong"); return; }
