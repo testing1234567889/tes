@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="utf-8" />
-  <!-- Tambah interactive-widget biar keyboard HP gak dorong layout -->
+  <!-- Keyboard mobile gak dorong layout -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=overlays-content" />
   <meta name="theme-color" content="#0b0f14" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -53,13 +53,16 @@
     .drawer{position:fixed;inset:0 auto 0 0;width:min(78%,320px);background:var(--card);border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .16s ease-out;z-index:70;contain:paint;display:flex;flex-direction:column}
     .drawer.open{transform:translateX(0)}
     .drawer .brand{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid var(--line)}
+    .acct-box{padding:8px 14px;border-bottom:1px solid var(--line)}
+    .acct-box .label{font-size:.85rem;color:var(--muted)}
+    .acct-box .email{font-weight:600;word-break:break-all;margin-top:2px}
     .nav{padding:8px;flex:1 1 auto;overflow:auto}
     .nav a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:1px solid transparent}
     .nav a:hover{background:color-mix(in oklab, var(--card), black 8%)}
     .nav a.active{border-color:#213048;background:color-mix(in oklab, var(--card), black 8%)}
     .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .16s ease;z-index:65}
     .backdrop.show{opacity:1;pointer-events:auto}
-    .drawer-footer{padding:12px 14px;border-top:1px solid var(--line);font-size:.92rem;color:var(--muted);display:flex;justify-content:flex-end;align-items:center}
+    .drawer-footer{padding:12px 14px;border-top:1px solid var(--line);font-size:.92rem;color:var(--muted);display:flex;justify-content:flex-start;align-items:center}
 
     /* App */
     .app{min-height:calc(100dvh - 56px);padding:14px 14px calc(14px + var(--bn-h) + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
@@ -116,10 +119,10 @@
     /* Login center */
     [data-page="login"].show{min-height:calc(100dvh - 56px);place-content:center}
 
-    /* Toast center (tanpa Undo) */
+    /* Toast center */
     #toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:color-mix(in oklab, var(--card), black 6%);border:1px solid var(--line);padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);display:none;z-index:99;text-align:center;max-width:min(92vw,520px)}
 
-    /* Bottom Nav (tanpa badge expired) */
+    /* Bottom Nav */
     .bottomnav{position:fixed;left:0;right:0;bottom:0;height:var(--bn-h);background:color-mix(in oklab, var(--card), black 4%);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(2,1fr);z-index:55;padding-bottom:env(safe-area-inset-bottom)}
     .bottomnav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:.85rem;color:var(--muted);position:relative}
     .bottomnav a .bi{width:22px;height:22px}
@@ -131,7 +134,7 @@
     .modal-card{width:min(92vw,420px);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end}
 
-    /* Mini progress bar (cadangan) */
+    /* Mini progress bar */
     .bar{height:10px;border-radius:999px;background:color-mix(in oklab, var(--card), black 8%);overflow:hidden;border:1px solid var(--line)}
     .bar > i{display:block;height:100%;background:linear-gradient(90deg,#16a34a,#22c55e)}
 
@@ -145,13 +148,11 @@
     .mini-legend{display:flex;gap:10px;flex-wrap:wrap}
     .mini-legend .pill{font-size:.78rem}
 
-  
-/* --- Mobile polish --- */
-.btn.small{padding:10px 12px;min-height:44px;border-radius:12px;font-weight:600}
-.row3 .btn{flex:1 1 calc(50% - 8px);width:auto}
-@media (min-width:640px){.row3 .btn{flex:0 0 auto}}
-.btn.danger{background:#2a1212;border-color:#5d2a2a}
-
+    /* --- Mobile polish --- */
+    .btn.small{padding:10px 12px;min-height:44px;border-radius:12px;font-weight:600}
+    .row3 .btn{flex:1 1 calc(50% - 8px);width:auto}
+    @media (min-width:640px){.row3 .btn{flex:0 0 auto}}
+    .btn.danger{background:#2a1212;border-color:#5d2a2a}
   </style>
 </head>
 <body class="noauth booting">
@@ -169,12 +170,20 @@
   <!-- Drawer -->
   <aside id="drawer" class="drawer" aria-hidden="true" tabindex="-1">
     <div class="brand"><strong>Menu</strong></div>
+
+    <!-- EMAIL DI MENU (ambil dari Firebase Auth) -->
+    <div class="acct-box">
+      <div class="label">Login sebagai</div>
+      <div class="email" id="menuEmail">Belum login</div>
+    </div>
+
     <nav class="nav" id="nav">
       <a href="#settings" data-route="settings" data-auth="in">Pengaturan</a>
       <a href="#about" data-route="about">Tentang</a>
     </nav>
-    <!-- Footer versi di bawah drawer -->
-    <div class="drawer-footer"><span>v0.0.1 beta</span></div>
+
+    <!-- Footer versi kiri -->
+    <div class="drawer-footer"><span id="appVersion">v0.0.1 beta</span></div>
   </aside>
   <div id="backdrop" class="backdrop"></div>
 
@@ -275,7 +284,7 @@
     <!-- Settings -->
     <section class="page guarded" data-page="settings">
       <div class="card">
-        <!-- Email login di atas Pengaturan -->
+        <!-- EMAIL DI ATAS PENGATURAN (ambil dari Firebase Auth) -->
         <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
           <div class="muted">Login sebagai <b id="acctEmail">-</b></div>
         </div>
@@ -376,7 +385,14 @@
   </div>
 
   <script type="module">
-    /* Firebase (tetap sama seperti file kamu) */
+    /* =================== Konstanta Versi =================== */
+    const APP_VERSION = "v0.0.1 beta";
+    document.addEventListener("DOMContentLoaded", ()=>{
+      const v = document.getElementById("appVersion");
+      if(v) v.textContent = APP_VERSION;
+    });
+
+    /* =================== Firebase =================== */
     const ADMIN_UID = "4CCiNyEyTvSUPnY6Ugd9PzAU1df2";
     const firebaseConfig = {
       apiKey: "AIzaSyAJ2YitGgxTI8k440TmWUHgntkTLSqkX3c",
@@ -401,7 +417,7 @@
     setPersistence(auth, browserLocalPersistence).catch(()=>{});
     const db   = getDatabase(app);
 
-    /* Utils */
+    /* =================== Utils =================== */
     const $  = (s,el=document)=>el.querySelector(s);
     const $$ = (s,el=document)=>el.querySelectorAll(s);
     const toastEl=$("#toast");
@@ -415,7 +431,6 @@
     const fmtDate = (ms)=> ms ? new Date(ms).toLocaleDateString("id-ID", { day:"2-digit", month:"long", year:"numeric" }) : "Permanen";
     const toEOD = (Y,M,D)=> new Date(Y,M-1,D,23,59,59,999).getTime();
     const fromInputDate = (v)=>{const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return {Y,M,D};};
-    // TIDAK mengubah huruf: tetap sesuai input (tidak auto-uppercase)
     const sanitizeKey=(k)=> (k||"")
       .normalize("NFKC")
       .replace(/\s+/g,"")
@@ -445,7 +460,7 @@
     menuBtn.onclick=openDrawer; backdrop.onclick=closeDrawer;
     document.addEventListener("keydown",(e)=>{ if(e.key==="Escape" && drawer.classList.contains("open")){ e.preventDefault(); closeDrawer(); }});
 
-    /* Multi-admin whitelist (RTDB: auth/admins/{uid} -> true atau "role") */
+    /* Multi-admin whitelist (RTDB: auth/admins/{uid}) */
     let ADMINS = {}; // {uid: true|"owner"|"editor"|"viewer"}
     onValue(ref(db,"auth/admins"), s=>{ ADMINS = s.val()||{}; try{ updateNav(isAuthed()); }catch{} try{ render(); }catch{} });
 
@@ -492,6 +507,7 @@
     const btnSignOut=$("#btnSignOut");
     const globalKeyCard=$("#globalKeyCard");
     const acctEmail=$("#acctEmail");
+    const menuEmail=$("#menuEmail");
 
     /* ===== Settings Sync (Local + Remote) ===== */
     const SETTINGS_PATH = (uid)=>`auth/settings/${uid}`;
@@ -583,10 +599,11 @@
       const c = localStorage.getItem("gx:cacheKeys"); if(c){ cache = JSON.parse(c); render(); }
     }catch{}
 
-    /* Helper: tampilkan email akun */
+    /* ======== Tampilkan email akun (Settings + Menu) ======== */
     function setAccountEmail(u){
-      if(!acctEmail) return;
-      acctEmail.textContent = (u && u.email) ? u.email : "-";
+      const text = (u && u.email) ? u.email : "Belum login";
+      if(acctEmail) acctEmail.textContent = text;
+      if(menuEmail) menuEmail.textContent = text;
     }
 
     /* Auth state */
@@ -607,7 +624,6 @@
       document.body.classList.toggle("authed", !!authed);
       document.body.classList.toggle("noauth", !authed);
       btnSignOut.classList.toggle("hide", !authed);
-      // Lock aksi bila role viewer
       const editable = canEdit();
       btnAdd.disabled = false;
       btnSaveGlobal.disabled = false;
@@ -735,7 +751,6 @@
         const expMs = cache[k]?.exp||0;
         const expired = expMs && now>expMs;
         const soon = !expired && expMs && (expMs - now) <= (5*864e5); // 5 hari
-
         const permanent = expMs===0;
 
         // Filter status
@@ -766,7 +781,7 @@
         const sub=document.createElement("div"); sub.className="row2 muted";
         sub.textContent = "Expire: "+fmtDate(expMs);
 
-        // Row 3: actions (tanpa Undo)
+        // Row 3: actions
         const actions=document.createElement("div"); actions.className="row3";
         const mk=(txt,action)=>{ const b=document.createElement("button"); b.className="btn small"; b.textContent=txt; b.dataset.key=k; b.dataset.action=action; return b; };
         const btnNoExp=mk("♾️ No Exp","noexp");
@@ -791,7 +806,7 @@
       updateAnalytics();
     }
 
-    /* Key actions (tanpa Undo) */
+    /* Key actions */
     document.addEventListener("click",(e)=>{
       const b=e.target.closest("button[data-action]"); if(!b) return;
       const k=b.dataset.key, act=b.dataset.action;
@@ -843,13 +858,12 @@
       else { await navigator.clipboard.writeText(text); toast("Disalin (share tidak didukung)"); }
     };
 
-    // Chips cepat tanggal — +7 hari bisa di-klik berkali-kali (inkremental)
+    // Chips tanggal cepat
+    const debounce=(fn,ms)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
     document.addEventListener("click",(e)=>{
       const chip=e.target.closest(".chip[data-add]"); if(!chip) return;
       const add=parseInt(chip.dataset.add||"0",10);
       if(add===0){ exp.value=""; toast("Tanpa Exp"); return; }
-
-      // ambil dari input jika ada; kalau kosong, mulai dari hari ini
       let baseDate;
       if((exp.value||"").trim()){
         const {Y,M,D}=fromInputDate(exp.value.trim());
@@ -858,14 +872,12 @@
         baseDate=new Date();
       }
       baseDate.setDate(baseDate.getDate()+add);
-
       const pad=n=>String(n).padStart(2,"0");
       exp.value=`${baseDate.getFullYear()}-${pad(baseDate.getMonth()+1)}-${pad(baseDate.getDate())}`;
       toast("+7 hari");
     });
 
     // Pencarian — debounce 200ms
-    const debounce=(fn,ms)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
     const liveSearch = debounce(render,200);
     search?.addEventListener("input", liveSearch, {passive:true});
     search?.addEventListener("keyup", liveSearch, {passive:true});
