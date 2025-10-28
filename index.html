@@ -115,17 +115,14 @@
     /* Login center */
     [data-page="login"].show{min-height:calc(100dvh - 56px);place-content:center}
 
-    /* Toast center (+ tombol Undo) */
+    /* Toast center (tanpa Undo) */
     #toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:color-mix(in oklab, var(--card), black 6%);border:1px solid var(--line);padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);display:none;z-index:99;text-align:center;max-width:min(92vw,520px)}
-    #toast .link{border:1px solid var(--line);border-radius:10px;padding:6px 10px;display:inline-block;margin-left:8px}
 
-    /* Bottom Nav + badge expired */
+    /* Bottom Nav (tanpa badge expired) */
     .bottomnav{position:fixed;left:0;right:0;bottom:0;height:var(--bn-h);background:color-mix(in oklab, var(--card), black 4%);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(2,1fr);z-index:55;padding-bottom:env(safe-area-inset-bottom)}
     .bottomnav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:.85rem;color:var(--muted);position:relative}
     .bottomnav a .bi{width:22px;height:22px}
     .bottomnav a.active{color:var(--text)}
-    .badge{position:absolute;top:6px;right:18px;min-width:18px;height:18px;border-radius:999px;background:var(--pri);color:white;font-size:11px;display:grid;place-items:center;padding:0 6px;line-height:1;border:1px solid var(--line)}
-    .badge.hide{display:none}
 
     /* Modal base */
     .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:90}
@@ -231,12 +228,10 @@
       <!-- Buat Key -->
       <div class="card" id="createKeyCard" style="position:relative">
         <h3 style="text-align:center">Buat Key</h3>
-        <!-- Generate tombol kanan sesuai preferensi -->
-        <button id="btnGen" class="btn small ghost" style="position:absolute;right:14px;top:12px">Generate</button>
 
         <!-- Baris input key -->
         <div class="row" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center">
-          <input id="newKey" type="text" placeholder="Key baru (contoh: VIP-XXXX-1234)" style="flex:1;min-width:220px;max-width:560px" autocomplete="off" />
+          <input id="newKey" type="text" placeholder="Key baru (contoh: vip-xxxx-1234)" style="flex:1;min-width:220px;max-width:560px" autocomplete="off" />
         </div>
 
         <!-- Baris tanggal -->
@@ -338,7 +333,6 @@
     <a href="#keys" data-route="keys" id="bn-keys">
       <svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="8" r="3"/><path d="M10 8h10l-2 2 2 2-2 2 2 2"/></svg>
       <span>Daftar Key</span>
-      <i id="bn-exp" class="badge hide" aria-hidden="true">0</i>
     </a>
   </nav>
 
@@ -404,30 +398,20 @@
     const $$ = (s,el=document)=>el.querySelectorAll(s);
     const toastEl=$("#toast");
     let toastTimer=null;
-    const toast = (t,{undo=null}={})=>{
-      toastEl.innerHTML = "";
-      const span = document.createElement("span");
-      span.textContent = t;
-      toastEl.appendChild(span);
-      if(typeof undo==="function"){
-        const b=document.createElement("button");
-        b.className="link";
-        b.textContent="Undo";
-        b.onclick=()=>{ try{ undo(); }finally{ toastEl.style.display="none"; } };
-        toastEl.appendChild(b);
-      }
+    const toast = (t)=>{
+      toastEl.textContent = t;
       toastEl.style.display="block";
       clearTimeout(toastTimer);
-      toastTimer=setTimeout(()=>toastEl.style.display="none", undo?6000:2000);
+      toastTimer=setTimeout(()=>toastEl.style.display="none", 1500);
     };
     const fmtDate = (ms)=> ms ? new Date(ms).toLocaleDateString("id-ID", { day:"2-digit", month:"long", year:"numeric" }) : "Permanen";
     const toEOD = (Y,M,D)=> new Date(Y,M-1,D,23,59,59,999).getTime();
     const fromInputDate = (v)=>{const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return {Y,M,D};};
+    // TIDAK mengubah huruf: tetap sesuai input (tidak auto-uppercase)
     const sanitizeKey=(k)=> (k||"")
       .normalize("NFKC")
       .replace(/\s+/g,"")
-      .replace(/[^\w\-.:@]/g,"")   // huruf/angka/underscore/titik/titikdua/at/minus
-      .toUpperCase();
+      .replace(/[^\w\-.:@]/g,"");
 
     const protectedRoutes = new Set(["dashboard","keys","settings"]);
 
@@ -493,13 +477,12 @@
 
     /* UI refs */
     const globalKey=$("#globalKey"), btnSaveGlobal=$("#btnSaveGlobal"), btnClearGlobal=$("#btnClearGlobal"), btnShareGlobal=$("#btnShareGlobal");
-    const newKey=$("#newKey"), exp=$("#exp"), btnAdd=$("#btnAdd"), createKeyCard=$("#createKeyCard"), btnGen=$("#btnGen");
+    const newKey=$("#newKey"), exp=$("#exp"), btnAdd=$("#btnAdd"), createKeyCard=$("#createKeyCard");
     const keyList=$("#keyList"), search=$("#search");
     const sortExpired=$("#sortExpired"), hideGlobal=$("#hideGlobal"), allowSelect=$("#allowSelect"), reduce=$("#reduce");
     const email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin");
     const btnSignOut=$("#btnSignOut");
     const globalKeyCard=$("#globalKeyCard");
-    const bnExp=$("#bn-exp");
 
     /* ===== Settings Sync (Local + Remote) ===== */
     const SETTINGS_PATH = (uid)=>`auth/settings/${uid}`;
@@ -610,7 +593,6 @@
       // Lock aksi bila role viewer
       const editable = canEdit();
       btnAdd.disabled = false;
-      btnGen.disabled = false;
       btnSaveGlobal.disabled = false;
       btnClearGlobal.disabled = false;
       btnShareGlobal.disabled = false;
@@ -687,7 +669,6 @@
     confirmOk.onclick=()=>confirmResolver&&confirmResolver(true);
     modalConfirmWrap.addEventListener("click",(e)=>{ if(e.target===modalConfirmWrap) confirmResolver&&confirmResolver(false); });
 
-    /* Render keys (+ badge expired + role gating pada aksi) */
     /* ===== Mini Analytics (Home) ===== */
     function calcStats(){
       const ks = Object.keys(cache||{});
@@ -715,7 +696,6 @@
       setBar("perm", s.perm, (s.perm/denom)*100);
     }
 
-    let lastDeleted = null; // {k, val}
     function render(){
       const ks = Object.keys(cache||{});
       const now=Date.now();
@@ -724,9 +704,6 @@
       const q = (search?.value||"").trim().toUpperCase();
       const filt = getFilter();
       const frag = document.createDocumentFragment();
-
-      // hitung badge expired
-      let expiredCount=0;
 
       const sorted = ks.sort((a,b)=>{
         if(sortExpired.checked){
@@ -740,10 +717,9 @@
       for(const k of sorted){
         const expMs = cache[k]?.exp||0;
         const expired = expMs && now>expMs;
-        const soon = !expired && expMs && (expMs - now) <= (3*864e5);
-        const permanent = expMs===0;
+        const soon = !expired && expMs && (expMs - now) <= (5*864e5); // 5 hari
 
-        if(expired) expiredCount++;
+        const permanent = expMs===0;
 
         // Filter status
         if(filt==="active" && (expired)) continue;
@@ -773,16 +749,13 @@
         const sub=document.createElement("div"); sub.className="row2 muted";
         sub.textContent = "Expire: "+fmtDate(expMs);
 
-        // Row 3: actions (+ share, undo-ready delete)
+        // Row 3: actions (tanpa Undo)
         const actions=document.createElement("div"); actions.className="row3";
         const mk=(txt,action)=>{ const b=document.createElement("button"); b.className="btn small"; b.textContent=txt; b.dataset.key=k; b.dataset.action=action; return b; };
         const btnNoExp=mk("♾️ No Exp","noexp");
         const btnDate =mk("🗓️ Tanggal…","setdate");
         const btnShare=mk("🔗 Share","share");
         const del=mk("🗑️ Hapus","del"); del.classList.add("danger");
-
-        // Non-editor (viewer) tidak boleh ubah
-        // viewer gating removed: buttons always enabled for all roles
 
         actions.appendChild(btnNoExp);
         actions.appendChild(btnDate);
@@ -798,17 +771,10 @@
       }
       keyList.appendChild(frag);
 
-      // update badge expired pada bottom nav
-      if(expiredCount>0){
-        bnExp.textContent = expiredCount>99 ? "99+" : String(expiredCount);
-        bnExp.classList.remove("hide");
-      }else{
-        bnExp.classList.add("hide");
-      }
       updateAnalytics();
     }
 
-    /* Key actions (+ share + undo delete) */
+    /* Key actions (tanpa Undo) */
     document.addEventListener("click",(e)=>{
       const b=e.target.closest("button[data-action]"); if(!b) return;
       const k=b.dataset.key, act=b.dataset.action;
@@ -821,29 +787,17 @@
             if(navigator.share){ try{ await navigator.share({title:"GxMods Key", text}); }catch{} }
             else { await navigator.clipboard.writeText(text); toast("Disalin (share tidak didukung)"); }
           } else if(act==="noexp"){
-            
             selfWriteAt=Date.now();
             await update(ref(db,"auth/keys/"+k), {exp:0});
             toast("No Exp");
           } else if(act==="setdate"){
-            
             openModalSetDate(k, cache[k]?.exp||0);
           } else if(act==="del"){
-            
             const ok = await confirmDialog(`Hapus key: ${k}?`);
             if(!ok) return;
-            // simpan untuk undo
-            lastDeleted = { k, val: cache[k] ? { ...cache[k] } : null };
             selfWriteAt=Date.now();
             await remove(ref(db,"auth/keys/"+k));
-            toast(`Dihapus`, {undo: async ()=>{
-              if(lastDeleted && lastDeleted.k===k && lastDeleted.val){
-                selfWriteAt=Date.now();
-                await update(ref(db,"auth/keys/"+k), lastDeleted.val);
-                lastDeleted=null;
-                toast("Dikembalikan");
-              }
-            }});
+            toast("Dihapus");
           }
         }catch{ toast("Gagal"); }
       })();
@@ -851,7 +805,6 @@
 
     /* Form controls */
     btnAdd.onclick = async ()=>{
-      
       let raw=(newKey.value||"");
       const k=sanitizeKey(raw);
       if(!k){ toast("Isi key"); return; }
@@ -862,16 +815,7 @@
       newKey.value=""; exp.value=""; toast("Ditambahkan");
     };
 
-    // Generate key kanan (alfabet tanpa I/O, angka tanpa 0/1 biar mudah dibaca)
-    function genSeg(len=4){
-      const CH="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-      let s=""; for(let i=0;i<len;i++){ s+=CH[Math.floor(Math.random()*CH.length)]; } return s;
-    }
-    btnGen.onclick = ()=>{
-      const v=`VIP-${genSeg()}-${genSeg()}`;
-      newKey.value=v; newKey.focus();
-    };
-
+    /* Global Key */
     btnSaveGlobal.onclick = async ()=>{  selfWriteAt=Date.now(); await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); toast("Global key disimpan"); };
     btnClearGlobal.onclick = async ()=>{  selfWriteAt=Date.now(); await set(ref(db,"auth/globalKey"), ""); globalKey.value=""; toast("Dikosongkan"); };
     btnShareGlobal.onclick = async ()=>{
@@ -882,14 +826,25 @@
       else { await navigator.clipboard.writeText(text); toast("Disalin (share tidak didukung)"); }
     };
 
-    // Chips cepat tanggal
+    // Chips cepat tanggal — +7 hari bisa di-klik berkali-kali (inkremental)
     document.addEventListener("click",(e)=>{
       const chip=e.target.closest(".chip[data-add]"); if(!chip) return;
       const add=parseInt(chip.dataset.add||"0",10);
       if(add===0){ exp.value=""; toast("Tanpa Exp"); return; }
-      const d=new Date(); d.setDate(d.getDate()+add);
+
+      // ambil dari input jika ada; kalau kosong, mulai dari hari ini
+      let baseDate;
+      if((exp.value||"").trim()){
+        const {Y,M,D}=fromInputDate(exp.value.trim());
+        baseDate=new Date(Y, M-1, D);
+      }else{
+        baseDate=new Date();
+      }
+      baseDate.setDate(baseDate.getDate()+add);
+
       const pad=n=>String(n).padStart(2,"0");
-      exp.value=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+      exp.value=`${baseDate.getFullYear()}-${pad(baseDate.getMonth()+1)}-${pad(baseDate.getDate())}`;
+      toast("+7 hari");
     });
 
     // Pencarian — debounce 200ms
