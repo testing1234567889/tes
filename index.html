@@ -136,6 +136,17 @@
     /* Mini progress bar (cadangan) */
     .bar{height:10px;border-radius:999px;background:color-mix(in oklab, var(--card), black 8%);overflow:hidden;border:1px solid var(--line)}
     .bar > i{display:block;height:100%;background:linear-gradient(90deg,#16a34a,#22c55e)}
+
+    /* Mini Analytics */
+    .mini{display:flex;flex-direction:column;gap:10px}
+    .mini-row{display:flex;align-items:center;gap:10px}
+    .mini-label{min-width:110px;color:var(--muted)}
+    .mini-val{min-width:42px;text-align:right;font-variant-numeric:tabular-nums}
+    .mini-bar{flex:1;height:8px;border-radius:999px;background:color-mix(in oklab, var(--card), black 8%);border:1px solid var(--line);overflow:hidden}
+    .mini-bar>i{display:block;height:100%;width:var(--w,0%);background:linear-gradient(90deg,#7c3aed,#19c37d)}
+    .mini-legend{display:flex;gap:10px;flex-wrap:wrap}
+    .mini-legend .pill{font-size:.78rem}
+
   </style>
 </head>
 <body class="noauth booting">
@@ -167,6 +178,33 @@
       <div class="card">
         <h3>Home</h3>
         <p class="muted">Kelola key di tab <b>Daftar Key</b>. UI diringkas supaya enteng di HP.</p>
+
+        <div id="miniStats" class="mini">
+          <div class="mini-row">
+            <div class="mini-label">Total Key</div>
+            <div class="mini-val" id="st-total">0</div>
+            <div class="mini-bar"><i id="bar-total" style="--w:0%"></i></div>
+          </div>
+          <div class="mini-row">
+            <div class="mini-label">Aktif</div>
+            <div class="mini-val" id="st-active">0</div>
+            <div class="mini-bar"><i id="bar-active" style="--w:0%"></i></div>
+          </div>
+          <div class="mini-row">
+            <div class="mini-label">Expired</div>
+            <div class="mini-val" id="st-expired">0</div>
+            <div class="mini-bar"><i id="bar-expired" style="--w:0%"></i></div>
+          </div>
+          <div class="mini-row">
+            <div class="mini-label">Tanpa Exp</div>
+            <div class="mini-val" id="st-perm">0</div>
+            <div class="mini-bar"><i id="bar-perm" style="--w:0%"></i></div>
+          </div>
+          <div class="mini-legend">
+            <span class="pill">Distribusi bar = proporsi dari total</span>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -410,7 +448,7 @@
 
     /* Multi-admin whitelist (RTDB: auth/admins/{uid} -> true atau "role") */
     let ADMINS = {}; // {uid: true|"owner"|"editor"|"viewer"}
-    onValue(ref(db,"auth/admins"), s=>{ ADMINS = s.val()||{}; });
+    onValue(ref(db,"auth/admins"), s=>{ ADMINS = s.val()||{}; try{ updateNav(isAuthed()); }catch{} try{ render(); }catch{} });
 
     const isAuthed = ()=>{
       const u=auth.currentUser;
@@ -643,6 +681,33 @@
     modalConfirmWrap.addEventListener("click",(e)=>{ if(e.target===modalConfirmWrap) confirmResolver&&confirmResolver(false); });
 
     /* Render keys (+ badge expired + role gating pada aksi) */
+    /* ===== Mini Analytics (Home) ===== */
+    function calcStats(){
+      const ks = Object.keys(cache||{});
+      const now = Date.now();
+      let total = ks.length, perm = 0, expired = 0, active = 0;
+      for(const k of ks){
+        const e = cache[k]?.exp || 0;
+        if(e===0){ perm++; continue; }
+        if(now>e){ expired++; } else { active++; }
+      }
+      return { total, active, expired, perm };
+    }
+    function setBar(id, val, pct){
+      const valEl = document.getElementById("st-"+id);
+      const barEl = document.getElementById("bar-"+id);
+      if(valEl) valEl.textContent = String(val);
+      if(barEl) barEl.style.setProperty("--w", (pct||0).toFixed(1) + "%");
+    }
+    function updateAnalytics(){
+      const s = calcStats();
+      const denom = Math.max(s.total, 1);
+      setBar("total", s.total, s.total>0 ? 100 : 0);
+      setBar("active", s.active, (s.active/denom)*100);
+      setBar("expired", s.expired, (s.expired/denom)*100);
+      setBar("perm", s.perm, (s.perm/denom)*100);
+    }
+
     let lastDeleted = null; // {k, val}
     function render(){
       const ks = Object.keys(cache||{});
@@ -733,6 +798,7 @@
       }else{
         bnExp.classList.add("hide");
       }
+      updateAnalytics();
     }
 
     /* Key actions (+ share + undo delete) */
