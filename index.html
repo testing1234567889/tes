@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <!-- Tambah interactive-widget biar keyboard HP gak dorong layout -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, interactive-widget=overlays-content" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=overlays-content" />
   <meta name="theme-color" content="#0b0f14" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>GxMods Key Panel</title>
@@ -13,40 +13,18 @@
     :root{
       --bg:#0b0f14;--card:#0f1622;--line:#1a2331;--muted:#9fb1c3;
       --text:#e6edf3;--pri:#7c3aed;--ok:#19c37d;--warn:#f59e0b;
-      --err:#ef4444;--chip:#1a2331;--chipOn:#1f2b3d;--ghost:#121a26;
-      --glass:color-mix(in oklab, var(--card), white 4%);
+      --r:16px; --shadow:0 6px 24px rgba(0,0,0,.28);
+      --bn-h:60px;
     }
-    body{margin:0;background:linear-gradient(180deg,#0b0f14,#0b0f14 40%,#0b0f14);color:var(--text);font:14px/1.4 system-ui,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial}
+
+    body{
+      margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      background:var(--bg);color:var(--text);-webkit-tap-highlight-color:transparent;
+      touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none
+    }
+    body.allow-select{user-select:text;-webkit-user-select:text;-webkit-touch-callout:auto}
     a{color:inherit;text-decoration:none}
-    .muted{color:#9fb1c3}
-    .ok{color:var(--ok)}.warn{color:var(--warn)}.err{color:var(--err)}
-    .row{display:flex;align-items:center;gap:12px}
-    .grow{flex:1 1 auto}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;background:color-mix(in oklab, var(--pri), black 30%);border:1px solid color-mix(in oklab, var(--pri), black 45%);cursor:pointer;user-select:none}
-    .btn.ghost{background:var(--ghost);border-color:var(--line)}
-    .btn[disabled]{opacity:.6;cursor:not-allowed}
-    .icon{width:18px;height:18px;stroke-width:2}
-    .chip{display:inline-flex;align-items:center;gap:8px;background:var(--chip);border:1px solid var(--line);padding:8px 12px;border-radius:999px;cursor:pointer;user-select:none}
-    .chip.active{background:var(--chipOn);border-color:#2a3650}
-    .card{background:var(--glass);border:1px solid var(--line);border-radius:16px}
-    .list{display:flex;flex-direction:column}
-    .item{display:grid;grid-template-columns:1fr auto;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
-    .item:last-child{border-bottom:none}
-    .row-actions{display:flex;gap:8px;flex-wrap:wrap}
-    .field{display:grid;gap:8px}
-    .field .label{font-weight:600}
-    .grid{display:grid;gap:12px}
-    .grid.cols2{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .grid.cols3{grid-template-columns:repeat(3,minmax(0,1fr))}
-    .topbar{position:sticky;top:0;z-index:60;height:56px;display:flex;align-items:center;gap:10px;padding:0 12px;background:color-mix(in oklab, var(--card), black 4%);border-bottom:1px solid var(--line);backdrop-filter:saturate(120%) blur(8px)}
-    .title{font-weight:700}
-    .container{max-width:980px;margin:16px auto;padding:0 12px}
-    .drawer{position:fixed;inset:0;z-index:70;display:flex;pointer-events:none}
-    .drawer .panel{width:280px;max-width:86vw;background:var(--card);border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .18s ease;border-radius:0 14px 14px 0}
-    .drawer .backdrop{flex:1;background:rgba(0,0,0,.32);opacity:0;transition:opacity .18s ease}
-    .drawer.open{pointer-events:auto}
-    .drawer.open .panel{transform:none}
-    .drawer.open .backdrop{opacity:1}
+    img,svg{display:block;max-width:100%}
     .hide{display:none !important}
     input,textarea{user-select:text;-webkit-user-select:text}
 
@@ -61,151 +39,314 @@
     input::placeholder,textarea::placeholder{color:#9aa7b3}
 
     /* Topbar */
-    .topbar .btn{background:transparent;border:1px solid var(--line)}
-    .topbar .btn:hover{background:color-mix(in oklab, var(--card), white 4%)}
+    .topbar{position:sticky;top:0;z-index:60;height:56px;display:flex;align-items:center;gap:12px;padding:0 14px;background:color-mix(in oklab, var(--card), black 4%);border-bottom:1px solid var(--line)}
+    .title{font-weight:700}
+    .grow{flex:1}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);cursor:pointer;transition:transform .08s ease}
+    .btn.ghost{background:transparent}
+    .btn.small{padding:8px 10px;border-radius:10px}
+    .btn:active{transform:translateY(1px)}
+    .btn[disabled]{opacity:.6;pointer-events:none}
+    .icon{width:20px;height:20px}
 
-    /* Bottom nav */
-    #bottomnav{position:sticky;bottom:0;z-index:50;background:color-mix(in oklab, var(--card), black 3%);border-top:1px solid var(--line)}
-    #bottomnav .bar{display:flex;gap:8px;padding:8px;max-width:980px;margin:0 auto}
-    #bottomnav a{flex:1;border-radius:12px;padding:10px;text-align:center;border:1px solid var(--line);background:var(--ghost)}
-    #bottomnav a.active{border-color:color-mix(in oklab, var(--pri), black 30%);background:color-mix(in oklab, var(--pri), black 60%)}
+    /* Drawer */
+    .drawer{position:fixed;inset:0 auto 0 0;width:min(78%,320px);background:var(--card);border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .16s ease-out;z-index:70;contain:paint}
+    .drawer.open{transform:translateX(0)}
+    .drawer .brand{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid var(--line)}
+    .nav{padding:8px}
+    .nav a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:1px solid transparent}
+    .nav a:hover{background:color-mix(in oklab, var(--card), black 8%)}
+    .nav a.active{border-color:#213048;background:color-mix(in oklab, var(--card), black 8%)}
+    .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .16s ease;z-index:65}
+    .backdrop.show{opacity:1;pointer-events:auto}
 
-    /* Pages */
+    /* App */
+    .app{min-height:calc(100dvh - 56px);padding:14px 14px calc(14px + var(--bn-h) + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
+    body.noauth .app{padding-bottom:14px}
     .page{display:none}
-    .page.show{display:block}
+    .page.show{display:grid;gap:16px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:12px}
+    .muted{color:var(--muted);font-size:.95rem}
+    .grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
+    @media (max-width:560px){.grid{grid-template-columns:1fr}}
 
-    /* Modal */
-    .modal{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;padding:20px}
+    /* Key list */
+    .list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+    .item{padding:12px;background:color-mix(in oklab, var(--card), black 2%);border-bottom:1px solid var(--line)}
+    .item:nth-child(2n){background:color-mix(in oklab, var(--card), black 6%)}
+    .item:last-child{border-bottom:none}
+    .row1{display:flex;align-items:center;gap:10px}
+    .row1 .grow{flex:1;min-width:0}
+    .row1 strong{word-break:break-all}
+    .row2{margin-top:4px}
+    .row3{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+    @media (max-width:720px){ .row3{justify-content:center} }
+
+    .pill{padding:3px 8px;border-radius:999px;border:1px solid var(--line);font-size:.8rem;white-space:nowrap}
+    .ok{background:#10221a;border-color:#1f4e39;color:#9de7c4}
+    .soon{background:#2b220c;border-color:#5a4310;color:#ffe5a3}
+    .exp{background:#2a1414;border-color:#5d2a2a;color:#ffc8c8}
+
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--card);cursor:pointer;user-select:none}
+    .chip.active{outline:2px solid #213048}
+
+    .switch{display:inline-flex;align-items:center;gap:10px}
+    .switch input{position:absolute;opacity:0;width:0;height:0}
+    .switch .track{width:44px;height:26px;background:#1f2937;border:1px solid var(--line);border-radius:999px;position:relative;transition:background .15s,border-color .15s}
+    .switch .thumb{position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#cbd5e1;transition:left .15s,background .15s}
+    .switch input:checked + .track{background:#12211a;border-color:#1f4e39}
+    .switch input:checked + .track .thumb{left:20px;background:#9de7c4}
+
+    /* Guards */
+    body.noauth .guarded{display:none !important}
+    body.authed .login-only{display:none !important}
+    body.noauth #menuBtn,body.noauth #btnSignOut{display:none !important}
+    body.noauth .topbar,body.noauth #drawer,body.noauth #backdrop,body.noauth #bottomnav{display:none !important}
+
+    /* Boot splash */
+    body.booting .page{display:none !important}
+    #boot{position:fixed;inset:0;display:grid;place-items:center;background:var(--bg);z-index:100;font-size:14px;color:var(--muted)}
+
+    /* “Kurangi efek” mode */
+    .reduce .btn,.reduce .card{box-shadow:none}
+    .reduce .backdrop{background:rgba(0,0,0,.3)}
+    .lite .btn,.lite .card{box-shadow:none}
+
+    /* Login center */
+    [data-page="login"].show{min-height:calc(100dvh - 56px);place-content:center}
+
+    /* Toast center (+ tombol Undo) */
+    #toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:color-mix(in oklab, var(--card), black 6%);border:1px solid var(--line);padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);display:none;z-index:99;text-align:center;max-width:min(92vw,520px)}
+    #toast .link{border:1px solid var(--line);border-radius:10px;padding:6px 10px;display:inline-block;margin-left:8px}
+
+    /* Bottom Nav + badge expired */
+    .bottomnav{position:fixed;left:0;right:0;bottom:0;height:var(--bn-h);background:color-mix(in oklab, var(--card), black 4%);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(2,1fr);z-index:55;padding-bottom:env(safe-area-inset-bottom)}
+    .bottomnav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:.85rem;color:var(--muted);position:relative}
+    .bottomnav a .bi{width:22px;height:22px}
+    .bottomnav a.active{color:var(--text)}
+    .badge{position:absolute;top:6px;right:18px;min-width:18px;height:18px;border-radius:999px;background:var(--pri);color:white;font-size:11px;display:grid;place-items:center;padding:0 6px;line-height:1;border:1px solid var(--line)}
+    .badge.hide{display:none}
+
+    /* Modal base */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:90}
     .modal.show{display:flex}
-    .modal-card{width:min(560px,92vw);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
-    .modal .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+    .modal-card{width:min(92vw,420px);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end}
 
-    /* Toast */
-    #toast{position:fixed;z-index:100;left:50%;bottom:18px;transform:translateX(-50%);display:none;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);padding:10px 14px;border-radius:14px}
+    /* Mini progress bar (cadangan) */
+    .bar{height:10px;border-radius:999px;background:color-mix(in oklab, var(--card), black 8%);overflow:hidden;border:1px solid var(--line)}
+    .bar > i{display:block;height:100%;background:linear-gradient(90deg,#16a34a,#22c55e)}
 
-    /* Poles UI tambahan (5 saran) */
-    .btn:focus-visible{ outline:2px solid color-mix(in oklab, var(--pri), white 10%); outline-offset:2px }
-    .chip{ transition: transform .08s ease, outline-color .15s ease }
-    .chip:active{ transform: translateY(1px) }
-    .item{ border-left:3px solid transparent }
-    .item:hover{ border-left-color: var(--pri) }
-    .offline-banner{ position:sticky; top:56px; z-index:59; background:#2b1f1f; color:#f2dede; border-bottom:1px solid #4a2f2f; padding:8px 16px; font-size:14px; }
-    body.offline .btn, body.offline input, body.offline select, body.offline textarea{ opacity:.7 }
+    /* Mini Analytics */
+    .mini{display:flex;flex-direction:column;gap:10px}
+    .mini-row{display:flex;align-items:center;gap:10px}
+    .mini-label{min-width:110px;color:var(--muted)}
+    .mini-val{min-width:42px;text-align:right;font-variant-numeric:tabular-nums}
+    .mini-bar{flex:1;height:8px;border-radius:999px;background:color-mix(in oklab, var(--card), black 8%);border:1px solid var(--line);overflow:hidden}
+    .mini-bar>i{display:block;height:100%;width:var(--w,0%);background:linear-gradient(90deg,#7c3aed,#19c37d)}
+    .mini-legend{display:flex;gap:10px;flex-wrap:wrap}
+    .mini-legend .pill{font-size:.78rem}
+
   </style>
 </head>
-<body class="booting">
-  <div class="topbar" role="banner">
+<body class="noauth booting">
+  <!-- Topbar -->
+  <header class="topbar">
     <button id="menuBtn" class="btn" aria-label="Menu" aria-haspopup="true" aria-controls="drawer" aria-expanded="false">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       <span>Menu</span>
     </button>
     <div class="title">GxMods Key Panel</div>
-    <div id="offlineBanner" class="offline-banner hide" role="status">Mode Offline: semua fitur dimatikan sementara.</div>
     <div class="grow"></div>
     <button id="btnSignOut" class="btn ghost">Sign Out</button>
-  </div>
+  </header>
 
-  <div class="drawer" id="drawer" aria-hidden="true">
-    <div class="panel">
-      <div style="padding:12px;border-bottom:1px solid var(--line);font-weight:700">Navigasi</div>
-      <div style="padding:12px;display:grid;gap:8px">
-        <a class="chip" data-route="dashboard">Dashboard</a>
-        <a class="chip" data-route="keys">Daftar Key</a>
-        <a class="chip" data-route="settings">Pengaturan</a>
-      </div>
-    </div>
-    <div class="backdrop"></div>
-  </div>
+  <!-- Drawer -->
+  <aside id="drawer" class="drawer" aria-hidden="true" tabindex="-1">
+    <div class="brand"><strong>Menu</strong></div>
+    <nav class="nav" id="nav">
+      <a href="#settings" data-route="settings" data-auth="in">Pengaturan</a>
+      <a href="#about" data-route="about">Tentang</a>
+    </nav>
+  </aside>
+  <div id="backdrop" class="backdrop"></div>
 
-  <div id="toast" role="status" aria-live="polite"></div>
+  <!-- App -->
+  <main id="app" class="app">
+    <!-- Home -->
+    <section class="page guarded" data-page="dashboard">
+      <div class="card">
+        <h3>Home</h3>
+        <p class="muted">Kelola key di tab <b>Daftar Key</b>. UI diringkas supaya enteng di HP.</p>
 
-  <div class="container">
-    <!-- Pages -->
-    <div id="page-dashboard" class="page show">
-      <div class="card" style="padding:12px">
-        <div class="row" style="gap:8px">
-          <div class="title" style="font-size:16px">Ringkasan</div>
-          <div class="grow"></div>
-          <div id="filterChips" class="row" role="tablist" aria-label="Filter">
-            <div class="chip active" data-filter="all" role="tab" aria-selected="true">Semua</div>
-            <div class="chip" data-filter="active" role="tab" aria-selected="false">Aktif</div>
-            <div class="chip" data-filter="expired" role="tab" aria-selected="false">Expired</div>
+        <div id="miniStats" class="mini">
+          <div class="mini-row">
+            <div class="mini-label">Total Key</div>
+            <div class="mini-val" id="st-total">0</div>
+            <div class="mini-bar"><i id="bar-total" style="--w:0%"></i></div>
+          </div>
+          <div class="mini-row">
+            <div class="mini-label">Aktif</div>
+            <div class="mini-val" id="st-active">0</div>
+            <div class="mini-bar"><i id="bar-active" style="--w:0%"></i></div>
+          </div>
+          <div class="mini-row">
+            <div class="mini-label">Expired</div>
+            <div class="mini-val" id="st-expired">0</div>
+            <div class="mini-bar"><i id="bar-expired" style="--w:0%"></i></div>
+          </div>
+          <div class="mini-row">
+            <div class="mini-label">Tanpa Exp</div>
+            <div class="mini-val" id="st-perm">0</div>
+            <div class="mini-bar"><i id="bar-perm" style="--w:0%"></i></div>
+          </div>
+          <div class="mini-legend">
+            <span class="pill">Distribusi bar = proporsi dari total</span>
           </div>
         </div>
+
+      </div>
+    </section>
+
+    <!-- Keys -->
+    <section class="page guarded" data-page="keys">
+      <!-- Global Key -->
+      <div class="card" id="globalKeyCard">
+        <h3>Global Key</h3>
+        <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
+          <input id="globalKey" type="text" placeholder="Kosongkan jika tidak pakai"/>
+          <button id="btnSaveGlobal" class="btn small">Simpan</button>
+          <button id="btnClearGlobal" class="btn small">Hapus</button>
+          <button id="btnShareGlobal" class="btn small ghost">Share</button>
+        </div>
       </div>
 
-      <div class="card" style="padding:12px;margin-top:12px">
-        <div class="grid cols3">
-          <div class="field"><div class="label">Key Global</div><input id="globalKey" placeholder="(opsional)"/></div>
-          <div class="field"><div class="label">Tambah Key</div>
-            <div class="row" style="gap:8px">
-              <input id="newKey" placeholder="VIP-XXXX-XXXX" />
-              <button id="btnGen" class="btn">Generate</button>
-              <button id="btnAdd" class="btn">Tambah</button>
-            </div>
+      <!-- Buat Key -->
+      <div class="card" id="createKeyCard" style="position:relative">
+        <h3 style="text-align:center">Buat Key</h3>
+        <!-- Generate tombol kanan sesuai preferensi -->
+        <button id="btnGen" class="btn small ghost" style="position:absolute;right:14px;top:12px">Generate</button>
+
+        <!-- Baris input key -->
+        <div class="row" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center">
+          <input id="newKey" type="text" placeholder="Key baru (contoh: VIP-XXXX-1234)" style="flex:1;min-width:220px;max-width:560px" autocomplete="off" />
+        </div>
+
+        <!-- Baris tanggal -->
+        <div class="row" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center">
+          <label class="muted" for="exp">Tanggal kadaluarsa (opsional)</label>
+          <input id="exp" type="date" inputmode="none" placeholder="dd-mm-yyyy" style="max-width:220px"/>
+        </div>
+
+        <!-- Baris chip tanggal cepat -->
+        <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center">
+          <span class="chip" data-add="7">+7 hari</span>
+          <span class="chip" data-add="0">Tanpa Exp</span>
+        </div>
+
+        <!-- Baris tombol Tambah -->
+        <div class="row" style="display:flex;justify-content:center">
+          <button id="btnAdd" class="btn small">Tambah</button>
+        </div>
+      </div>
+
+      <!-- Daftar Key -->
+      <div class="card">
+        <div class="row" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between">
+          <h3 style="margin:0">Daftar Key</h3>
+          <input id="search" type="search" placeholder="Cari key…" style="min-width:160px;max-width:260px" autocomplete="off" />
+        </div>
+        <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <span class="chip filter" data-filter="all">Semua</span>
+          <span class="chip filter" data-filter="active">Aktif</span>
+          <span class="chip filter" data-filter="soon">Segera Habis</span>
+          <span class="chip filter" data-filter="expired">Expired</span>
+          <span class="chip filter" data-filter="permanent">Tanpa Exp</span>
+        </div>
+        <div id="keyList" class="list" role="list"></div>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section class="page guarded" data-page="settings">
+      <div class="card">
+        <h3>Pengaturan</h3>
+
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div><strong>Kurangi efek</strong><span class="muted" style="margin-left:8px">Animasi tetap halus, efek berat diminimalkan.</span></div>
+          <label class="switch"><input id="reduce" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
+        </div>
+
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div><strong>Urutkan expired dulu</strong></div>
+          <label class="switch"><input id="sortExpired" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
+        </div>
+
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div><strong>Sembunyikan Global Key</strong></div>
+          <label class="switch"><input id="hideGlobal" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
+        </div>
+
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div><strong>Izinkan seleksi teks</strong></div>
+          <label class="switch"><input id="allowSelect" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="page" data-page="about">
+      <div class="card">
+        <h3>Tentang Panel</h3>
+        <p class="muted">Data sinkron lintas perangkat via Firebase Realtime Database. Admin whitelist multi-role didukung.</p>
+      </div>
+    </section>
+
+    <!-- Login -->
+    <section class="page login-only" data-page="login">
+      <div class="card" style="max-width:480px;margin-inline:auto">
+        <h3>Login Admin</h3>
+        <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
+          <input id="email" type="email" placeholder="Email" autocomplete="username">
+        </div>
+        <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
+          <div style="position:relative;width:100%">
+            <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+            <button id="togglePass" class="btn small" style="position:absolute;right:6px;top:6px">Lihat</button>
           </div>
-          <div class="field"><div class="label">Tanggal Exp</div>
-            <input id="exp" type="date" />
-          </div>
         </div>
-        <div class="row" style="gap:8px; margin-top:10px;justify-content:flex-end">
-          <button id="btnSaveGlobal" class="btn">Simpan Global</button>
-          <button id="btnClearGlobal" class="btn ghost">Kosongkan Global</button>
-          <button id="btnShareGlobal" class="btn">Share</button>
+        <div class="row" style="display:flex;justify-content:center">
+          <button id="btnLogin" class="btn">Sign In</button>
         </div>
       </div>
+    </section>
+  </main>
 
-      <div class="card" style="padding:12px;margin-top:12px">
-        <div class="row" style="gap:8px;align-items:center">
-          <div class="label" style="font-weight:700">Daftar Key</div>
-          <div class="grow"></div>
-          <label class="row" style="gap:6px"><input type="checkbox" id="reduce"><span class="muted">Padat</span></label>
-          <label class="row" style="gap:6px"><input type="checkbox" id="sortExpired"><span class="muted">Expired di bawah</span></label>
-          <label class="row" style="gap:6px"><input type="checkbox" id="hideGlobal"><span class="muted">Sembunyikan Global</span></label>
-          <label class="row" style="gap:6px"><input type="checkbox" id="allowSelect"><span class="muted">Bisa Select</span></label>
-        </div>
-        <div id="list" class="list" style="margin-top:8px"></div>
-      </div>
-    </div>
+  <!-- Bottom Navigation -->
+  <nav id="bottomnav" class="bottomnav" role="navigation" aria-label="Navigasi utama">
+    <a href="#dashboard" data-route="dashboard" id="bn-home" aria-current="page">
+      <svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10h14V10"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="#keys" data-route="keys" id="bn-keys">
+      <svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="8" r="3"/><path d="M10 8h10l-2 2 2 2-2 2 2 2"/></svg>
+      <span>Daftar Key</span>
+      <i id="bn-exp" class="badge hide" aria-hidden="true">0</i>
+    </a>
+  </nav>
 
-    <div id="page-keys" class="page">
-      <div class="card" style="padding:12px">
-        <div class="label" style="font-weight:700">Daftar Key</div>
-        <div id="list2" class="list" style="margin-top:8px"></div>
-      </div>
-    </div>
+  <!-- Splash boot -->
+  <div id="boot"><span class="muted">Memuat…</span></div>
 
-    <div id="page-settings" class="page">
-      <div class="card" style="padding:12px">
-        <div class="label" style="font-weight:700">Pengaturan</div>
-        <div class="grid cols2" style="margin-top:8px">
-          <label class="row" style="gap:6px"><input type="checkbox" id="reduce2"><span class="muted">Padat</span></label>
-          <label class="row" style="gap:6px"><input type="checkbox" id="sortExpired2"><span class="muted">Expired di bawah</span></label>
-          <label class="row" style="gap:6px"><input type="checkbox" id="hideGlobal2"><span class="muted">Sembunyikan Global</span></label>
-          <label class="row" style="gap:6px"><input type="checkbox" id="allowSelect2"><span>Bisa Select</span></label>
-        </div>
-      </div>
-    </div>
+  <!-- Toast -->
+  <div id="toast"></div>
 
-    <div id="page-login" class="page">
-      <div class="card" style="padding:12px">
-        <div class="row" style="gap:8px">
-          <div class="label" style="font-weight:700">Login</div>
-          <div class="grow"></div>
-          <button id="btnSignIn" class="btn">Google Sign-In</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Tanggal -->
+  <!-- Modal Set Tanggal -->
   <div id="modalDateWrap" class="modal" aria-hidden="true">
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalDateTitle">
-      <h3 id="modalDateTitle">Set Tanggal Exp</h3>
-      <div class="field" style="margin-top:8px">
-        <div class="label">Tanggal</div>
-        <input id="modalDate" type="date" />
-      </div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Set Tanggal Kadaluarsa</h3>
+      <div class="muted">Format: <b>Tanggal Bulan Tahun</b></div>
+      <input id="modalDate" type="date">
       <div class="modal-actions">
         <button id="modalCancel" class="btn ghost">Batal</button>
         <button id="modalSave" class="btn">Simpan</button>
@@ -225,14 +366,6 @@
     </div>
   </div>
 
-  <nav id="bottomnav">
-    <div class="bar">
-      <a data-route="dashboard" class="active">Dashboard</a>
-      <a data-route="keys">Daftar Key</a>
-      <a data-route="settings">Pengaturan</a>
-    </div>
-  </nav>
-
   <script type="module">
     /* Firebase (tetap sama seperti file kamu) */
     const ADMIN_UID = "4CCiNyEyTvSUPnY6Ugd9PzAU1df2";
@@ -249,7 +382,7 @@
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
     import {
-      getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut,
+      getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut,
       setPersistence, browserLocalPersistence
     } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
     import { getDatabase, ref, onValue, set, update, remove, off } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
@@ -260,12 +393,12 @@
     const db   = getDatabase(app);
 
     /* Utils */
-    const $  = (q,root=document)=>root.querySelector(q);
-    const $$ = (q,root=document)=>Array.from(root.querySelectorAll(q));
-    const toastEl = $("#toast"); let toastTimer=null;
-    const toast = (t,opts={})=>{
-      const {undo} = opts||{};
-      toastEl.innerHTML="";
+    const $  = (s,el=document)=>el.querySelector(s);
+    const $$ = (s,el=document)=>el.querySelectorAll(s);
+    const toastEl=$("#toast");
+    let toastTimer=null;
+    const toast = (t,{undo=null}={})=>{
+      toastEl.innerHTML = "";
       const span = document.createElement("span");
       span.textContent = t;
       toastEl.appendChild(span);
@@ -280,39 +413,57 @@
       clearTimeout(toastTimer);
       toastTimer=setTimeout(()=>toastEl.style.display="none", undo?6000:2000);
     };
+    const fmtDate = (ms)=> ms ? new Date(ms).toLocaleDateString("id-ID", { day:"2-digit", month:"long", year:"numeric" }) : "Permanen";
+    const toEOD = (Y,M,D)=> new Date(Y,M-1,D,23,59,59,999).getTime();
+    const fromInputDate = (v)=>{const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return {Y,M,D};};
+    const sanitizeKey=(k)=> (k||"")
+      .normalize("NFKC")
+      .replace(/\s+/g,"")
+      .replace(/[^\w\-.:@]/g,"")   // huruf/angka/underscore/titik/titikdua/at/minus
+      .toUpperCase();
 
-    /* Elemen */
-    const menuBtn=$("#menuBtn"), drawer=$("#drawer"), btnSignOut=$("#btnSignOut");
-    const btnSignIn=$("#btnSignIn");
-    const globalKey=$("#globalKey"), newKey=$("#newKey"), exp=$("#exp");
-    const btnGen=$("#btnGen"), btnAdd=$("#btnAdd"), btnSaveGlobal=$("#btnSaveGlobal"), btnClearGlobal=$("#btnClearGlobal"), btnShareGlobal=$("#btnShareGlobal");
-    const reduce=$("#reduce"), sortExpired=$("#sortExpired"), hideGlobal=$("#hideGlobal"), allowSelect=$("#allowSelect");
-    const reduce2=$("#reduce2"), sortExpired2=$("#sortExpired2"), hideGlobal2=$("#hideGlobal2"), allowSelect2=$("#allowSelect2");
-    const list=$("#list"), list2=$("#list2");
-    const chips=$$("#filterChips .chip");
-    const bottomLinks=$$("#bottomnav a");
+    const protectedRoutes = new Set(["dashboard","keys","settings"]);
 
-    /* Drawer */
+    /* Drawer a11y */
+    const menuBtn = $("#menuBtn");
+    const drawer  = $("#drawer");
+    const backdrop= $("#backdrop");
+    drawer.setAttribute("aria-hidden","true");
+    try{ drawer.inert = true; }catch{}
+
     function openDrawer(){
-      drawer.classList.add("open"); drawer.setAttribute("aria-hidden","false"); try{ drawer.inert = false; }catch{}
+      drawer.classList.add("open"); backdrop.classList.add("show");
+      drawer.removeAttribute("aria-hidden"); try{ drawer.inert = false; }catch{}
       menuBtn.setAttribute("aria-expanded","true");
+      const first = drawer.querySelector(".nav a") || drawer; (first instanceof HTMLElement ? first : drawer).focus();
     }
     function closeDrawer(){
-      drawer.classList.remove("open");
+      if (drawer.contains(document.activeElement)) { menuBtn.focus(); }
+      drawer.classList.remove("open"); backdrop.classList.remove("show");
       drawer.setAttribute("aria-hidden","true"); try{ drawer.inert = true; }catch{}
       menuBtn.setAttribute("aria-expanded","false");
     }
-    menuBtn.onclick=openDrawer; $(".backdrop",drawer).onclick=closeDrawer;
+    menuBtn.onclick=openDrawer; backdrop.onclick=closeDrawer;
     document.addEventListener("keydown",(e)=>{ if(e.key==="Escape" && drawer.classList.contains("open")){ e.preventDefault(); closeDrawer(); }});
 
-    /* Login-only permission: jika sudah login, semua aksi boleh.
-       Tidak ada role/whitelist. Offline akan mematikan aksi. */
-    const isAuthed = ()=> !!auth.currentUser;
-    let IS_OFFLINE = !navigator.onLine;
-    const canEdit = ()=> !!auth.currentUser && !IS_OFFLINE;
+    /* Multi-admin whitelist (RTDB: auth/admins/{uid} -> true atau "role") */
+    let ADMINS = {}; // {uid: true|"owner"|"editor"|"viewer"}
+    onValue(ref(db,"auth/admins"), s=>{ ADMINS = s.val()||{}; try{ updateNav(isAuthed()); }catch{} try{ render(); }catch{} });
+
+    const isAuthed = ()=>{
+      const u=auth.currentUser;
+      if(!u) return false;
+      return (u.uid===ADMIN_UID) || !!ADMINS[u.uid];
+    };
+    const roleOf = (uid)=> uid===ADMIN_UID ? "owner" : (ADMINS?.[uid]===true ? "owner" : (ADMINS?.[uid]||null));
+    const canEdit = ()=> {
+      const u=auth.currentUser;
+      if(!u) return false;
+      const r=roleOf(u.uid);
+      return !!r && r!=="viewer";
+    };
 
     /* Routing */
-    const protectedRoutes = new Set(["dashboard","keys","settings"]);
     function hardGuard(name){ return protectedRoutes.has(name)&&!isAuthed() ? "login" : name; }
     function updateBottomNav(name){
       $$("#bottomnav a").forEach(a=>{
@@ -323,40 +474,61 @@
     }
     function route(name){
       name = hardGuard(name);
-      $$(".page").forEach(p=>p.classList.toggle("show", p.id===`page-${name}`));
+      $$(".page").forEach(p=>p.classList.toggle("show",p.dataset.page===name));
+      $$(".nav a").forEach(a=>a.classList.toggle("active",a.dataset.route===name));
       updateBottomNav(name);
+      if(isAuthed()){ localStorage.setItem("gx:route", name); } else { localStorage.removeItem("gx:route"); }
       closeDrawer();
-      localStorage.setItem("gx:route", name);
+      try{ document.scrollingElement.scrollTo({top:0,behavior:"smooth"}); }catch{}
     }
-    bottomLinks.forEach(a=>a.onclick=()=>route(a.dataset.route));
-    chips.forEach(c=>{
-      c.onclick=()=>{
-        chips.forEach(x=>x.classList.remove("active"));
-        c.classList.add("active");
-        setFilter(c.dataset.filter);
+    $$(".nav a").forEach(a=>a.onclick=(e)=>{e.preventDefault(); route(a.dataset.route);});
+    $$("#bottomnav a").forEach(a=>a.addEventListener("click",(e)=>{ e.preventDefault(); route(a.dataset.route); }, {passive:false}));
+
+    /* UI refs */
+    const globalKey=$("#globalKey"), btnSaveGlobal=$("#btnSaveGlobal"), btnClearGlobal=$("#btnClearGlobal"), btnShareGlobal=$("#btnShareGlobal");
+    const newKey=$("#newKey"), exp=$("#exp"), btnAdd=$("#btnAdd"), createKeyCard=$("#createKeyCard"), btnGen=$("#btnGen");
+    const keyList=$("#keyList"), search=$("#search");
+    const sortExpired=$("#sortExpired"), hideGlobal=$("#hideGlobal"), allowSelect=$("#allowSelect"), reduce=$("#reduce");
+    const email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin");
+    const btnSignOut=$("#btnSignOut");
+    const globalKeyCard=$("#globalKeyCard");
+    const bnExp=$("#bn-exp");
+
+    /* ===== Settings Sync (Local + Remote) ===== */
+    const SETTINGS_PATH = (uid)=>`auth/settings/${uid}`;
+    function readLocalSettings(){
+      return {
+        reduce: localStorage.getItem("gx:reduce")==="1",
+        sortExpired: localStorage.getItem("gx:sortExp")==="1",
+        hideGlobal: localStorage.getItem("gx:hideGlobal")==="1",
+        allowSelect: localStorage.getItem("gx:allowSelect")==="1",
+        statusFilter: localStorage.getItem("gx:statusFilter")||"all",
+        updatedAt: parseInt(localStorage.getItem("gx:settingsUpdatedAt")||"0",10)||0
       };
-    });
-
-    /* Filter state */
-    function getFilter(){ return localStorage.getItem("gx:filter") || "all"; }
-    function setFilter(v){ localStorage.setItem("gx:filter", v); render(); }
-    const filter = getFilter(); chips.forEach(c=>c.classList.toggle("active", c.dataset.filter===filter));
-
-    /* Settings (sync sederhana) */
-    const SETTINGS_PATH = (uid)=> `auth/users/${uid}/ui`;
-    let remoteReady=false, pushing=false;
-    const readLocalSettings = ()=> {
-      try{ return JSON.parse(localStorage.getItem("gx:ui")||"{}"); }catch{return {}}
-    };
-    const writeLocalSettings = (data)=>{ try{ localStorage.setItem("gx:ui", JSON.stringify(data||{})); }catch{} };
-    function applySettingsToDOM(data){
-      reduce.checked=!!data.reduce; sortExpired.checked=!!data.sortExpired; hideGlobal.checked=!!data.hideGlobal; allowSelect.checked=!!data.allowSelect;
-      reduce2.checked=!!data.reduce; sortExpired2.checked=!!data.sortExpired; hideGlobal2.checked=!!data.hideGlobal; allowSelect2.checked=!!data.allowSelect;
-      render();
     }
+    function writeLocalSettings(obj){
+      localStorage.setItem("gx:reduce", obj.reduce?"1":"0");
+      localStorage.setItem("gx:sortExp", obj.sortExpired?"1":"0");
+      localStorage.setItem("gx:hideGlobal", obj.hideGlobal?"1":"0");
+      localStorage.setItem("gx:allowSelect", obj.allowSelect?"1":"0");
+      localStorage.setItem("gx:statusFilter", obj.statusFilter||"all");
+      localStorage.setItem("gx:settingsUpdatedAt", String(obj.updatedAt||Date.now()));
+    }
+    function applySettingsToDOM(obj){
+      reduce.checked=!!obj.reduce; sortExpired.checked=!!obj.sortExpired;
+      hideGlobal.checked=!!obj.hideGlobal; allowSelect.checked=!!obj.allowSelect;
+      document.body.classList.toggle('reduce', reduce.checked);
+      document.body.classList.toggle('allow-select', allowSelect.checked);
+      globalKeyCard.classList.toggle('hide', hideGlobal.checked);
+      setFilterChip(obj.statusFilter||"all");
+    }
+    applySettingsToDOM(readLocalSettings());
+
+    let pushing=false, remoteReady=false;
     function currentSettings(){
       return {
-        reduce: reduce.checked, sortExpired: sortExpired.checked, hideGlobal: hideGlobal.checked, allowSelect: allowSelect.checked,
+        reduce: reduce.checked, sortExpired: sortExpired.checked,
+        hideGlobal: hideGlobal.checked, allowSelect: allowSelect.checked,
         statusFilter: getFilter(), updatedAt: Date.now()
       };
     }
@@ -372,16 +544,17 @@
         const rAt=remote.updatedAt||0, lAt=local.updatedAt||0;
         if(pushing){ remoteReady=true; return; }
         if(rAt===0 && lAt>0){ pushSettings(uid); remoteReady=true; return; }
-        if(rAt>lAt){ applySettingsToDOM(remote); writeLocalSettings(remote); remoteReady=true; }
-        else if(rAt<lAt){ pushSettings(uid); remoteReady=true; }
-        else{ applySettingsToDOM(remote||local); remoteReady=true; }
+        if(rAt>lAt){ writeLocalSettings(remote); applySettingsToDOM(remote); }
+        else if(rAt<lAt && remoteReady){ pushSettings(uid); }
+        remoteReady=true;
       });
     }
-
-    [reduce,sortExpired,hideGlobal,allowSelect].forEach(el=>{
+    let syncTimer=null;
+    function scheduleSync(uid){ clearTimeout(syncTimer); syncTimer=setTimeout(()=>pushSettings(uid), 250); }
+    ;[reduce,sortExpired,hideGlobal,allowSelect].forEach(el=>{
       el.addEventListener("change", ()=>{
         const data=currentSettings(); applySettingsToDOM(data); writeLocalSettings(data);
-        if(isAuthed()) pushSettings(auth.currentUser.uid);
+        if(isAuthed()) scheduleSync(auth.currentUser.uid);
         if(el===sortExpired) render();
       });
     });
@@ -395,10 +568,12 @@
       onValue(ref(db,"auth/keys"), s=>{
         const v = s.val()||{};
         const serialized = JSON.stringify(v);
-        if(localStorage.getItem("gx:cacheKeys") !== serialized){
-          localStorage.setItem("gx:cacheKeys", serialized);
+        if(JSON.stringify(cache)!==serialized){
+          cache = v;
+          try{ localStorage.setItem("gx:cacheKeys", serialized); }catch{}
+          render();
+          if(Date.now()-selfWriteAt>1200){ toast("Data diperbarui"); }
         }
-        render(v);
       });
     }
     function stopData(){
@@ -411,104 +586,196 @@
 
     /* Auth state */
     onAuthStateChanged(auth, (user)=>{
-      if(user){
-        updateNav(true);
-        render(); // <-- langsung aktifkan tombol sesuai status login (tanpa ganti filter)
-        if(!IS_OFFLINE){
-          try{ startSettingsSync(user.uid); }catch{}
-          try{ startData(); }catch{}
-        }
+      if(user && isAuthed()){
+        startSettingsSync(user.uid);
+        updateNav(true); startData();
         route(localStorage.getItem("gx:route") || "dashboard");
       }else{
-        stopData(); updateNav(false); render(); route("login");
+        stopData(); updateNav(false); route("login");
+        if(user && !isAuthed()){ signOut(auth).catch(()=>{}); toast("Bukan admin"); }
       }
       document.body.classList.remove("booting"); $("#boot")?.remove();
     });
-
-    /* Jaringan: Offline/Online */
-    const $offline = document.getElementById('offlineBanner');
-    function applyNetworkState(){
-      document.body.classList.toggle('offline', IS_OFFLINE);
-      if($offline){ $offline.classList.toggle('hide', !IS_OFFLINE); }
-      updateNav(isAuthed());
-      render(); // <-- re-render supaya state tombol ikut berubah saat jaringan berubah
-      if(IS_OFFLINE){
-        try{ stopData(); }catch{}
-        try{ const uid=auth.currentUser?.uid; if(uid){ off(ref(db, SETTINGS_PATH(uid))); } }catch{}
-      }else{
-        if(isAuthed()){
-          try{ startSettingsSync(auth.currentUser.uid); }catch{}
-          try{ startData(); }catch{}
-        }
-      }
-    }
-    window.addEventListener('online', ()=>{ IS_OFFLINE=false; applyNetworkState(); toast('Kembali online'); });
-    window.addEventListener('offline', ()=>{ IS_OFFLINE=true; applyNetworkState(); toast('Mode offline: fitur dimatikan'); });
-    // set awal
-    try{ IS_OFFLINE = !navigator.onLine; }catch{}
-    applyNetworkState();
-
     function updateNav(authed){
       document.body.classList.toggle("authed", !!authed);
       document.body.classList.toggle("noauth", !authed);
       btnSignOut.classList.toggle("hide", !authed);
-      // Lock aksi hanya bila offline atau belum login
-      const editable = !!authed && !IS_OFFLINE;
+      // Lock aksi bila role viewer
+      const editable = canEdit();
       btnAdd.disabled = !editable;
       btnGen.disabled = !editable;
       btnSaveGlobal.disabled = !editable;
       btnClearGlobal.disabled = !editable;
-      btnShareGlobal.disabled = !editable; // <- simplifikasi: share tetap punya fallback clipboard, jadi cukup ikut editable saja
+      btnShareGlobal.disabled = !editable && !navigator.canShare;
     }
 
     /* Login UX */
-    btnSignIn?.addEventListener("click", async ()=>{
-      try{
-        const prov=new GoogleAuthProvider();
-        await signInWithPopup(auth, prov);
-        toast("Login berhasil");
-      }catch{ toast("Login dibatalkan"); }
+    $("#togglePass").addEventListener("click", ()=>{
+      const pw=$("#password"); const t=pw.getAttribute("type")==="password"?"text":"password";
+      pw.setAttribute("type", t); $("#togglePass").textContent=(t==="password"?"Lihat":"Sembunyikan"); pw.focus();
     });
-    btnSignOut?.addEventListener("click", async ()=>{
-      try{ await signOut(auth); toast("Keluar"); }catch{}
+    document.addEventListener("keydown",(e)=>{ if(e.key==="Enter" && $(".page.show")?.dataset.page==="login"){ btnLogin.click(); }});
+    btnLogin.addEventListener("click", async ()=>{
+      const em=(email.value||"").trim(); const pw=password.value||"";
+      if(!em||!pw){ toast("Isi email & password"); return; }
+      try{ btnLogin.disabled=true; btnLogin.textContent="Masuk…"; await signInWithEmailAndPassword(auth, em, pw); toast("Login sukses"); }
+      catch{ toast("Login gagal"); }
+      finally{ btnLogin.disabled=false; btnLogin.textContent="Sign In"; }
+    });
+    btnSignOut.onclick = async ()=>{ try{ btnSignOut.disabled=true; await signOut(auth); toast("Signed out"); route("login"); }catch{}finally{ btnSignOut.disabled=false; } };
+
+    /* Anti salin di luar input */
+    const allowCtx=(el)=>!!el&&(el.closest('input,textarea,[contenteditable="true"]'));
+    document.addEventListener('copy',e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(document.activeElement)) e.preventDefault(); });
+    document.addEventListener('cut', e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(document.activeElement)) e.preventDefault(); });
+    document.addEventListener('contextmenu', e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(e.target)) e.preventDefault(); }, {passive:false});
+
+    /* ===== Filter status chips ===== */
+    function getFilter(){ return localStorage.getItem("gx:statusFilter") || "all"; }
+    function setFilterChip(val){
+      localStorage.setItem("gx:statusFilter", val);
+      $$(".chip.filter").forEach(c=>c.classList.toggle("active", c.dataset.filter===val));
+    }
+    document.addEventListener("click",(e)=>{
+      const f = e.target.closest(".chip.filter"); if(!f)return;
+      const val=f.dataset.filter; setFilterChip(val); render();
+      if(isAuthed()) scheduleSync(auth.currentUser.uid);
     });
 
-    /* Render list */
-    function render(data){
-      if(data){ cache=data; }
-      const FILTER = getFilter();
-      const arr = Object.entries(cache||{}).map(([k,v])=>({k,exp:Number(v?.exp||0)||0})).sort((a,b)=>a.k.localeCompare(b.k));
+    /* ===== Modal Set Tanggal ===== */
+    const modalDateWrap=$("#modalDateWrap"), modalDate=$("#modalDate"), modalSave=$("#modalSave"), modalCancel=$("#modalCancel");
+    let modalKey=null;
+    function openModalSetDate(key, currMs){
+      modalKey=key;
+      const d = currMs? new Date(currMs) : new Date();
+      const pad=n=>String(n).padStart(2,"0");
+      modalDate.value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+      modalDateWrap.classList.add("show"); modalDateWrap.setAttribute("aria-hidden","false");
+      modalDate.focus();
+    }
+    function closeModalDate(){ modalKey=null; modalDateWrap.classList.remove("show"); modalDateWrap.setAttribute("aria-hidden","true"); }
+    modalCancel.onclick=closeModalDate;
+    modalDateWrap.addEventListener("click",(e)=>{ if(e.target===modalDateWrap) closeModalDate(); });
+    document.addEventListener("keydown",(e)=>{ if(e.key==="Escape" && modalDateWrap.classList.contains("show")) closeModalDate(); });
+    modalSave.onclick = async ()=>{
+      if(!modalKey) return closeModalDate();
+      const v=(modalDate.value||"").trim(); if(!v) return closeModalDate();
+      const {Y,M,D}=fromInputDate(v); const ms=toEOD(Y,M,D);
+      selfWriteAt=Date.now();
+      await update(ref(db,"auth/keys/"+modalKey), {exp: ms});
+      toast("Tanggal di-set"); closeModalDate();
+    };
+
+    /* ===== Modal Konfirmasi ===== */
+    const modalConfirmWrap=$("#modalConfirmWrap"), confirmMsg=$("#confirmMsg"), confirmOk=$("#confirmOk"), confirmCancel=$("#confirmCancel");
+    let confirmResolver=null;
+    function confirmDialog(msg="Yakin?"){
+      confirmMsg.textContent = msg;
+      modalConfirmWrap.classList.add("show"); modalConfirmWrap.setAttribute("aria-hidden","false");
+      return new Promise((res)=>{
+        confirmResolver = (v)=>{ modalConfirmWrap.classList.remove("show"); modalConfirmWrap.setAttribute("aria-hidden","true"); res(v); };
+      });
+    }
+    confirmCancel.onclick=()=>confirmResolver&&confirmResolver(false);
+    confirmOk.onclick=()=>confirmResolver&&confirmResolver(true);
+    modalConfirmWrap.addEventListener("click",(e)=>{ if(e.target===modalConfirmWrap) confirmResolver&&confirmResolver(false); });
+
+    /* Render keys (+ badge expired + role gating pada aksi) */
+    /* ===== Mini Analytics (Home) ===== */
+    function calcStats(){
+      const ks = Object.keys(cache||{});
       const now = Date.now();
+      let total = ks.length, perm = 0, expired = 0, active = 0;
+      for(const k of ks){
+        const e = cache[k]?.exp || 0;
+        if(e===0){ perm++; continue; }
+        if(now>e){ expired++; } else { active++; }
+      }
+      return { total, active, expired, perm };
+    }
+    function setBar(id, val, pct){
+      const valEl = document.getElementById("st-"+id);
+      const barEl = document.getElementById("bar-"+id);
+      if(valEl) valEl.textContent = String(val);
+      if(barEl) barEl.style.setProperty("--w", (pct||0).toFixed(1) + "%");
+    }
+    function updateAnalytics(){
+      const s = calcStats();
+      const denom = Math.max(s.total, 1);
+      setBar("total", s.total, s.total>0 ? 100 : 0);
+      setBar("active", s.active, (s.active/denom)*100);
+      setBar("expired", s.expired, (s.expired/denom)*100);
+      setBar("perm", s.perm, (s.perm/denom)*100);
+    }
 
-      const expired = arr.filter(x=>x.exp>0 && x.exp<now);
-      const active  = arr.filter(x=>x.exp===0 || x.exp>=now);
-      const all = sortExpired.checked ? [...active, ...expired] : [...expired, ...active]; // expired di bawah
+    let lastDeleted = null; // {k, val}
+    function render(){
+      const ks = Object.keys(cache||{});
+      const now=Date.now();
 
-      const pick = FILTER==="expired" ? expired : FILTER==="active" ? active : all;
+      keyList.innerHTML="";
+      const q = (search?.value||"").trim().toUpperCase();
+      const filt = getFilter();
+      const frag = document.createDocumentFragment();
 
-      const mkRow = (k, expMs)=>{
+      // hitung badge expired
+      let expiredCount=0;
+
+      const sorted = ks.sort((a,b)=>{
+        if(sortExpired.checked){
+          const ea=(cache[a]?.exp||0)&&now>(cache[a].exp);
+          const eb=(cache[b]?.exp||0)&&now>(cache[b].exp);
+          if(ea!==eb) return eb - ea; // expired duluan
+        }
+        return a.localeCompare(b);
+      });
+
+      for(const k of sorted){
+        const expMs = cache[k]?.exp||0;
+        const expired = expMs && now>expMs;
+        const soon = !expired && expMs && (expMs - now) <= (3*864e5);
+        const permanent = expMs===0;
+
+        if(expired) expiredCount++;
+
+        // Filter status
+        if(filt==="active" && (expired)) continue;
+        if(filt==="soon" && !soon) continue;
+        if(filt==="expired" && !expired) continue;
+        if(filt==="permanent" && !permanent) continue;
+
+        if(q && !k.toUpperCase().includes(q)) continue;
+
         const row=document.createElement("div"); row.className="item";
-        if(reduce.checked) row.style.padding="8px 10px";
-        const head=document.createElement("div");
-        head.textContent=k;
-        head.style.fontWeight="700";
-        const sub=document.createElement("div");
-        sub.className="muted";
-        sub.textContent = expMs===0 ? "No Exp" : new Date(expMs).toLocaleDateString();
 
-        const actions=document.createElement("div"); actions.className="row-actions";
+        // Row 1: key + Copy + pill status
+        const head=document.createElement("div"); head.className="row1";
+        const keySpan=document.createElement("strong"); keySpan.className="grow"; keySpan.textContent=k;
 
-        const mk=(label,action)=>{
-          const b=document.createElement("button");
-          b.className="btn ghost"; b.textContent=label; b.dataset.action=action; return b;
-        };
+        const copyBtn=document.createElement("button"); copyBtn.className="btn small"; copyBtn.textContent="Copy";
+        copyBtn.dataset.key=k; copyBtn.dataset.action="copy";
+
+        const status=document.createElement("span"); status.className="pill "+(expired?"exp":(soon?"soon":"ok"));
+        status.textContent = expired?"Expired":(soon?"Segera Habis":"Aktif");
+
+        head.appendChild(keySpan);
+        head.appendChild(copyBtn);
+        head.appendChild(status);
+
+        // Row 2: tanggal
+        const sub=document.createElement("div"); sub.className="row2 muted";
+        sub.textContent = "Expire: "+fmtDate(expMs);
+
+        // Row 3: actions (+ share, undo-ready delete)
+        const actions=document.createElement("div"); actions.className="row3";
+        const mk=(txt,action)=>{ const b=document.createElement("button"); b.className="btn small"; b.textContent=txt; b.dataset.key=k; b.dataset.action=action; return b; };
         const btnNoExp=mk("No Exp","noexp");
         const btnDate =mk("Tanggal…","setdate");
         const btnShare=mk("Share","share");
         const del=mk("Hapus","del"); del.style.background="#2a1212"; del.style.borderColor="#5d2a2a";
 
-        // Saat offline / belum login, tombol baris dimatikan
-        if(IS_OFFLINE || !isAuthed()){ btnNoExp.disabled=true; btnDate.disabled=true; del.disabled=true; }
+        // Non-editor (viewer) tidak boleh ubah
+        if(!canEdit()){ btnNoExp.disabled=true; btnDate.disabled=true; del.disabled=true; }
 
         actions.appendChild(btnNoExp);
         actions.appendChild(btnDate);
@@ -516,30 +783,36 @@
         actions.appendChild(del);
 
         row.appendChild(head); row.appendChild(sub); row.appendChild(actions);
-        return row;
-      };
+        frag.appendChild(row);
+      }
 
-      const frag=document.createDocumentFragment();
-      pick.forEach(x=> frag.appendChild(mkRow(x.k,x.exp)));
-      list.innerHTML=""; list.appendChild(frag);
-      list2.innerHTML=""; list2.appendChild(list.cloneNode(true));
+      if(!frag.childNodes.length){
+        const empty=document.createElement("div"); empty.className="item"; empty.innerHTML='<span class="muted">Tidak ada hasil.</span>'; frag.appendChild(empty);
+      }
+      keyList.appendChild(frag);
+
+      // update badge expired pada bottom nav
+      if(expiredCount>0){
+        bnExp.textContent = expiredCount>99 ? "99+" : String(expiredCount);
+        bnExp.classList.remove("hide");
+      }else{
+        bnExp.classList.add("hide");
+      }
+      updateAnalytics();
     }
 
-    /* Action di list */
-    let lastDeleted=null;
+    /* Key actions (+ share + undo delete) */
     document.addEventListener("click",(e)=>{
-      const btn = e.target.closest(".row-actions .btn");
-      if(!btn) return;
-      const row = btn.closest(".item"); if(!row) return;
-      const k = row.querySelector("div").textContent.trim();
-      const act = btn.dataset.action;
-      (async ()=>{
+      const b=e.target.closest("button[data-action]"); if(!b) return;
+      const k=b.dataset.key, act=b.dataset.action;
+      (async()=>{
         try{
-          if(act==="share"){
-            try{
-              await navigator.clipboard.writeText(k);
-              toast("Key disalin");
-            }catch{ toast("Tidak bisa salin"); }
+          if(act==="copy"){
+            await navigator.clipboard.writeText(k); toast("Disalin");
+          } else if(act==="share"){
+            const text=`KEY: ${k}`;
+            if(navigator.share){ try{ await navigator.share({title:"GxMods Key", text}); }catch{} }
+            else { await navigator.clipboard.writeText(text); toast("Disalin (share tidak didukung)"); }
           } else if(act==="noexp"){
             if(!canEdit()) return;
             selfWriteAt=Date.now();
@@ -570,82 +843,61 @@
     }, {passive:true});
 
     /* Form controls */
-    btnShareGlobal.onclick = async ()=>{
-      const v=(globalKey.value||"").trim();
-      try{
-        if(navigator.share && v){
-          await navigator.share({title:"GxMods Global Key", text:v});
-        }else{
-          await navigator.clipboard.writeText(v||"");
-          toast("Global key disalin");
-        }
-      }catch{ toast("Tidak bisa share/salin"); }
-    };
-    btnSaveGlobal.onclick = async ()=>{ if(!canEdit()) return; await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); toast("Global key disimpan"); };
-    btnClearGlobal.onclick = async ()=>{ if(!canEdit()) return; await set(ref(db,"auth/globalKey"), ""); globalKey.value=""; toast("Dikosongkan"); };
-
-    const toEOD=(Y,M,D)=> new Date(Y, M-1, D, 23, 59, 59, 999).getTime();
-    const fromInputDate=(v)=>{ const [Y,M,D]=v.split("-").map(x=>+x); return {Y,M,D}; };
-
-    /* ===== Modal Tanggal ===== */
-    const modalDateWrap=$("#modalDateWrap"), modalDate=$("#modalDate"), modalSave=$("#modalSave"), modalCancel=$("#modalCancel");
-    let modalKey=null;
-    function openModalSetDate(k, expMs){
-      modalKey=k;
-      modalDateWrap.classList.add("show"); modalDateWrap.setAttribute("aria-hidden","false");
-      modalDate.value = expMs>0 ? (new Date(expMs).toISOString().slice(0,10)) : "";
-      setTimeout(()=>modalDate.focus(), 30);
-    }
-    function closeModalDate(){ modalKey=null; modalDateWrap.classList.remove("show"); modalDateWrap.setAttribute("aria-hidden","true"); }
-    modalCancel.onclick=closeModalDate;
-    modalDateWrap.addEventListener("click",(e)=>{ if(e.target===modalDateWrap) closeModalDate(); });
-    document.addEventListener("keydown",(e)=>{ if(e.key==="Escape" && modalDateWrap.classList.contains("show")) closeModalDate(); });
-    // Saran #5: Enter = Simpan
-    modalDate.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); modalSave.click(); } });
-    modalSave.onclick = async ()=>{
-      if(!modalKey) return closeModalDate();
-      const v=(modalDate.value||"").trim(); if(!v) return closeModalDate();
-      const {Y,M,D}=fromInputDate(v); const ms=toEOD(Y,M,D);
-      selfWriteAt=Date.now();
-      await update(ref(db,"auth/keys/"+modalKey), {exp: ms});
-      toast("Tanggal di-set"); closeModalDate();
-    };
-
-    /* ===== Modal Konfirmasi ===== */
-    const modalConfirmWrap=$("#modalConfirmWrap"), confirmMsg=$("#confirmMsg"), confirmOk=$("#confirmOk"), confirmCancel=$("#confirmCancel");
-    function confirmDialog(msg){
-      confirmMsg.textContent=msg;
-      modalConfirmWrap.classList.add("show"); modalConfirmWrap.setAttribute("aria-hidden","false");
-      return new Promise((res)=>{
-        const ok=()=>{ cleanup(); res(true); };
-        const no=()=>{ cleanup(); res(false); };
-        function cleanup(){
-          confirmOk.removeEventListener("click", ok);
-          confirmCancel.removeEventListener("click", no);
-          modalConfirmWrap.classList.remove("show"); modalConfirmWrap.setAttribute("aria-hidden","true");
-        }
-        confirmOk.addEventListener("click", ok, {once:true});
-        confirmCancel.addEventListener("click", no, {once:true});
-        modalConfirmWrap.addEventListener("click",(e)=>{ if(e.target===modalConfirmWrap) no(); }, {once:true});
-      });
-    }
-
-    /* Tambah key baru */
-    btnGen.onclick = ()=>{
-      const CH="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-      const seg=(n)=> Array.from({length:n},()=>CH[Math.floor(Math.random()*CH.length)]).join("");
-      const v=`VIP-${seg(4)}-${seg(4)}`;
-      newKey.value=v; newKey.focus();
-    };
     btnAdd.onclick = async ()=>{
       if(!canEdit()) return;
-      const k=(newKey.value||"").trim(); if(!k) return newKey.focus();
+      let raw=(newKey.value||"");
+      const k=sanitizeKey(raw);
+      if(!k){ toast("Isi key"); return; }
       const val=(exp.value||"").trim();
       let ms=0; if(val){ const {Y,M,D}=fromInputDate(val); ms=toEOD(Y,M,D); }
       selfWriteAt=Date.now();
       await update(ref(db,"auth/keys/"+k), {exp: ms});
       newKey.value=""; exp.value=""; toast("Ditambahkan");
     };
+
+    // Generate key kanan (alfabet tanpa I/O, angka tanpa 0/1 biar mudah dibaca)
+    function genSeg(len=4){
+      const CH="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let s=""; for(let i=0;i<len;i++){ s+=CH[Math.floor(Math.random()*CH.length)]; } return s;
+    }
+    btnGen.onclick = ()=>{
+      const v=`VIP-${genSeg()}-${genSeg()}`;
+      newKey.value=v; newKey.focus();
+    };
+
+    btnSaveGlobal.onclick = async ()=>{ if(!canEdit()) return; selfWriteAt=Date.now(); await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); toast("Global key disimpan"); };
+    btnClearGlobal.onclick = async ()=>{ if(!canEdit()) return; selfWriteAt=Date.now(); await set(ref(db,"auth/globalKey"), ""); globalKey.value=""; toast("Dikosongkan"); };
+    btnShareGlobal.onclick = async ()=>{
+      const v=(globalKey.value||"").trim();
+      if(!v){ toast("Global key kosong"); return; }
+      const text="GLOBAL KEY: "+v;
+      if(navigator.share){ try{ await navigator.share({title:"GxMods Global Key", text}); }catch{} }
+      else { await navigator.clipboard.writeText(text); toast("Disalin (share tidak didukung)"); }
+    };
+
+    // Chips cepat tanggal
+    document.addEventListener("click",(e)=>{
+      const chip=e.target.closest(".chip[data-add]"); if(!chip) return;
+      const add=parseInt(chip.dataset.add||"0",10);
+      if(add===0){ exp.value=""; toast("Tanpa Exp"); return; }
+      const d=new Date(); d.setDate(d.getDate()+add);
+      const pad=n=>String(n).padStart(2,"0");
+      exp.value=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    });
+
+    // Pencarian — debounce 200ms
+    const debounce=(fn,ms)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
+    const liveSearch = debounce(render,200);
+    search?.addEventListener("input", liveSearch, {passive:true});
+    search?.addEventListener("keyup", liveSearch, {passive:true});
+
+    // Lite mode: perangkat RAM kecil
+    try{ if('deviceMemory' in navigator && navigator.deviceMemory<=2){ document.body.classList.add('lite'); } }catch{}
+
+    // ===== Fallback anti “memuat terus” =====
+    window.addEventListener('error', ()=>{ document.body.classList.remove('booting'); $("#boot")?.remove(); }, {once:true});
+    window.addEventListener('unhandledrejection', ()=>{ document.body.classList.remove('booting'); $("#boot")?.remove(); }, {once:true});
+    setTimeout(()=>{ if(document.body.classList.contains('booting')){ document.body.classList.remove('booting'); $("#boot")?.remove(); route('login'); } }, 2500);
   </script>
 </body>
 </html>
