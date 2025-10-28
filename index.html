@@ -169,7 +169,7 @@
     </button>
     <div class="title">GxMods Key Panel</div>
     <div class="grow"></div>
-    <button id="btnSignOut" class="btn ghost">Sign Out</button>
+    <button id="topAvatar" class="avatar btn ghost" aria-label="Akun" style="padding:0;width:36px;height:36px;border-radius:999px"><span>?</span></button>
   </header>
 
   <!-- Drawer (lebih cantik) -->
@@ -201,7 +201,7 @@
     </nav>
 
     <!-- Footer versi kiri -->
-    <div class="drawer-footer"><span id="appVersion">v0.0.1 beta</span></div>
+    <div class="drawer-footer" style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span id="appVersion">v0.0.1 beta</span><button id="drawerLogout" class="btn small">Keluar</button></div>
   </aside>
   <div id="backdrop" class="backdrop"></div>
 
@@ -232,6 +232,11 @@
             <div class="mini-label">Tanpa Exp</div>
             <div class="mini-val" id="st-perm">0</div>
             <div class="mini-bar"><i id="bar-perm" style="--w:0%"></i></div>
+          </div>
+          <div class="mini-row">
+            <div class="mini-label">DB Storage (approx)</div>
+            <div class="mini-val" id="db-bytes">-</div>
+            <div class="mini-bar"><i id="bar-db" style="--w:0%"></i></div>
           </div>
         </div>
 
@@ -432,7 +437,7 @@
       getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut,
       setPersistence, browserLocalPersistence
     } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-    import { getDatabase, ref, onValue, set, update, remove, off } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+    import { getDatabase, ref, onValue, set, update, remove, off, get } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -523,12 +528,17 @@
     const keyList=$("#keyList"), search=$("#search");
     const sortExpired=$("#sortExpired"), hideGlobal=$("#hideGlobal"), allowSelect=$("#allowSelect"), reduce=$("#reduce");
     const email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin");
-    const btnSignOut=$("#btnSignOut");
+    const topAvatar=$("#topAvatar");
+    const drawerLogout=$("#drawerLogout");
     const globalKeyCard=$("#globalKeyCard");
     const acctEmail=$("#acctEmail");
     const menuEmail=$("#menuEmail");
     const menuRole=$("#menuRole");
     const menuAvatar=$("#menuAvatar");
+    // Top avatar opens drawer; drawer footer logout signs out
+    if (topAvatar) topAvatar.addEventListener("click", openDrawer);
+    if (drawerLogout) drawerLogout.addEventListener("click", ()=>{ signOut(auth).catch(()=>{}); });
+
 
     /* ===== Settings Sync (Local + Remote) ===== */
     const SETTINGS_PATH = (uid)=>`auth/settings/${uid}`;
@@ -640,6 +650,16 @@
         menuAvatar.style.background = `hsl(${hue} 35% 22%)`;
         menuAvatar.style.borderColor = `hsl(${hue} 35% 30%)`;
       }
+
+      if(topAvatar){
+        const hue = hueHash(text);
+        const init2 = (text && text[0] || "?").toUpperCase();
+        topAvatar.innerHTML = `<span style="font-weight:700">${init2}</span>`;
+        topAvatar.style.background = `hsl(${hue} 35% 22%)`;
+        topAvatar.style.border = "1px solid";
+        topAvatar.style.borderColor = `hsl(${hue} 35% 30%)`;
+      }
+
     }
 
     /* Auth state */
@@ -649,6 +669,7 @@
         updateNav(true); startData();
         setAccountEmail(user);
         route(localStorage.getItem("gx:route") || "dashboard");
+        refreshLocalDbUsage();
       }else{
         stopData(); updateNav(false); route("login");
         setAccountEmail(null);
@@ -659,7 +680,7 @@
     function updateNav(authed){
       document.body.classList.toggle("authed", !!authed);
       document.body.classList.toggle("noauth", !authed);
-      btnSignOut.classList.toggle("hide", !authed);
+      if(topAvatar) topAvatar.classList.toggle("hide", !authed);
       const editable = canEdit();
       btnAdd.disabled = false;
       btnSaveGlobal.disabled = false;
@@ -680,7 +701,7 @@
       catch{ toast("Login gagal"); }
       finally{ btnLogin.disabled=false; btnLogin.textContent="Sign In"; }
     });
-    btnSignOut.onclick = async ()=>{ try{ btnSignOut.disabled=true; await signOut(auth); toast("Signed out"); route("login"); }catch{}finally{ btnSignOut.disabled=false; } };
+    // legacy signout removed
 
     /* Anti salin di luar input */
     const allowCtx=(el)=>!!el&&(el.closest('input,textarea,[contenteditable="true"]'));
@@ -765,6 +786,25 @@
       setBar("perm", s.perm, (s.perm/denom)*100);
     }
 
+    
+    /* === Local DB usage estimation (Option 1) === */
+    function humanBytes(n){
+      const u=["B","KB","MB","GB","TB"]; let i=0, v=Math.max(n||0,0);
+      while(v>=1024 && i<u.length-1){ v/=1024; i++; }
+      return `${v.toFixed(v<10&&i>0?1:0)}${u[i]}`;
+    }
+    function setUsage(elId, barId, val, denom){
+      const el=document.getElementById(elId), bar=document.getElementById(barId);
+      if(el) el.textContent = humanBytes(val);
+      if(bar) bar.style.setProperty("--w", Math.min(100,(val/Math.max(denom,1))*100).toFixed(1)+"%");
+    }
+    async function refreshLocalDbUsage(){
+      try{
+        const snap = await get(ref(db));
+        const size = new Blob([JSON.stringify(snap.val()||{})]).size;
+        setUsage("db-bytes","bar-db", size, 1024*1024); // scale vs 1MB
+      }catch(e){}
+    }
     /* ===== Render list dengan tombol aksi berikon (SVG, tanpa emoji) ===== */
     function iconSVG(name){
       switch(name){
