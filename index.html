@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="utf-8" />
-  <!-- Tambah interactive-widget biar keyboard HP gak dorong layout -->
+  <!-- Keyboard-safe viewport -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=overlays-content" />
   <meta name="theme-color" content="#0b0f14" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -17,26 +17,25 @@
       --bn-h:60px;
     }
 
-    /* ====== Global ====== */
+    /* ===== Background: tetap gelap tapi hidup, tanpa gambar eksternal ===== */
     body{
       margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-      color:var(--text);-webkit-tap-highlight-color:transparent;
-      touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
-      background-color:var(--bg);
-      /* Subtle dark grid + soft glows, tetap tema gelap */
-      background-image:
-        radial-gradient(rgba(255,255,255,.04) 1px, transparent 1px);
-      background-size:24px 24px;
-      background-attachment:fixed;
+      color:var(--text);-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+      user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
+      background: radial-gradient(1200px 800px at 20% -10%, #0e1622 0%, rgba(14,22,34,0.0) 60%),
+                  radial-gradient(900px 700px at 85% 120%, #0a1422 0%, rgba(10,20,34,0.0) 65%),
+                  linear-gradient(180deg, #0b0f14, #0b0f14);
+      background-attachment: fixed;
     }
+    /* Grid halus di latar (sangat tipis) */
     body::before{
-      content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
-      background:
-        radial-gradient(900px 600px at 15% -10%, rgba(124,58,237,.10), transparent 60%),
-        radial-gradient(700px 520px at 85% 110%, rgba(25,195,125,.10), transparent 60%),
-        linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0) 30%);
+      content:""; position:fixed; inset:0; pointer-events:none;
+      background-image: linear-gradient(to right, rgba(255,255,255,.035) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 24px 24px;
+      opacity:.06; mix-blend-mode:screen;
     }
-
+    body.allow-select{user-select:text;-webkit-user-select:text;-webkit-touch-callout:auto}
     a{color:inherit;text-decoration:none}
     img,svg{display:block;max-width:100%}
     .hide{display:none !important}
@@ -47,54 +46,57 @@
     .btn{color:var(--text)}
     input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
     select,textarea{
-      width:100%;padding:14px;border-radius:12px;background:color-mix(in oklab, var(--card), black 12%);border:1px solid var(--line);outline:none;
-      appearance:none;-webkit-appearance:none;-moz-appearance:none;font-size:16px
+      width:100%;padding:14px;border-radius:12px;background:rgba(15,22,34,.8);border:1px solid var(--line);outline:none;
+      appearance:none;-webkit-appearance:none;-moz-appearance:none;font-size:16px;
+      backdrop-filter:saturate(110%) blur(6px);
     }
     input::placeholder,textarea::placeholder{color:#9aa7b3}
+    :focus-visible{outline:2px solid #213048;outline-offset:2px;border-radius:12px}
 
     /* Topbar */
-    .topbar{position:sticky;top:0;z-index:60;height:56px;display:flex;align-items:center;gap:12px;padding:0 14px;background:color-mix(in oklab, var(--card), black 4%);border-bottom:1px solid var(--line)}
+    .topbar{position:sticky;top:0;z-index:60;height:56px;display:flex;align-items:center;gap:12px;padding:0 14px;
+      background:rgba(16,24,36,.7);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
     .title{font-weight:700}
     .grow{flex:1}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);cursor:pointer;transition:transform .08s ease}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(16,24,36,.7);
+      box-shadow:var(--shadow);cursor:pointer;transition:transform .08s ease, background .15s ease}
     .btn.ghost{background:transparent}
     .btn.small{padding:10px 12px;min-height:44px;border-radius:12px;font-weight:600}
+    .btn:hover{background:rgba(20,30,44,.9)}
     .btn:active{transform:translateY(1px)}
     .btn[disabled]{opacity:.6;pointer-events:none}
     .icon{width:20px;height:20px}
 
-    /* ===== Drawer ===== */
-    .drawer{position:fixed;inset:0 auto 0 0;width:min(78%,320px);background:var(--card);border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .16s ease-out;z-index:70;contain:paint}
+    /* Drawer */
+    .drawer{position:fixed;inset:0 auto 0 0;width:min(78%,320px);background:rgba(16,24,36,.92);backdrop-filter:blur(10px);
+      border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .16s ease-out;z-index:70;contain:paint;
+      display:flex;flex-direction:column}
     .drawer.open{transform:translateX(0)}
-    .drawer .brand{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid var(--line)}
-    .drawer .user{padding:12px 14px;border-bottom:1px solid var(--line)}
-    .drawer .user .label{font-size:.78rem;color:var(--muted);margin-bottom:6px}
-    .drawer .user .value{font-weight:600;word-break:break-all}
-    .nav{padding:8px}
+    .drawer .brand{display:flex;flex-direction:column;gap:6px;padding:16px 14px;border-bottom:1px solid var(--line)}
+    .drawer .brand small{color:var(--muted)}
+    .drawer .sep{height:1px;background:var(--line);margin:8px 0}
+    .nav{padding:8px;flex:1;overflow:auto}
     .nav a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:1px solid transparent}
-    .nav a:hover{background:color-mix(in oklab, var(--card), black 8%)}
-    .nav a.active{border-color:#213048;background:color-mix(in oklab, var(--card), black 8%)}
-    .drawer .sep{height:1px;background:var(--line);margin:8px 14px}
-    .drawer-footer{position:absolute;left:0;right:0;bottom:0;padding:12px 14px;border-top:1px solid var(--line);color:var(--muted);font-size:.86rem}
-
+    .nav a:hover{background:rgba(20,30,44,.7)}
+    .nav a.active{border-color:#213048;background:rgba(20,30,44,.9)}
     .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .16s ease;z-index:65}
     .backdrop.show{opacity:1;pointer-events:auto}
+    .drawer .foot{border-top:1px solid var(--line);padding:12px 14px;color:var(--muted);font-size:.9rem}
 
-    /* ===== App ===== */
+    /* App */
     .app{min-height:calc(100dvh - 56px);padding:14px 14px calc(14px + var(--bn-h) + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
     body.noauth .app{padding-bottom:14px}
     .page{display:none}
     .page.show{display:grid;gap:16px}
-    .card{background:color-mix(in oklab, var(--card), black 0%);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:12px;
-      -webkit-backdrop-filter:saturate(1.2) blur(6px);backdrop-filter:saturate(1.2) blur(6px)}
+    .card{background:rgba(15,22,34,.86);backdrop-filter:saturate(110%) blur(8px);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:12px}
     .muted{color:var(--muted);font-size:.95rem}
     .grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
     @media (max-width:560px){.grid{grid-template-columns:1fr}}
 
     /* Key list */
     .list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden}
-    .item{padding:12px;background:color-mix(in oklab, var(--card), black 2%);border-bottom:1px solid var(--line)}
-    .item:nth-child(2n){background:color-mix(in oklab, var(--card), black 6%)}
+    .item{padding:12px;background:rgba(18,26,40,.6);border-bottom:1px solid var(--line)}
+    .item:nth-child(2n){background:rgba(20,30,44,.6)}
     .item:last-child{border-bottom:none}
     .row1{display:flex;align-items:center;gap:10px}
     .row1 .grow{flex:1;min-width:0}
@@ -108,7 +110,7 @@
     .soon{background:#2b220c;border-color:#5a4310;color:#ffe5a3}
     .exp{background:#2a1414;border-color:#5d2a2a;color:#ffc8c8}
 
-    .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--card);cursor:pointer;user-select:none}
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(16,24,36,.8);cursor:pointer;user-select:none}
     .chip.active{outline:2px solid #213048}
 
     .switch{display:inline-flex;align-items:center;gap:10px}
@@ -137,10 +139,10 @@
     [data-page="login"].show{min-height:calc(100dvh - 56px);place-content:center}
 
     /* Toast center (tanpa Undo) */
-    #toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:color-mix(in oklab, var(--card), black 6%);border:1px solid var(--line);padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);display:none;z-index:99;text-align:center;max-width:min(92vw,520px)}
+    #toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(20,30,44,.9);backdrop-filter:blur(8px);border:1px solid var(--line);padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);display:none;z-index:99;text-align:center;max-width:min(92vw,520px)}
 
-    /* Bottom Nav (tanpa badge expired) */
-    .bottomnav{position:fixed;left:0;right:0;bottom:0;height:var(--bn-h);background:color-mix(in oklab, var(--card), black 4%);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(2,1fr);z-index:55;padding-bottom:env(safe-area-inset-bottom)}
+    /* Bottom Nav */
+    .bottomnav{position:fixed;left:0;right:0;bottom:0;height:var(--bn-h);background:rgba(16,24,36,.82);backdrop-filter:blur(8px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(2,1fr);z-index:55;padding-bottom:env(safe-area-inset-bottom)}
     .bottomnav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:.85rem;color:var(--muted);position:relative}
     .bottomnav a .bi{width:22px;height:22px}
     .bottomnav a.active{color:var(--text)}
@@ -148,11 +150,11 @@
     /* Modal base */
     .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:90}
     .modal.show{display:flex}
-    .modal-card{width:min(92vw,420px);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
+    .modal-card{width:min(92vw,420px);background:rgba(16,24,36,.92);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end}
 
     /* Mini progress bar (cadangan) */
-    .bar{height:10px;border-radius:999px;background:color-mix(in oklab, var(--card), black 8%);overflow:hidden;border:1px solid var(--line)}
+    .bar{height:10px;border-radius:999px;background:rgba(16,24,36,.7);overflow:hidden;border:1px solid var(--line)}
     .bar > i{display:block;height:100%;background:linear-gradient(90deg,#16a34a,#22c55e)}
 
     /* Mini Analytics */
@@ -160,7 +162,7 @@
     .mini-row{display:flex;align-items:center;gap:10px}
     .mini-label{min-width:110px;color:var(--muted)}
     .mini-val{min-width:42px;text-align:right;font-variant-numeric:tabular-nums}
-    .mini-bar{flex:1;height:8px;border-radius:999px;background:color-mix(in oklab, var(--card), black 8%);border:1px solid var(--line);overflow:hidden}
+    .mini-bar{flex:1;height:8px;border-radius:999px;background:rgba(16,24,36,.7);border:1px solid var(--line);overflow:hidden}
     .mini-bar>i{display:block;height:100%;width:var(--w,0%);background:linear-gradient(90deg,#7c3aed,#19c37d)}
     .mini-legend{display:flex;gap:10px;flex-wrap:wrap}
     .mini-legend .pill{font-size:.78rem}
@@ -170,7 +172,6 @@
     .row3 .btn{flex:1 1 calc(50% - 8px);width:auto}
     @media (min-width:640px){.row3 .btn{flex:0 0 auto}}
     .btn.danger{background:#2a1212;border-color:#5d2a2a}
-
   </style>
 </head>
 <body class="noauth booting">
@@ -187,22 +188,18 @@
 
   <!-- Drawer -->
   <aside id="drawer" class="drawer" aria-hidden="true" tabindex="-1">
-    <div class="brand"><strong>Menu</strong></div>
-
-    <!-- Email Login -->
-    <div class="user" aria-label="Email login">
-      <div class="label">Email login</div>
-      <div id="userEmail" class="value">Belum login</div>
+    <div class="brand">
+      <small>Email login</small>
+      <div id="loginEmail" style="font-weight:700">Belum login</div>
+      <div class="sep" role="separator" aria-hidden="true"></div>
     </div>
-
-    <div class="sep" aria-hidden="true"></div>
-
     <nav class="nav" id="nav">
       <a href="#settings" data-route="settings" data-auth="in">Pengaturan</a>
       <a href="#about" data-route="about">Tentang</a>
     </nav>
-
-    <div class="drawer-footer"><small id="appVersion">GxMods Key Panel v0.1.0</small></div>
+    <div class="foot">
+      <span id="appVersion">GxMods Panel • v1.0.0</span>
+    </div>
   </aside>
   <div id="backdrop" class="backdrop"></div>
 
@@ -399,6 +396,9 @@
   </div>
 
   <script type="module">
+    /* Versi aplikasi untuk footer drawer */
+    const APP_VERSION = "v1.0.0";
+
     /* Firebase (tetap sama seperti file kamu) */
     const ADMIN_UID = "4CCiNyEyTvSUPnY6Ugd9PzAU1df2";
     const firebaseConfig = {
@@ -442,7 +442,7 @@
     const sanitizeKey=(k)=> (k||"")
       .normalize("NFKC")
       .replace(/\s+/g,"")
-      .replace(/[^\w\-.:@]/g,"");
+      .replace(/[^\w\\-.:@]/g,"");
 
     const protectedRoutes = new Set(["dashboard","keys","settings"]);
 
@@ -514,6 +514,7 @@
     const email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin");
     const btnSignOut=$("#btnSignOut");
     const globalKeyCard=$("#globalKeyCard");
+    const loginEmailEl = $("#loginEmail");
 
     /* ===== Settings Sync (Local + Remote) ===== */
     const SETTINGS_PATH = (uid)=>`auth/settings/${uid}`;
@@ -606,32 +607,41 @@
     }catch{}
 
     /* Auth state */
+    function setLoginEmail(){
+      try{
+        const u = auth.currentUser;
+        loginEmailEl.textContent = (u && u.email) ? u.email : "Belum login";
+      }catch{}
+    }
+
     onAuthStateChanged(auth, (user)=>{
       if(user && isAuthed()){
+        setLoginEmail();
         startSettingsSync(user.uid);
         updateNav(true); startData();
         route(localStorage.getItem("gx:route") || "dashboard");
       }else{
         stopData(); updateNav(false); route("login");
+        setLoginEmail();
         if(user && !isAuthed()){ signOut(auth).catch(()=>{}); toast("Bukan admin"); }
       }
       document.body.classList.remove("booting"); $("#boot")?.remove();
     });
+
     function updateNav(authed){
       document.body.classList.toggle("authed", !!authed);
       document.body.classList.toggle("noauth", !authed);
       btnSignOut.classList.toggle("hide", !authed);
-      // Tampilkan email login di drawer
-      const u = auth.currentUser;
-      const em = (authed && u && u.email) ? u.email : (authed ? "(tanpa email)" : "Belum login");
-      const emailBox = document.getElementById('userEmail');
-      if(emailBox) emailBox.textContent = em;
       // Lock aksi bila role viewer
       const editable = canEdit();
       btnAdd.disabled = false;
       btnSaveGlobal.disabled = false;
       btnClearGlobal.disabled = false;
       btnShareGlobal.disabled = false;
+
+      // footer versi
+      const v = document.getElementById("appVersion");
+      if(v){ v.textContent = "GxMods Panel • " + APP_VERSION; }
     }
 
     /* Login UX */
@@ -652,7 +662,7 @@
     /* Anti salin di luar input */
     const allowCtx=(el)=>!!el&&(el.closest('input,textarea,[contenteditable="true"]'));
     document.addEventListener('copy',e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(document.activeElement)) e.preventDefault(); });
-    document.addEventListener('cut', e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(document.activeElement)) e.preventDefault(); });
+    document.addEventListener('cut', e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(e.target)) e.preventDefault(); });
     document.addEventListener('contextmenu', e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(e.target)) e.preventDefault(); }, {passive:false});
 
     /* ===== Filter status chips ===== */
@@ -754,7 +764,6 @@
         const expMs = cache[k]?.exp||0;
         const expired = expMs && now>expMs;
         const soon = !expired && expMs && (expMs - now) <= (5*864e5); // 5 hari
-
         const permanent = expMs===0;
 
         // Filter status
@@ -785,12 +794,12 @@
         const sub=document.createElement("div"); sub.className="row2 muted";
         sub.textContent = "Expire: "+fmtDate(expMs);
 
-        // Row 3: actions (tanpa emoji)
+        // Row 3: actions (tanpa Undo) — tanpa emotikon
         const actions=document.createElement("div"); actions.className="row3";
         const mk=(txt,action)=>{ const b=document.createElement("button"); b.className="btn small"; b.textContent=txt; b.dataset.key=k; b.dataset.action=action; return b; };
         const btnNoExp=mk("No Exp","noexp");
-        const btnDate =mk("Atur Tanggal…","setdate");
-        const btnShare=mk("Bagikan","share");
+        const btnDate =mk("Tanggal…","setdate");
+        const btnShare=mk("Share","share");
         const del=mk("Hapus","del"); del.classList.add("danger");
 
         actions.appendChild(btnNoExp);
@@ -820,4 +829,82 @@
             await navigator.clipboard.writeText(k); toast("Disalin");
           } else if(act==="share"){
             const text=`KEY: ${k}`;
-            if(navigator.share){ try{ await 
+            if(navigator.share){ try{ await navigator.share({title:"GxMods Key", text}); }catch{} }
+            else { await navigator.clipboard.writeText(text); toast("Disalin (share tidak didukung)"); }
+          } else if(act==="noexp"){
+            selfWriteAt=Date.now();
+            await update(ref(db,"auth/keys/"+k), {exp:0});
+            toast("No Exp");
+          } else if(act==="setdate"){
+            openModalSetDate(k, cache[k]?.exp||0);
+          } else if(act==="del"){
+            const ok = await confirmDialog(`Hapus key: ${k}?`);
+            if(!ok) return;
+            selfWriteAt=Date.now();
+            await remove(ref(db,"auth/keys/"+k));
+            toast("Dihapus");
+          }
+        }catch{ toast("Gagal"); }
+      })();
+    }, {passive:true});
+
+    /* Form controls */
+    btnAdd.onclick = async ()=>{
+      let raw=(newKey.value||"");
+      const k=sanitizeKey(raw);
+      if(!k){ toast("Isi key"); return; }
+      const val=(exp.value||"").trim();
+      let ms=0; if(val){ const {Y,M,D}=fromInputDate(val); ms=toEOD(Y,M,D); }
+      selfWriteAt=Date.now();
+      await update(ref(db,"auth/keys/"+k), {exp: ms});
+      newKey.value=""; exp.value=""; toast("Ditambahkan");
+    };
+
+    /* Global Key */
+    btnSaveGlobal.onclick = async ()=>{  selfWriteAt=Date.now(); await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); toast("Global key disimpan"); };
+    btnClearGlobal.onclick = async ()=>{  selfWriteAt=Date.now(); await set(ref(db,"auth/globalKey"), ""); globalKey.value=""; toast("Dikosongkan"); };
+    btnShareGlobal.onclick = async ()=>{
+      const v=(globalKey.value||"").trim();
+      if(!v){ toast("Global key kosong"); return; }
+      const text="GLOBAL KEY: "+v;
+      if(navigator.share){ try{ await navigator.share({title:"GxMods Global Key", text}); }catch{} }
+      else { await navigator.clipboard.writeText(text); toast("Disalin (share tidak didukung)"); }
+    };
+
+    // Chips cepat tanggal — +7 hari bisa di-klik berkali-kali (inkremental)
+    document.addEventListener("click",(e)=>{
+      const chip=e.target.closest(".chip[data-add]"); if(!chip) return;
+      const add=parseInt(chip.dataset.add||"0",10);
+      if(add===0){ exp.value=""; toast("Tanpa Exp"); return; }
+
+      // ambil dari input jika ada; kalau kosong, mulai dari hari ini
+      let baseDate;
+      if((exp.value||"").trim()){
+        const {Y,M,D}=fromInputDate(exp.value.trim());
+        baseDate=new Date(Y, M-1, D);
+      }else{
+        baseDate=new Date();
+      }
+      baseDate.setDate(baseDate.getDate()+add);
+
+      const pad=n=>String(n).padStart(2,"0");
+      exp.value=`${baseDate.getFullYear()}-${pad(baseDate.getMonth()+1)}-${pad(baseDate.getDate())}`;
+      toast("+7 hari");
+    });
+
+    // Pencarian — debounce 200ms
+    const debounce=(fn,ms)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
+    const liveSearch = debounce(render,200);
+    search?.addEventListener("input", liveSearch, {passive:true});
+    search?.addEventListener("keyup", liveSearch, {passive:true});
+
+    // Lite mode: perangkat RAM kecil
+    try{ if('deviceMemory' in navigator && navigator.deviceMemory<=2){ document.body.classList.add('lite'); } }catch{}
+
+    // ===== Fallback anti “memuat terus” =====
+    window.addEventListener('error', ()=>{ document.body.classList.remove('booting'); $("#boot")?.remove(); }, {once:true});
+    window.addEventListener('unhandledrejection', ()=>{ document.body.classList.remove('booting'); $("#boot")?.remove(); }, {once:true});
+    setTimeout(()=>{ if(document.body.classList.contains('booting')){ document.body.classList.remove('booting'); $("#boot")?.remove(); route('login'); } }, 2500);
+  </script>
+</body>
+</html>
