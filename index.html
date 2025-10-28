@@ -2,7 +2,6 @@
 <html lang="id">
 <head>
   <meta charset="utf-8" />
-  <!-- Keyboard mobile gak dorong layout -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=overlays-content" />
   <meta name="theme-color" content="#0b0f14" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -24,11 +23,10 @@
     }
     body.allow-select{user-select:text;-webkit-user-select:text;-webkit-touch-callout:auto}
     a{color:inherit;text-decoration:none}
-    img,svg{display:block;max-width:100%}
     .hide{display:none !important}
     input,textarea{user-select:text;-webkit-user-select:text}
 
-    /* Inputs */
+    /* Controls */
     body,button,input,select,textarea{color:var(--text)}
     .btn{color:var(--text)}
     input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
@@ -47,19 +45,37 @@
     .btn.small{padding:10px 12px;min-height:44px;border-radius:12px;font-weight:600}
     .btn:active{transform:translateY(1px)}
     .btn[disabled]{opacity:.6;pointer-events:none}
-    .icon{width:20px;height:20px}
+    .i{width:18px;height:18px;display:inline-block}
+    .btn .i{margin-right:6px}
 
-    /* Drawer */
-    .drawer{position:fixed;inset:0 auto 0 0;width:min(78%,320px);background:var(--card);border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .16s ease-out;z-index:70;contain:paint;display:flex;flex-direction:column}
+    /* Drawer (lebih cantik) */
+    .drawer{position:fixed;inset:0 auto 0 0;width:min(78%,330px);background:var(--card);border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .16s ease-out;z-index:70;contain:paint;display:flex;flex-direction:column}
     .drawer.open{transform:translateX(0)}
-    .drawer .brand{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid var(--line)}
-    .acct-box{padding:8px 14px;border-bottom:1px solid var(--line)}
-    .acct-box .label{font-size:.85rem;color:var(--muted)}
-    .acct-box .email{font-weight:600;word-break:break-all;margin-top:2px}
+    .brand{
+      padding:16px 14px;border-bottom:1px solid var(--line);
+      background:
+        radial-gradient(120px 60px at -10% -10%, rgba(124,58,237,.35), transparent 60%),
+        radial-gradient(160px 80px at 120% 0%, rgba(25,195,125,.28), transparent 60%);
+      display:flex;align-items:center;gap:10px
+    }
+    .brand .logo{
+      width:34px;height:34px;border-radius:12px;background:linear-gradient(135deg,#7c3aed 0%,#19c37d 100%);
+      display:grid;place-items:center;font-weight:800
+    }
+    .brand .logo span{font-size:.95rem;color:white;letter-spacing:.2px}
+    .acct-box{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+    .avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:#243044;border:1px solid #2f3d52}
+    .avatar span{color:#d7e0ea}
+    .acct-meta{min-width:0}
+    .acct-meta .email{font-weight:600;word-break:break-all}
+    .acct-meta .sub{font-size:.82rem;color:var(--muted);display:flex;gap:8px;align-items:center}
+    .role{border:1px solid var(--line);border-radius:999px;padding:2px 6px;font-size:.75rem;color:#c8d2dc}
+    .nav-title{padding:10px 14px;color:var(--muted);font-size:.85rem}
     .nav{padding:8px;flex:1 1 auto;overflow:auto}
     .nav a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:1px solid transparent}
     .nav a:hover{background:color-mix(in oklab, var(--card), black 8%)}
     .nav a.active{border-color:#213048;background:color-mix(in oklab, var(--card), black 8%)}
+    .nav .i{opacity:.9}
     .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .16s ease;z-index:65}
     .backdrop.show{opacity:1;pointer-events:auto}
     .drawer-footer{padding:12px 14px;border-top:1px solid var(--line);font-size:.92rem;color:var(--muted);display:flex;justify-content:flex-start;align-items:center}
@@ -83,7 +99,7 @@
     .row1 .grow{flex:1;min-width:0}
     .row1 strong{word-break:break-all}
     .row2{margin-top:4px}
-    .row3{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+    .row3{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
     @media (max-width:720px){ .row3{justify-content:center} }
 
     .pill{padding:3px 8px;border-radius:999px;border:1px solid var(--line);font-size:.8rem;white-space:nowrap}
@@ -110,14 +126,6 @@
     /* Boot splash */
     body.booting .page{display:none !important}
     #boot{position:fixed;inset:0;display:grid;place-items:center;background:var(--bg);z-index:100;font-size:14px;color:var(--muted)}
-
-    /* “Kurangi efek” mode */
-    .reduce .btn,.reduce .card{box-shadow:none}
-    .reduce .backdrop{background:rgba(0,0,0,.3)}
-    .lite .btn,.lite .card{box-shadow:none}
-
-    /* Login center */
-    [data-page="login"].show{min-height:calc(100dvh - 56px);place-content:center}
 
     /* Toast center */
     #toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:color-mix(in oklab, var(--card), black 6%);border:1px solid var(--line);padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);display:none;z-index:99;text-align:center;max-width:min(92vw,520px)}
@@ -148,10 +156,7 @@
     .mini-legend{display:flex;gap:10px;flex-wrap:wrap}
     .mini-legend .pill{font-size:.78rem}
 
-    /* --- Mobile polish --- */
-    .btn.small{padding:10px 12px;min-height:44px;border-radius:12px;font-weight:600}
-    .row3 .btn{flex:1 1 calc(50% - 8px);width:auto}
-    @media (min-width:640px){.row3 .btn{flex:0 0 auto}}
+    /* Finishing */
     .btn.danger{background:#2a1212;border-color:#5d2a2a}
   </style>
 </head>
@@ -159,7 +164,7 @@
   <!-- Topbar -->
   <header class="topbar">
     <button id="menuBtn" class="btn" aria-label="Menu" aria-haspopup="true" aria-controls="drawer" aria-expanded="false">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       <span>Menu</span>
     </button>
     <div class="title">GxMods Key Panel</div>
@@ -167,19 +172,32 @@
     <button id="btnSignOut" class="btn ghost">Sign Out</button>
   </header>
 
-  <!-- Drawer -->
+  <!-- Drawer (lebih cantik) -->
   <aside id="drawer" class="drawer" aria-hidden="true" tabindex="-1">
-    <div class="brand"><strong>Menu</strong></div>
-
-    <!-- EMAIL DI MENU (ambil dari Firebase Auth) -->
-    <div class="acct-box">
-      <div class="label">Login sebagai</div>
-      <div class="email" id="menuEmail">Belum login</div>
+    <div class="brand">
+      <div class="logo"><span>Gx</span></div>
+      <div style="font-weight:700">Panel</div>
     </div>
 
+    <!-- EMAIL + AVATAR + ROLE -->
+    <div class="acct-box">
+      <div class="avatar" id="menuAvatar"><span>?</span></div>
+      <div class="acct-meta">
+        <div class="email" id="menuEmail">Belum login</div>
+        <div class="sub"><span id="menuRole" class="role">guest</span></div>
+      </div>
+    </div>
+
+    <div class="nav-title">Navigasi</div>
     <nav class="nav" id="nav">
-      <a href="#settings" data-route="settings" data-auth="in">Pengaturan</a>
-      <a href="#about" data-route="about">Tentang</a>
+      <a href="#settings" data-route="settings" data-auth="in">
+        <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0A1.65 1.65 0 0 0 9 3.09V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0A1.65 1.65 0 0 0 21 12h0a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+        <span>Pengaturan</span>
+      </a>
+      <a href="#about" data-route="about">
+        <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <span>Tentang</span>
+      </a>
     </nav>
 
     <!-- Footer versi kiri -->
@@ -189,11 +207,10 @@
 
   <!-- App -->
   <main id="app" class="app">
-    <!-- Home -->
+    <!-- Home (dipoles: tanpa keterangan bertele) -->
     <section class="page guarded" data-page="dashboard">
       <div class="card">
-        <h3>Home</h3>
-        <p class="muted">Kelola key di tab <b>Daftar Key</b>. UI diringkas supaya enteng di HP.</p>
+        <h3>Ringkasan</h3>
 
         <div id="miniStats" class="mini">
           <div class="mini-row">
@@ -216,9 +233,6 @@
             <div class="mini-val" id="st-perm">0</div>
             <div class="mini-bar"><i id="bar-perm" style="--w:0%"></i></div>
           </div>
-          <div class="mini-legend">
-            <span class="pill">Distribusi bar = proporsi dari total</span>
-          </div>
         </div>
 
       </div>
@@ -231,9 +245,18 @@
         <h3>Global Key</h3>
         <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
           <input id="globalKey" type="text" placeholder="Kosongkan jika tidak pakai"/>
-          <button id="btnSaveGlobal" class="btn small">Simpan</button>
-          <button id="btnClearGlobal" class="btn small">Hapus</button>
-          <button id="btnShareGlobal" class="btn small ghost">Share</button>
+          <button id="btnSaveGlobal" class="btn small">
+            <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h11l5 5v9a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v4h8"/></svg>
+            Simpan
+          </button>
+          <button id="btnClearGlobal" class="btn small">
+            <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4h8v2"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+            Hapus
+          </button>
+          <button id="btnShareGlobal" class="btn small ghost">
+            <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h7"/><path d="M20 12V5a1 1 0 0 0-1-1h-7"/><path d="M5 12 20 3"/><path d="m5 12 15 9"/></svg>
+            Share
+          </button>
         </div>
       </div>
 
@@ -241,26 +264,25 @@
       <div class="card" id="createKeyCard" style="position:relative">
         <h3 style="text-align:center">Buat Key</h3>
 
-        <!-- Baris input key -->
         <div class="row" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center">
           <input id="newKey" type="text" placeholder="Key baru (contoh: vip-xxxx-1234)" style="flex:1;min-width:220px;max-width:560px" autocomplete="off" />
         </div>
 
-        <!-- Baris tanggal -->
         <div class="row" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center">
           <label class="muted" for="exp">Tanggal kadaluarsa (opsional)</label>
           <input id="exp" type="date" inputmode="none" placeholder="dd-mm-yyyy" style="max-width:220px"/>
         </div>
 
-        <!-- Baris chip tanggal cepat -->
         <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center">
           <span class="chip" data-add="7">+7 hari</span>
           <span class="chip" data-add="0">Tanpa Exp</span>
         </div>
 
-        <!-- Baris tombol Tambah -->
         <div class="row" style="display:flex;justify-content:center">
-          <button id="btnAdd" class="btn small">Tambah</button>
+          <button id="btnAdd" class="btn small">
+            <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+            Tambah
+          </button>
         </div>
       </div>
 
@@ -284,7 +306,7 @@
     <!-- Settings -->
     <section class="page guarded" data-page="settings">
       <div class="card">
-        <!-- EMAIL DI ATAS PENGATURAN (ambil dari Firebase Auth) -->
+        <!-- Email dari Auth -->
         <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
           <div class="muted">Login sebagai <b id="acctEmail">-</b></div>
         </div>
@@ -431,10 +453,7 @@
     const fmtDate = (ms)=> ms ? new Date(ms).toLocaleDateString("id-ID", { day:"2-digit", month:"long", year:"numeric" }) : "Permanen";
     const toEOD = (Y,M,D)=> new Date(Y,M-1,D,23,59,59,999).getTime();
     const fromInputDate = (v)=>{const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return {Y,M,D};};
-    const sanitizeKey=(k)=> (k||"")
-      .normalize("NFKC")
-      .replace(/\s+/g,"")
-      .replace(/[^\w\-.:@]/g,"");
+    const sanitizeKey=(k)=> (k||"").normalize("NFKC").replace(/\s+/g,"").replace(/[^\w\-.:@]/g,"");
 
     const protectedRoutes = new Set(["dashboard","keys","settings"]);
 
@@ -508,6 +527,8 @@
     const globalKeyCard=$("#globalKeyCard");
     const acctEmail=$("#acctEmail");
     const menuEmail=$("#menuEmail");
+    const menuRole=$("#menuRole");
+    const menuAvatar=$("#menuAvatar");
 
     /* ===== Settings Sync (Local + Remote) ===== */
     const SETTINGS_PATH = (uid)=>`auth/settings/${uid}`;
@@ -594,16 +615,31 @@
     function stopData(){
       try{ off(ref(db,"auth/globalKey")); off(ref(db,"auth/keys")); }catch{}
     }
-    // Offline cache dulu
     try{
       const c = localStorage.getItem("gx:cacheKeys"); if(c){ cache = JSON.parse(c); render(); }
     }catch{}
 
-    /* ======== Tampilkan email akun (Settings + Menu) ======== */
+    /* ======== Email + Avatar + Role di Settings & Drawer ======== */
+    function hueHash(str){
+      let h=0; for(let i=0;i<str.length;i++){ h=(h*31 + str.charCodeAt(i))>>>0; }
+      return h%360;
+    }
     function setAccountEmail(u){
       const text = (u && u.email) ? u.email : "Belum login";
       if(acctEmail) acctEmail.textContent = text;
       if(menuEmail) menuEmail.textContent = text;
+
+      const role = (u && isAuthed()) ? (roleOf(u.uid)||"editor") : "guest";
+      if(menuRole) menuRole.textContent = role;
+
+      // Avatar inisial + warna
+      const init = (text && text[0] || "?").toUpperCase();
+      if(menuAvatar){
+        menuAvatar.innerHTML = `<span>${init}</span>`;
+        const hue = hueHash(text);
+        menuAvatar.style.background = `hsl(${hue} 35% 22%)`;
+        menuAvatar.style.borderColor = `hsl(${hue} 35% 30%)`;
+      }
     }
 
     /* Auth state */
@@ -649,7 +685,7 @@
     /* Anti salin di luar input */
     const allowCtx=(el)=>!!el&&(el.closest('input,textarea,[contenteditable="true"]'));
     document.addEventListener('copy',e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(document.activeElement)) e.preventDefault(); });
-    document.addEventListener('cut', e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(document.activeElement)) e.preventDefault(); });
+    document.addEventListener('cut', e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(e.target)) e.preventDefault(); });
     document.addEventListener('contextmenu', e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(e.target)) e.preventDefault(); }, {passive:false});
 
     /* ===== Filter status chips ===== */
@@ -729,6 +765,17 @@
       setBar("perm", s.perm, (s.perm/denom)*100);
     }
 
+    /* ===== Render list dengan tombol aksi berikon (SVG, tanpa emoji) ===== */
+    function iconSVG(name){
+      switch(name){
+        case "noexp": return '<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12a7 7 0 0 1 7-7c1.9 0 3.6.78 4.83 2.05"/><path d="M19 12a7 7 0 0 1-7 7c-1.9 0-3.6-.78-4.83-2.05"/><path d="M22 2 2 22"/></svg>';
+        case "setdate": return '<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>';
+        case "share": return '<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51 15.42 17.49"/><path d="M15.41 6.51 8.59 10.49"/></svg>';
+        case "del": return '<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4h8v2"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>';
+        default: return '';
+      }
+    }
+
     function render(){
       const ks = Object.keys(cache||{});
       const now=Date.now();
@@ -750,7 +797,7 @@
       for(const k of sorted){
         const expMs = cache[k]?.exp||0;
         const expired = expMs && now>expMs;
-        const soon = !expired && expMs && (expMs - now) <= (5*864e5); // 5 hari
+        const soon = !expired && expMs && (expMs - now) <= (5*864e5);
         const permanent = expMs===0;
 
         // Filter status
@@ -767,8 +814,9 @@
         const head=document.createElement("div"); head.className="row1";
         const keySpan=document.createElement("strong"); keySpan.className="grow"; keySpan.textContent=k;
 
-        const copyBtn=document.createElement("button"); copyBtn.className="btn small"; copyBtn.textContent="Copy";
+        const copyBtn=document.createElement("button"); copyBtn.className="btn small"; copyBtn.setAttribute("aria-label","Copy key");
         copyBtn.dataset.key=k; copyBtn.dataset.action="copy";
+        copyBtn.innerHTML = '<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy';
 
         const status=document.createElement("span"); status.className="pill "+(expired?"exp":(soon?"soon":"ok"));
         status.textContent = expired?"Expired":(soon?"Segera Habis":"Aktif");
@@ -781,13 +829,18 @@
         const sub=document.createElement("div"); sub.className="row2 muted";
         sub.textContent = "Expire: "+fmtDate(expMs);
 
-        // Row 3: actions
+        // Row 3: actions (ikon SVG)
         const actions=document.createElement("div"); actions.className="row3";
-        const mk=(txt,action)=>{ const b=document.createElement("button"); b.className="btn small"; b.textContent=txt; b.dataset.key=k; b.dataset.action=action; return b; };
-        const btnNoExp=mk("♾️ No Exp","noexp");
-        const btnDate =mk("🗓️ Tanggal…","setdate");
-        const btnShare=mk("🔗 Share","share");
-        const del=mk("🗑️ Hapus","del"); del.classList.add("danger");
+        const mk=(label,action,extraClass="")=>{
+          const b=document.createElement("button"); b.className="btn small"+(extraClass?(" "+extraClass):"");
+          b.dataset.key=k; b.dataset.action=action;
+          b.innerHTML = iconSVG(action) + label;
+          return b;
+        };
+        const btnNoExp=mk("No Exp","noexp");
+        const btnDate =mk("Tanggal…","setdate");
+        const btnShare=mk("Share","share");
+        const del=mk("Hapus","del","danger");
 
         actions.appendChild(btnNoExp);
         actions.appendChild(btnDate);
@@ -836,7 +889,7 @@
     }, {passive:true});
 
     /* Form controls */
-    btnAdd.onclick = async ()=>{
+    $("#btnAdd").onclick = async ()=>{
       let raw=(newKey.value||"");
       const k=sanitizeKey(raw);
       if(!k){ toast("Isi key"); return; }
@@ -858,7 +911,7 @@
       else { await navigator.clipboard.writeText(text); toast("Disalin (share tidak didukung)"); }
     };
 
-    // Chips tanggal cepat
+    // Chips tanggal cepat & pencarian
     const debounce=(fn,ms)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
     document.addEventListener("click",(e)=>{
       const chip=e.target.closest(".chip[data-add]"); if(!chip) return;
@@ -876,13 +929,11 @@
       exp.value=`${baseDate.getFullYear()}-${pad(baseDate.getMonth()+1)}-${pad(baseDate.getDate())}`;
       toast("+7 hari");
     });
-
-    // Pencarian — debounce 200ms
     const liveSearch = debounce(render,200);
-    search?.addEventListener("input", liveSearch, {passive:true});
-    search?.addEventListener("keyup", liveSearch, {passive:true});
+    $("#search")?.addEventListener("input", liveSearch, {passive:true});
+    $("#search")?.addEventListener("keyup", liveSearch, {passive:true});
 
-    // Lite mode: perangkat RAM kecil
+    // Lite mode
     try{ if('deviceMemory' in navigator && navigator.deviceMemory<=2){ document.body.classList.add('lite'); } }catch{}
 
     // ===== Fallback anti “memuat terus” =====
