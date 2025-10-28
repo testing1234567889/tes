@@ -2,10 +2,8 @@
 <html lang="id">
 <head>
   <meta charset="utf-8" />
-  <!-- Tambah interactive-widget biar keyboard HP gak dorong layout -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=overlays-content" />
   <meta name="theme-color" content="#0b0f14" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>GxMods Key Panel</title>
   <style>
     *,*::before,*::after{box-sizing:border-box}
@@ -16,11 +14,20 @@
       --r:16px; --shadow:0 6px 24px rgba(0,0,0,.28);
       --bn-h:60px;
     }
-
     body{
       margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-      background:var(--bg);color:var(--text);-webkit-tap-highlight-color:transparent;
-      touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none
+      color:var(--text);-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+      user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
+      background: radial-gradient(1200px 800px at 20% -10%, #0e1622 0%, rgba(14,22,34,0.0) 60%),
+                  radial-gradient(900px 700px at 85% 120%, #0a1422 0%, rgba(10,20,34,0.0) 65%),
+                  linear-gradient(180deg, #0b0f14, #0b0f14);
+      background-attachment: fixed;
+    }
+    body::before{
+      content:""; position:fixed; inset:0; pointer-events:none;
+      background-image: linear-gradient(to right, rgba(255,255,255,.035) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 24px 24px; opacity:.06; mix-blend-mode:screen;
     }
     body.allow-select{user-select:text;-webkit-user-select:text;-webkit-touch-callout:auto}
     a{color:inherit;text-decoration:none}
@@ -28,52 +35,57 @@
     .hide{display:none !important}
     input,textarea{user-select:text;-webkit-user-select:text}
 
-    /* Inputs */
     body,button,input,select,textarea{color:var(--text)}
     .btn{color:var(--text)}
     input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
     select,textarea{
-      width:100%;padding:14px;border-radius:12px;background:color-mix(in oklab, var(--card), black 12%);border:1px solid var(--line);outline:none;
-      appearance:none;-webkit-appearance:none;-moz-appearance:none;font-size:16px
+      width:100%;padding:14px;border-radius:12px;background:rgba(15,22,34,.8);border:1px solid var(--line);outline:none;
+      appearance:none;-webkit-appearance:none;-moz-appearance:none;font-size:16px;
+      backdrop-filter:saturate(110%) blur(6px);
     }
     input::placeholder,textarea::placeholder{color:#9aa7b3}
+    :focus-visible{outline:2px solid #213048;outline-offset:2px;border-radius:12px}
 
-    /* Topbar */
-    .topbar{position:sticky;top:0;z-index:60;height:56px;display:flex;align-items:center;gap:12px;padding:0 14px;background:color-mix(in oklab, var(--card), black 4%);border-bottom:1px solid var(--line)}
+    .topbar{position:sticky;top:0;z-index:60;height:56px;display:flex;align-items:center;gap:12px;padding:0 14px;
+      background:rgba(16,24,36,.7);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
     .title{font-weight:700}
     .grow{flex:1}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);cursor:pointer;transition:transform .08s ease}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(16,24,36,.7);
+      box-shadow:var(--shadow);cursor:pointer;transition:transform .08s ease, background .15s ease}
     .btn.ghost{background:transparent}
     .btn.small{padding:10px 12px;min-height:44px;border-radius:12px;font-weight:600}
+    .btn:hover{background:rgba(20,30,44,.9)}
     .btn:active{transform:translateY(1px)}
     .btn[disabled]{opacity:.6;pointer-events:none}
     .icon{width:20px;height:20px}
 
-    /* Drawer */
-    .drawer{position:fixed;inset:0 auto 0 0;width:min(78%,320px);background:var(--card);border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .16s ease-out;z-index:70;contain:paint}
+    .drawer{position:fixed;inset:0 auto 0 0;width:min(78%,320px);background:rgba(16,24,36,.92);backdrop-filter:blur(10px);
+      border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .16s ease-out;z-index:70;contain:paint;
+      display:flex;flex-direction:column}
     .drawer.open{transform:translateX(0)}
-    .drawer .brand{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid var(--line)}
-    .nav{padding:8px}
+    .drawer .brand{display:flex;flex-direction:column;gap:6px;padding:16px 14px;border-bottom:1px solid var(--line)}
+    .drawer .brand small{color:var(--muted)}
+    .drawer .sep{height:1px;background:var(--line);margin:8px 0}
+    .nav{padding:8px;flex:1;overflow:auto}
     .nav a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:1px solid transparent}
-    .nav a:hover{background:color-mix(in oklab, var(--card), black 8%)}
-    .nav a.active{border-color:#213048;background:color-mix(in oklab, var(--card), black 8%)}
+    .nav a:hover{background:rgba(20,30,44,.7)}
+    .nav a.active{border-color:#213048;background:rgba(20,30,44,.9)}
     .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .16s ease;z-index:65}
     .backdrop.show{opacity:1;pointer-events:auto}
+    .drawer .foot{border-top:1px solid var(--line);padding:12px 14px;color:var(--muted);font-size:.9rem}
 
-    /* App */
     .app{min-height:calc(100dvh - 56px);padding:14px 14px calc(14px + var(--bn-h) + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
     body.noauth .app{padding-bottom:14px}
     .page{display:none}
     .page.show{display:grid;gap:16px}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:12px}
+    .card{background:rgba(15,22,34,.86);backdrop-filter:saturate(110%) blur(8px);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:12px}
     .muted{color:var(--muted);font-size:.95rem}
     .grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
     @media (max-width:560px){.grid{grid-template-columns:1fr}}
 
-    /* Key list */
     .list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden}
-    .item{padding:12px;background:color-mix(in oklab, var(--card), black 2%);border-bottom:1px solid var(--line)}
-    .item:nth-child(2n){background:color-mix(in oklab, var(--card), black 6%)}
+    .item{padding:12px;background:rgba(18,26,40,.6);border-bottom:1px solid var(--line)}
+    .item:nth-child(2n){background:rgba(20,30,44,.6)}
     .item:last-child{border-bottom:none}
     .row1{display:flex;align-items:center;gap:10px}
     .row1 .grow{flex:1;min-width:0}
@@ -87,7 +99,7 @@
     .soon{background:#2b220c;border-color:#5a4310;color:#ffe5a3}
     .exp{background:#2a1414;border-color:#5d2a2a;color:#ffc8c8}
 
-    .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--card);cursor:pointer;user-select:none}
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(16,24,36,.8);cursor:pointer;user-select:none}
     .chip.active{outline:2px solid #213048}
 
     .switch{display:inline-flex;align-items:center;gap:10px}
@@ -97,64 +109,46 @@
     .switch input:checked + .track{background:#12211a;border-color:#1f4e39}
     .switch input:checked + .track .thumb{left:20px;background:#9de7c4}
 
-    /* Guards */
     body.noauth .guarded{display:none !important}
     body.authed .login-only{display:none !important}
     body.noauth #menuBtn,body.noauth #btnSignOut{display:none !important}
     body.noauth .topbar,body.noauth #drawer,body.noauth #backdrop,body.noauth #bottomnav{display:none !important}
 
-    /* Boot splash */
     body.booting .page{display:none !important}
     #boot{position:fixed;inset:0;display:grid;place-items:center;background:var(--bg);z-index:100;font-size:14px;color:var(--muted)}
 
-    /* “Kurangi efek” mode */
     .reduce .btn,.reduce .card{box-shadow:none}
     .reduce .backdrop{background:rgba(0,0,0,.3)}
     .lite .btn,.lite .card{box-shadow:none}
 
-    /* Login center */
     [data-page="login"].show{min-height:calc(100dvh - 56px);place-content:center}
 
-    /* Toast center (tanpa Undo) */
-    #toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:color-mix(in oklab, var(--card), black 6%);border:1px solid var(--line);padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);display:none;z-index:99;text-align:center;max-width:min(92vw,520px)}
+    #toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(20,30,44,.9);backdrop-filter:blur(8px);border:1px solid var(--line);padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);display:none;z-index:99;text-align:center;max-width:min(92vw,520px)}
 
-    /* Bottom Nav (tanpa badge expired) */
-    .bottomnav{position:fixed;left:0;right:0;bottom:0;height:var(--bn-h);background:color-mix(in oklab, var(--card), black 4%);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(2,1fr);z-index:55;padding-bottom:env(safe-area-inset-bottom)}
+    .bottomnav{position:fixed;left:0;right:0;bottom:0;height:var(--bn-h);background:rgba(16,24,36,.82);backdrop-filter:blur(8px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(2,1fr);z-index:55;padding-bottom:env(safe-area-inset-bottom)}
     .bottomnav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:.85rem;color:var(--muted);position:relative}
     .bottomnav a .bi{width:22px;height:22px}
     .bottomnav a.active{color:var(--text)}
 
-    /* Modal base */
     .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:90}
     .modal.show{display:flex}
-    .modal-card{width:min(92vw,420px);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
+    .modal-card{width:min(92vw,420px);background:rgba(16,24,36,.92);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end}
 
-    /* Mini progress bar (cadangan) */
-    .bar{height:10px;border-radius:999px;background:color-mix(in oklab, var(--card), black 8%);overflow:hidden;border:1px solid var(--line)}
+    .bar{height:10px;border-radius:999px;background:rgba(16,24,36,.7);overflow:hidden;border:1px solid var(--line)}
     .bar > i{display:block;height:100%;background:linear-gradient(90deg,#16a34a,#22c55e)}
 
-    /* Mini Analytics */
     .mini{display:flex;flex-direction:column;gap:10px}
     .mini-row{display:flex;align-items:center;gap:10px}
     .mini-label{min-width:110px;color:var(--muted)}
     .mini-val{min-width:42px;text-align:right;font-variant-numeric:tabular-nums}
-    .mini-bar{flex:1;height:8px;border-radius:999px;background:color-mix(in oklab, var(--card), black 8%);border:1px solid var(--line);overflow:hidden}
+    .mini-bar{flex:1;height:8px;border-radius:999px;background:rgba(16,24,36,.7);border:1px solid var(--line);overflow:hidden}
     .mini-bar>i{display:block;height:100%;width:var(--w,0%);background:linear-gradient(90deg,#7c3aed,#19c37d)}
     .mini-legend{display:flex;gap:10px;flex-wrap:wrap}
     .mini-legend .pill{font-size:.78rem}
-
-  
-/* --- Mobile polish --- */
-.btn.small{padding:10px 12px;min-height:44px;border-radius:12px;font-weight:600}
-.row3 .btn{flex:1 1 calc(50% - 8px);width:auto}
-@media (min-width:640px){.row3 .btn{flex:0 0 auto}}
-.btn.danger{background:#2a1212;border-color:#5d2a2a}
-
   </style>
 </head>
 <body class="noauth booting">
-  <!-- Topbar -->
   <header class="topbar">
     <button id="menuBtn" class="btn" aria-label="Menu" aria-haspopup="true" aria-controls="drawer" aria-expanded="false">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -165,24 +159,27 @@
     <button id="btnSignOut" class="btn ghost">Sign Out</button>
   </header>
 
-  <!-- Drawer -->
   <aside id="drawer" class="drawer" aria-hidden="true" tabindex="-1">
-    <div class="brand"><strong>Menu</strong></div>
+    <div class="brand">
+      <small>Email login</small>
+      <div id="loginEmail" style="font-weight:700">Belum login</div>
+      <div class="sep" role="separator" aria-hidden="true"></div>
+    </div>
     <nav class="nav" id="nav">
       <a href="#settings" data-route="settings" data-auth="in">Pengaturan</a>
       <a href="#about" data-route="about">Tentang</a>
     </nav>
+    <div class="foot">
+      <span id="appVersion">GxMods Panel • v1.0.0</span>
+    </div>
   </aside>
   <div id="backdrop" class="backdrop"></div>
 
-  <!-- App -->
   <main id="app" class="app">
-    <!-- Home -->
     <section class="page guarded" data-page="dashboard">
       <div class="card">
         <h3>Home</h3>
         <p class="muted">Kelola key di tab <b>Daftar Key</b>. UI diringkas supaya enteng di HP.</p>
-
         <div id="miniStats" class="mini">
           <div class="mini-row">
             <div class="mini-label">Total Key</div>
@@ -208,13 +205,10 @@
             <span class="pill">Distribusi bar = proporsi dari total</span>
           </div>
         </div>
-
       </div>
     </section>
 
-    <!-- Keys -->
     <section class="page guarded" data-page="keys">
-      <!-- Global Key -->
       <div class="card" id="globalKeyCard">
         <h3>Global Key</h3>
         <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
@@ -225,34 +219,24 @@
         </div>
       </div>
 
-      <!-- Buat Key -->
       <div class="card" id="createKeyCard" style="position:relative">
         <h3 style="text-align:center">Buat Key</h3>
-
-        <!-- Baris input key -->
         <div class="row" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center">
           <input id="newKey" type="text" placeholder="Key baru (contoh: vip-xxxx-1234)" style="flex:1;min-width:220px;max-width:560px" autocomplete="off" />
         </div>
-
-        <!-- Baris tanggal -->
         <div class="row" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center">
           <label class="muted" for="exp">Tanggal kadaluarsa (opsional)</label>
           <input id="exp" type="date" inputmode="none" placeholder="dd-mm-yyyy" style="max-width:220px"/>
         </div>
-
-        <!-- Baris chip tanggal cepat -->
         <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center">
           <span class="chip" data-add="7">+7 hari</span>
           <span class="chip" data-add="0">Tanpa Exp</span>
         </div>
-
-        <!-- Baris tombol Tambah -->
         <div class="row" style="display:flex;justify-content:center">
           <button id="btnAdd" class="btn small">Tambah</button>
         </div>
       </div>
 
-      <!-- Daftar Key -->
       <div class="card">
         <div class="row" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between">
           <h3 style="margin:0">Daftar Key</h3>
@@ -269,26 +253,21 @@
       </div>
     </section>
 
-    <!-- Settings -->
     <section class="page guarded" data-page="settings">
       <div class="card">
         <h3>Pengaturan</h3>
-
         <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
           <div><strong>Kurangi efek</strong><span class="muted" style="margin-left:8px">Animasi tetap halus, efek berat diminimalkan.</span></div>
           <label class="switch"><input id="reduce" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
         </div>
-
         <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
           <div><strong>Urutkan expired dulu</strong></div>
           <label class="switch"><input id="sortExpired" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
         </div>
-
         <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
           <div><strong>Sembunyikan Global Key</strong></div>
           <label class="switch"><input id="hideGlobal" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
         </div>
-
         <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
           <div><strong>Izinkan seleksi teks</strong></div>
           <label class="switch"><input id="allowSelect" type="checkbox"><span class="track"><i class="thumb"></i></span></label>
@@ -296,7 +275,6 @@
       </div>
     </section>
 
-    <!-- About -->
     <section class="page" data-page="about">
       <div class="card">
         <h3>Tentang Panel</h3>
@@ -304,7 +282,6 @@
       </div>
     </section>
 
-    <!-- Login -->
     <section class="page login-only" data-page="login">
       <div class="card" style="max-width:480px;margin-inline:auto">
         <h3>Login Admin</h3>
@@ -324,7 +301,6 @@
     </section>
   </main>
 
-  <!-- Bottom Navigation -->
   <nav id="bottomnav" class="bottomnav" role="navigation" aria-label="Navigasi utama">
     <a href="#dashboard" data-route="dashboard" id="bn-home" aria-current="page">
       <svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10h14V10"/></svg>
@@ -336,13 +312,9 @@
     </a>
   </nav>
 
-  <!-- Splash boot -->
   <div id="boot"><span class="muted">Memuat…</span></div>
-
-  <!-- Toast -->
   <div id="toast"></div>
 
-  <!-- Modal Set Tanggal -->
   <div id="modalDateWrap" class="modal" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <h3 id="modalTitle">Set Tanggal Kadaluarsa</h3>
@@ -355,7 +327,6 @@
     </div>
   </div>
 
-  <!-- Modal Konfirmasi -->
   <div id="modalConfirmWrap" class="modal" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
       <h3 id="confirmTitle">Konfirmasi</h3>
@@ -367,499 +338,447 @@
     </div>
   </div>
 
-  <script type="module">
-    /* Firebase (tetap sama seperti file kamu) */
-    const ADMIN_UID = "4CCiNyEyTvSUPnY6Ugd9PzAU1df2";
-    const firebaseConfig = {
-      apiKey: "AIzaSyAJ2YitGgxTI8k440TmWUHgntkTLSqkX3c",
-      authDomain: "dialog-vip-only-key.firebaseapp.com",
-      databaseURL: "https://dialog-vip-only-key-default-rtdb.firebaseio.com",
-      projectId: "dialog-vip-only-key",
-      storageBucket: "dialog-vip-only-key.firebasestorage.app",
-      messagingSenderId: "405714783893",
-      appId: "1:405714783893:web:9cf697f2104b91958ed59c",
-      measurementId: "G-YKCTBR2857"
-    };
-
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import {
-      getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut,
-      setPersistence, browserLocalPersistence
-    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-    import { getDatabase, ref, onValue, set, update, remove, off } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    setPersistence(auth, browserLocalPersistence).catch(()=>{});
-    const db   = getDatabase(app);
-
-    /* Utils */
-    const $  = (s,el=document)=>el.querySelector(s);
-    const $$ = (s,el=document)=>el.querySelectorAll(s);
-    const toastEl=$("#toast");
-    let toastTimer=null;
-    const toast = (t)=>{
-      toastEl.textContent = t;
-      toastEl.style.display="block";
-      clearTimeout(toastTimer);
-      toastTimer=setTimeout(()=>toastEl.style.display="none", 1500);
-    };
-    const fmtDate = (ms)=> ms ? new Date(ms).toLocaleDateString("id-ID", { day:"2-digit", month:"long", year:"numeric" }) : "Permanen";
-    const toEOD = (Y,M,D)=> new Date(Y,M-1,D,23,59,59,999).getTime();
-    const fromInputDate = (v)=>{const [Y,M,D]=v.split("-").map(n=>parseInt(n,10)); return {Y,M,D};};
-    // TIDAK mengubah huruf: tetap sesuai input (tidak auto-uppercase)
-    const sanitizeKey=(k)=> (k||"")
-      .normalize("NFKC")
-      .replace(/\s+/g,"")
-      .replace(/[^\w\-.:@]/g,"");
-
-    const protectedRoutes = new Set(["dashboard","keys","settings"]);
-
-    /* Drawer a11y */
-    const menuBtn = $("#menuBtn");
-    const drawer  = $("#drawer");
-    const backdrop= $("#backdrop");
-    drawer.setAttribute("aria-hidden","true");
-    try{ drawer.inert = true; }catch{}
-
-    function openDrawer(){
-      drawer.classList.add("open"); backdrop.classList.add("show");
-      drawer.removeAttribute("aria-hidden"); try{ drawer.inert = false; }catch{}
-      menuBtn.setAttribute("aria-expanded","true");
-      const first = drawer.querySelector(".nav a") || drawer; (first instanceof HTMLElement ? first : drawer).focus();
-    }
-    function closeDrawer(){
-      if (drawer.contains(document.activeElement)) { menuBtn.focus(); }
-      drawer.classList.remove("open"); backdrop.classList.remove("show");
-      drawer.setAttribute("aria-hidden","true"); try{ drawer.inert = true; }catch{}
-      menuBtn.setAttribute("aria-expanded","false");
-    }
-    menuBtn.onclick=openDrawer; backdrop.onclick=closeDrawer;
-    document.addEventListener("keydown",(e)=>{ if(e.key==="Escape" && drawer.classList.contains("open")){ e.preventDefault(); closeDrawer(); }});
-
-    /* Multi-admin whitelist (RTDB: auth/admins/{uid} -> true atau "role") */
-    let ADMINS = {}; // {uid: true|"owner"|"editor"|"viewer"}
-    onValue(ref(db,"auth/admins"), s=>{ ADMINS = s.val()||{}; try{ updateNav(isAuthed()); }catch{} try{ render(); }catch{} });
-
-    const isAuthed = ()=>{
-      const u=auth.currentUser;
-      if(!u) return false;
-      return (u.uid===ADMIN_UID) || !!ADMINS[u.uid];
-    };
-    const roleOf = (uid)=> uid===ADMIN_UID ? "owner" : (ADMINS?.[uid]===true ? "owner" : (ADMINS?.[uid]||null));
-    const canEdit = ()=> {
-      const u=auth.currentUser;
-      if(!u) return false;
-      const r=roleOf(u.uid);
-      return !!r && r!=="viewer";
-    };
-
-    /* Routing */
-    function hardGuard(name){ return protectedRoutes.has(name)&&!isAuthed() ? "login" : name; }
-    function updateBottomNav(name){
-      $$("#bottomnav a").forEach(a=>{
-        const active = a.dataset.route===name;
-        a.classList.toggle("active", active);
-        a.setAttribute("aria-current", active ? "page" : "false");
-      });
-    }
-    function route(name){
-      name = hardGuard(name);
-      $$(".page").forEach(p=>p.classList.toggle("show",p.dataset.page===name));
-      $$(".nav a").forEach(a=>a.classList.toggle("active",a.dataset.route===name));
-      updateBottomNav(name);
-      if(isAuthed()){ localStorage.setItem("gx:route", name); } else { localStorage.removeItem("gx:route"); }
-      closeDrawer();
-      try{ document.scrollingElement.scrollTo({top:0,behavior:"smooth"}); }catch{}
-    }
-    $$(".nav a").forEach(a=>a.onclick=(e)=>{e.preventDefault(); route(a.dataset.route);});
-    $$("#bottomnav a").forEach(a=>a.addEventListener("click",(e)=>{ e.preventDefault(); route(a.dataset.route); }, {passive:false}));
-
-    /* UI refs */
-    const globalKey=$("#globalKey"), btnSaveGlobal=$("#btnSaveGlobal"), btnClearGlobal=$("#btnClearGlobal"), btnShareGlobal=$("#btnShareGlobal");
-    const newKey=$("#newKey"), exp=$("#exp"), btnAdd=$("#btnAdd"), createKeyCard=$("#createKeyCard");
-    const keyList=$("#keyList"), search=$("#search");
-    const sortExpired=$("#sortExpired"), hideGlobal=$("#hideGlobal"), allowSelect=$("#allowSelect"), reduce=$("#reduce");
-    const email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin");
-    const btnSignOut=$("#btnSignOut");
-    const globalKeyCard=$("#globalKeyCard");
-
-    /* ===== Settings Sync (Local + Remote) ===== */
-    const SETTINGS_PATH = (uid)=>`auth/settings/${uid}`;
-    function readLocalSettings(){
-      return {
-        reduce: localStorage.getItem("gx:reduce")==="1",
-        sortExpired: localStorage.getItem("gx:sortExp")==="1",
-        hideGlobal: localStorage.getItem("gx:hideGlobal")==="1",
-        allowSelect: localStorage.getItem("gx:allowSelect")==="1",
-        statusFilter: localStorage.getItem("gx:statusFilter")||"all",
-        updatedAt: parseInt(localStorage.getItem("gx:settingsUpdatedAt")||"0",10)||0
-      };
-    }
-    function writeLocalSettings(obj){
-      localStorage.setItem("gx:reduce", obj.reduce?"1":"0");
-      localStorage.setItem("gx:sortExp", obj.sortExpired?"1":"0");
-      localStorage.setItem("gx:hideGlobal", obj.hideGlobal?"1":"0");
-      localStorage.setItem("gx:allowSelect", obj.allowSelect?"1":"0");
-      localStorage.setItem("gx:statusFilter", obj.statusFilter||"all");
-      localStorage.setItem("gx:settingsUpdatedAt", String(obj.updatedAt||Date.now()));
-    }
-    function applySettingsToDOM(obj){
-      reduce.checked=!!obj.reduce; sortExpired.checked=!!obj.sortExpired;
-      hideGlobal.checked=!!obj.hideGlobal; allowSelect.checked=!!obj.allowSelect;
-      document.body.classList.toggle('reduce', reduce.checked);
-      document.body.classList.toggle('allow-select', allowSelect.checked);
-      globalKeyCard.classList.toggle('hide', hideGlobal.checked);
-      setFilterChip(obj.statusFilter||"all");
-    }
-    applySettingsToDOM(readLocalSettings());
-
-    let pushing=false, remoteReady=false;
-    function currentSettings(){
-      return {
-        reduce: reduce.checked, sortExpired: sortExpired.checked,
-        hideGlobal: hideGlobal.checked, allowSelect: allowSelect.checked,
-        statusFilter: getFilter(), updatedAt: Date.now()
-      };
-    }
-    function pushSettings(uid){
-      if(!uid) return;
-      const data=currentSettings(); pushing=true;
-      set(ref(db, SETTINGS_PATH(uid)), data).catch(()=>{}).finally(()=>{pushing=false});
-      writeLocalSettings(data);
-    }
-    function startSettingsSync(uid){
-      onValue(ref(db, SETTINGS_PATH(uid)), (s)=>{
-        const remote = s.val()||{}; const local=readLocalSettings();
-        const rAt=remote.updatedAt||0, lAt=local.updatedAt||0;
-        if(pushing){ remoteReady=true; return; }
-        if(rAt===0 && lAt>0){ pushSettings(uid); remoteReady=true; return; }
-        if(rAt>lAt){ writeLocalSettings(remote); applySettingsToDOM(remote); }
-        else if(rAt<lAt && remoteReady){ pushSettings(uid); }
-        remoteReady=true;
-      });
-    }
-    let syncTimer=null;
-    function scheduleSync(uid){ clearTimeout(syncTimer); syncTimer=setTimeout(()=>pushSettings(uid), 250); }
-    ;[reduce,sortExpired,hideGlobal,allowSelect].forEach(el=>{
-      el.addEventListener("change", ()=>{
-        const data=currentSettings(); applySettingsToDOM(data); writeLocalSettings(data);
-        if(isAuthed()) scheduleSync(auth.currentUser.uid);
-        if(el===sortExpired) render();
-      });
-    });
-
-    /* Data listeners + offline cache */
-    let cache = {}; // { key: {exp:number} }
-    let selfWriteAt = 0;
-    function startData(){
-      stopData();
-      onValue(ref(db,"auth/globalKey"), s=>{ globalKey.value = s.exists()? (s.val()||"") : ""; });
-      onValue(ref(db,"auth/keys"), s=>{
-        const v = s.val()||{};
-        const serialized = JSON.stringify(v);
-        if(JSON.stringify(cache)!==serialized){
-          cache = v;
-          try{ localStorage.setItem("gx:cacheKeys", serialized); }catch{}
-          render();
-          if(Date.now()-selfWriteAt>1200){ toast("Data diperbarui"); }
-        }
-      });
-    }
-    function stopData(){
-      try{ off(ref(db,"auth/globalKey")); off(ref(db,"auth/keys")); }catch{}
-    }
-    // Offline cache dulu
-    try{
-      const c = localStorage.getItem("gx:cacheKeys"); if(c){ cache = JSON.parse(c); render(); }
-    }catch{}
-
-    /* Auth state */
-    onAuthStateChanged(auth, (user)=>{
-      if(user && isAuthed()){
-        startSettingsSync(user.uid);
-        updateNav(true); startData();
-        route(localStorage.getItem("gx:route") || "dashboard");
-      }else{
-        stopData(); updateNav(false); route("login");
-        if(user && !isAuthed()){ signOut(auth).catch(()=>{}); toast("Bukan admin"); }
-      }
-      document.body.classList.remove("booting"); $("#boot")?.remove();
-    });
-    function updateNav(authed){
-      document.body.classList.toggle("authed", !!authed);
-      document.body.classList.toggle("noauth", !authed);
-      btnSignOut.classList.toggle("hide", !authed);
-      // Lock aksi bila role viewer
-      const editable = canEdit();
-      btnAdd.disabled = false;
-      btnSaveGlobal.disabled = false;
-      btnClearGlobal.disabled = false;
-      btnShareGlobal.disabled = false;
-    }
-
-    /* Login UX */
-    $("#togglePass").addEventListener("click", ()=>{
-      const pw=$("#password"); const t=pw.getAttribute("type")==="password"?"text":"password";
-      pw.setAttribute("type", t); $("#togglePass").textContent=(t==="password"?"Lihat":"Sembunyikan"); pw.focus();
-    });
-    document.addEventListener("keydown",(e)=>{ if(e.key==="Enter" && $(".page.show")?.dataset.page==="login"){ btnLogin.click(); }});
-    btnLogin.addEventListener("click", async ()=>{
-      const em=(email.value||"").trim(); const pw=password.value||"";
-      if(!em||!pw){ toast("Isi email & password"); return; }
-      try{ btnLogin.disabled=true; btnLogin.textContent="Masuk…"; await signInWithEmailAndPassword(auth, em, pw); toast("Login sukses"); }
-      catch{ toast("Login gagal"); }
-      finally{ btnLogin.disabled=false; btnLogin.textContent="Sign In"; }
-    });
-    btnSignOut.onclick = async ()=>{ try{ btnSignOut.disabled=true; await signOut(auth); toast("Signed out"); route("login"); }catch{}finally{ btnSignOut.disabled=false; } };
-
-    /* Anti salin di luar input */
-    const allowCtx=(el)=>!!el&&(el.closest('input,textarea,[contenteditable="true"]'));
-    document.addEventListener('copy',e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(document.activeElement)) e.preventDefault(); });
-    document.addEventListener('cut', e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(document.activeElement)) e.preventDefault(); });
-    document.addEventListener('contextmenu', e=>{ if(!document.body.classList.contains('allow-select')&&!allowCtx(e.target)) e.preventDefault(); }, {passive:false});
-
-    /* ===== Filter status chips ===== */
-    function getFilter(){ return localStorage.getItem("gx:statusFilter") || "all"; }
-    function setFilterChip(val){
-      localStorage.setItem("gx:statusFilter", val);
-      $$(".chip.filter").forEach(c=>c.classList.toggle("active", c.dataset.filter===val));
-    }
-    document.addEventListener("click",(e)=>{
-      const f = e.target.closest(".chip.filter"); if(!f)return;
-      const val=f.dataset.filter; setFilterChip(val); render();
-      if(isAuthed()) scheduleSync(auth.currentUser.uid);
-    });
-
-    /* ===== Modal Set Tanggal ===== */
-    const modalDateWrap=$("#modalDateWrap"), modalDate=$("#modalDate"), modalSave=$("#modalSave"), modalCancel=$("#modalCancel");
-    let modalKey=null;
-    function openModalSetDate(key, currMs){
-      modalKey=key;
-      const d = currMs? new Date(currMs) : new Date();
-      const pad=n=>String(n).padStart(2,"0");
-      modalDate.value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-      modalDateWrap.classList.add("show"); modalDateWrap.setAttribute("aria-hidden","false");
-      modalDate.focus();
-    }
-    function closeModalDate(){ modalKey=null; modalDateWrap.classList.remove("show"); modalDateWrap.setAttribute("aria-hidden","true"); }
-    modalCancel.onclick=closeModalDate;
-    modalDateWrap.addEventListener("click",(e)=>{ if(e.target===modalDateWrap) closeModalDate(); });
-    document.addEventListener("keydown",(e)=>{ if(e.key==="Escape" && modalDateWrap.classList.contains("show")) closeModalDate(); });
-    modalSave.onclick = async ()=>{
-      if(!modalKey) return closeModalDate();
-      const v=(modalDate.value||"").trim(); if(!v) return closeModalDate();
-      const {Y,M,D}=fromInputDate(v); const ms=toEOD(Y,M,D);
-      selfWriteAt=Date.now();
-      await update(ref(db,"auth/keys/"+modalKey), {exp: ms});
-      toast("Tanggal di-set"); closeModalDate();
-    };
-
-    /* ===== Modal Konfirmasi ===== */
-    const modalConfirmWrap=$("#modalConfirmWrap"), confirmMsg=$("#confirmMsg"), confirmOk=$("#confirmOk"), confirmCancel=$("#confirmCancel");
-    let confirmResolver=null;
-    function confirmDialog(msg="Yakin?"){
-      confirmMsg.textContent = msg;
-      modalConfirmWrap.classList.add("show"); modalConfirmWrap.setAttribute("aria-hidden","false");
-      return new Promise((res)=>{
-        confirmResolver = (v)=>{ modalConfirmWrap.classList.remove("show"); modalConfirmWrap.setAttribute("aria-hidden","true"); res(v); };
-      });
-    }
-    confirmCancel.onclick=()=>confirmResolver&&confirmResolver(false);
-    confirmOk.onclick=()=>confirmResolver&&confirmResolver(true);
-    modalConfirmWrap.addEventListener("click",(e)=>{ if(e.target===modalConfirmWrap) confirmResolver&&confirmResolver(false); });
-
-    /* ===== Mini Analytics (Home) ===== */
-    function calcStats(){
-      const ks = Object.keys(cache||{});
-      const now = Date.now();
-      let total = ks.length, perm = 0, expired = 0, active = 0;
-      for(const k of ks){
-        const e = cache[k]?.exp || 0;
-        if(e===0){ perm++; continue; }
-        if(now>e){ expired++; } else { active++; }
-      }
-      return { total, active, expired, perm };
-    }
-    function setBar(id, val, pct){
-      const valEl = document.getElementById("st-"+id);
-      const barEl = document.getElementById("bar-"+id);
-      if(valEl) valEl.textContent = String(val);
-      if(barEl) barEl.style.setProperty("--w", (pct||0).toFixed(1) + "%");
-    }
-    function updateAnalytics(){
-      const s = calcStats();
-      const denom = Math.max(s.total, 1);
-      setBar("total", s.total, s.total>0 ? 100 : 0);
-      setBar("active", s.active, (s.active/denom)*100);
-      setBar("expired", s.expired, (s.expired/denom)*100);
-      setBar("perm", s.perm, (s.perm/denom)*100);
-    }
-
-    function render(){
-      const ks = Object.keys(cache||{});
-      const now=Date.now();
-
-      keyList.innerHTML="";
-      const q = (search?.value||"").trim().toUpperCase();
-      const filt = getFilter();
-      const frag = document.createDocumentFragment();
-
-      const sorted = ks.sort((a,b)=>{
-        if(sortExpired.checked){
-          const ea=(cache[a]?.exp||0)&&now>(cache[a].exp);
-          const eb=(cache[b]?.exp||0)&&now>(cache[b].exp);
-          if(ea!==eb) return eb - ea; // expired duluan
-        }
-        return a.localeCompare(b);
-      });
-
-      for(const k of sorted){
-        const expMs = cache[k]?.exp||0;
-        const expired = expMs && now>expMs;
-        const soon = !expired && expMs && (expMs - now) <= (5*864e5); // 5 hari
-
-        const permanent = expMs===0;
-
-        // Filter status
-        if(filt==="active" && (expired)) continue;
-        if(filt==="soon" && !soon) continue;
-        if(filt==="expired" && !expired) continue;
-        if(filt==="permanent" && !permanent) continue;
-
-        if(q && !k.toUpperCase().includes(q)) continue;
-
-        const row=document.createElement("div"); row.className="item";
-
-        // Row 1: key + Copy + pill status
-        const head=document.createElement("div"); head.className="row1";
-        const keySpan=document.createElement("strong"); keySpan.className="grow"; keySpan.textContent=k;
-
-        const copyBtn=document.createElement("button"); copyBtn.className="btn small"; copyBtn.textContent="Copy";
-        copyBtn.dataset.key=k; copyBtn.dataset.action="copy";
-
-        const status=document.createElement("span"); status.className="pill "+(expired?"exp":(soon?"soon":"ok"));
-        status.textContent = expired?"Expired":(soon?"Segera Habis":"Aktif");
-
-        head.appendChild(keySpan);
-        head.appendChild(copyBtn);
-        head.appendChild(status);
-
-        // Row 2: tanggal
-        const sub=document.createElement("div"); sub.className="row2 muted";
-        sub.textContent = "Expire: "+fmtDate(expMs);
-
-        // Row 3: actions (tanpa Undo)
-        const actions=document.createElement("div"); actions.className="row3";
-        const mk=(txt,action)=>{ const b=document.createElement("button"); b.className="btn small"; b.textContent=txt; b.dataset.key=k; b.dataset.action=action; return b; };
-        const btnNoExp=mk("♾️ No Exp","noexp");
-        const btnDate =mk("🗓️ Tanggal…","setdate");
-        const btnShare=mk("🔗 Share","share");
-        const del=mk("🗑️ Hapus","del"); del.classList.add("danger");
-
-        actions.appendChild(btnNoExp);
-        actions.appendChild(btnDate);
-        actions.appendChild(btnShare);
-        actions.appendChild(del);
-
-        row.appendChild(head); row.appendChild(sub); row.appendChild(actions);
-        frag.appendChild(row);
-      }
-
-      if(!frag.childNodes.length){
-        const empty=document.createElement("div"); empty.className="item"; empty.innerHTML='<span class="muted">Tidak ada hasil.</span>'; frag.appendChild(empty);
-      }
-      keyList.appendChild(frag);
-
-      updateAnalytics();
-    }
-
-    /* Key actions (tanpa Undo) */
-    document.addEventListener("click",(e)=>{
-      const b=e.target.closest("button[data-action]"); if(!b) return;
-      const k=b.dataset.key, act=b.dataset.action;
-      (async()=>{
+  <!-- Early fallback: kalau skrip di bawah gagal, ini tetap melepas splash -->
+  <script>
+    (function(){
+      var released = false;
+      function release(){
+        if(released) return; released = true;
+        document.body.classList.remove('booting');
+        var b = document.getElementById('boot'); if(b && b.parentNode){ b.parentNode.removeChild(b); }
+        // tampilkan login minimal agar tidak "memuat terus"
         try{
-          if(act==="copy"){
-            await navigator.clipboard.writeText(k); toast("Disalin");
-          } else if(act==="share"){
-            const text=`KEY: ${k}`;
-            if(navigator.share){ try{ await navigator.share({title:"GxMods Key", text}); }catch{} }
-            else { await navigator.clipboard.writeText(text); toast("Disalin (share tidak didukung)"); }
-          } else if(act==="noexp"){
-            selfWriteAt=Date.now();
-            await update(ref(db,"auth/keys/"+k), {exp:0});
-            toast("No Exp");
-          } else if(act==="setdate"){
-            openModalSetDate(k, cache[k]?.exp||0);
-          } else if(act==="del"){
-            const ok = await confirmDialog(`Hapus key: ${k}?`);
-            if(!ok) return;
-            selfWriteAt=Date.now();
-            await remove(ref(db,"auth/keys/"+k));
-            toast("Dihapus");
-          }
-        }catch{ toast("Gagal"); }
-      })();
-    }, {passive:true});
-
-    /* Form controls */
-    btnAdd.onclick = async ()=>{
-      let raw=(newKey.value||"");
-      const k=sanitizeKey(raw);
-      if(!k){ toast("Isi key"); return; }
-      const val=(exp.value||"").trim();
-      let ms=0; if(val){ const {Y,M,D}=fromInputDate(val); ms=toEOD(Y,M,D); }
-      selfWriteAt=Date.now();
-      await update(ref(db,"auth/keys/"+k), {exp: ms});
-      newKey.value=""; exp.value=""; toast("Ditambahkan");
-    };
-
-    /* Global Key */
-    btnSaveGlobal.onclick = async ()=>{  selfWriteAt=Date.now(); await set(ref(db,"auth/globalKey"), (globalKey.value||"").trim()); toast("Global key disimpan"); };
-    btnClearGlobal.onclick = async ()=>{  selfWriteAt=Date.now(); await set(ref(db,"auth/globalKey"), ""); globalKey.value=""; toast("Dikosongkan"); };
-    btnShareGlobal.onclick = async ()=>{
-      const v=(globalKey.value||"").trim();
-      if(!v){ toast("Global key kosong"); return; }
-      const text="GLOBAL KEY: "+v;
-      if(navigator.share){ try{ await navigator.share({title:"GxMods Global Key", text}); }catch{} }
-      else { await navigator.clipboard.writeText(text); toast("Disalin (share tidak didukung)"); }
-    };
-
-    // Chips cepat tanggal — +7 hari bisa di-klik berkali-kali (inkremental)
-    document.addEventListener("click",(e)=>{
-      const chip=e.target.closest(".chip[data-add]"); if(!chip) return;
-      const add=parseInt(chip.dataset.add||"0",10);
-      if(add===0){ exp.value=""; toast("Tanpa Exp"); return; }
-
-      // ambil dari input jika ada; kalau kosong, mulai dari hari ini
-      let baseDate;
-      if((exp.value||"").trim()){
-        const {Y,M,D}=fromInputDate(exp.value.trim());
-        baseDate=new Date(Y, M-1, D);
-      }else{
-        baseDate=new Date();
+          document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('show'); });
+          var login = document.querySelector('[data-page="login"]'); if(login){ login.classList.add('show'); }
+        }catch(e){}
       }
-      baseDate.setDate(baseDate.getDate()+add);
+      // jika dalam 3.5s tidak ada yang menghapus splash, lepaskan
+      window.addEventListener('DOMContentLoaded', function(){ setTimeout(release, 3500); }, {once:true});
+      window.addEventListener('error', release, {once:true});
+      window.addEventListener('unhandledrejection', release, {once:true});
+      window.__gx_releaseSplash = release; // bisa dipanggil ulang oleh app
+    })();
+  </script>
 
-      const pad=n=>String(n).padStart(2,"0");
-      exp.value=`${baseDate.getFullYear()}-${pad(baseDate.getMonth()+1)}-${pad(baseDate.getDate())}`;
-      toast("+7 hari");
-    });
+  <!-- Firebase CDN compat (tanpa ES modules) -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
 
-    // Pencarian — debounce 200ms
-    const debounce=(fn,ms)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
-    const liveSearch = debounce(render,200);
-    search?.addEventListener("input", liveSearch, {passive:true});
-    search?.addEventListener("keyup", liveSearch, {passive:true});
+  <script>
+    (function(){
+      var APP_VERSION = "v1.0.0";
 
-    // Lite mode: perangkat RAM kecil
-    try{ if('deviceMemory' in navigator && navigator.deviceMemory<=2){ document.body.classList.add('lite'); } }catch{}
+      var ADMIN_UID = "4CCiNyEyTvSUPnY6Ugd9PzAU1df2";
+      var firebaseConfig = {
+        apiKey: "AIzaSyAJ2YitGgxTI8k440TmWUHgntkTLSqkX3c",
+        authDomain: "dialog-vip-only-key.firebaseapp.com",
+        databaseURL: "https://dialog-vip-only-key-default-rtdb.firebaseio.com",
+        projectId: "dialog-vip-only-key",
+        storageBucket: "dialog-vip-only-key.firebasestorage.app",
+        messagingSenderId: "405714783893",
+        appId: "1:405714783893:web:9cf697f2104b91958ed59c",
+        measurementId: "G-YKCTBR2857"
+      };
 
-    // ===== Fallback anti “memuat terus” =====
-    window.addEventListener('error', ()=>{ document.body.classList.remove('booting'); $("#boot")?.remove(); }, {once:true});
-    window.addEventListener('unhandledrejection', ()=>{ document.body.classList.remove('booting'); $("#boot")?.remove(); }, {once:true});
-    setTimeout(()=>{ if(document.body.classList.contains('booting')){ document.body.classList.remove('booting'); $("#boot")?.remove(); route('login'); } }, 2500);
+      try{ firebase.initializeApp(firebaseConfig); }catch(e){}
+      var auth = firebase.auth();
+      try{ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); }catch(e){}
+      var db   = firebase.database();
+
+      function $(s,el){ return (el||document).querySelector(s); }
+      function $$(s,el){ return (el||document).querySelectorAll(s); }
+      var toastEl = $("#toast"); var toastTimer=null;
+      function toast(t){ toastEl.textContent=t; toastEl.style.display="block"; clearTimeout(toastTimer); toastTimer=setTimeout(function(){ toastEl.style.display="none"; },1500); }
+      function fmtDate(ms){ return ms ? new Date(ms).toLocaleDateString("id-ID",{day:"2-digit",month:"long",year:"numeric"}) : "Permanen"; }
+      function toEOD(Y,M,D){ return new Date(Y,M-1,D,23,59,59,999).getTime(); }
+      function fromInputDate(v){ var a=v.split("-"); return {Y:parseInt(a[0],10)||0, M:parseInt(a[1],10)||0, D:parseInt(a[2],10)||0}; }
+      function sanitizeKey(k){ return (k||"").normalize("NFKC").replace(/\s+/g,"").replace(/[^\w\\-.:@]/g,""); }
+      var protectedRoutes = {"dashboard":1,"keys":1,"settings":1};
+
+      var menuBtn=$("#menuBtn"), drawer=$("#drawer"), backdrop=$("#backdrop");
+      drawer.setAttribute("aria-hidden","true"); try{ drawer.inert = true; }catch(e){}
+      function openDrawer(){ drawer.classList.add("open"); backdrop.classList.add("show"); drawer.removeAttribute("aria-hidden"); try{ drawer.inert=false; }catch(e){} menuBtn.setAttribute("aria-expanded","true"); var first=drawer.querySelector(".nav a")||drawer; (first instanceof HTMLElement?first:drawer).focus(); }
+      function closeDrawer(){ if(drawer.contains(document.activeElement)){ menuBtn.focus(); } drawer.classList.remove("open"); backdrop.classList.remove("show"); drawer.setAttribute("aria-hidden","true"); try{ drawer.inert=true; }catch(e){} menuBtn.setAttribute("aria-expanded","false"); }
+      menuBtn.onclick=openDrawer; backdrop.onclick=closeDrawer;
+      document.addEventListener("keydown",function(e){ if(e.key==="Escape" && drawer.classList.contains("open")){ e.preventDefault(); closeDrawer(); }});
+
+      var ADMINS = {};
+      var adminsRef = db.ref("auth/admins");
+      adminsRef.on("value", function(s){ ADMINS = s.val()||{}; try{ updateNav(isAuthed()); }catch(e){} try{ render(); }catch(e){} });
+
+      function isAuthed(){ var u=auth.currentUser; if(!u) return false; return (u.uid===ADMIN_UID) || !!ADMINS[u.uid]; }
+      function roleOf(uid){ return uid===ADMIN_UID ? "owner" : (ADMINS && (ADMINS[uid]===true ? "owner" : ADMINS[uid] || null)); }
+      function canEdit(){ var u=auth.currentUser; if(!u) return false; var r=roleOf(u.uid); return !!r && r!=="viewer"; }
+
+      function hardGuard(name){ return protectedRoutes[name] && !isAuthed() ? "login" : name; }
+      function updateBottomNav(name){
+        $$("#bottomnav a").forEach(function(a){
+          var active = a.dataset.route===name;
+          a.classList.toggle("active", active);
+          a.setAttribute("aria-current", active ? "page" : "false");
+        });
+      }
+      function route(name){
+        name = hardGuard(name);
+        $$(".page").forEach(function(p){ p.classList.toggle("show", p.dataset.page===name); });
+        $$(".nav a").forEach(function(a){ a.classList.toggle("active", a.dataset.route===name); });
+        updateBottomNav(name);
+        if(isAuthed()){ try{ localStorage.setItem("gx:route", name); }catch(e){} } else { try{ localStorage.removeItem("gx:route"); }catch(e){} }
+        closeDrawer();
+        try{ document.scrollingElement.scrollTo({top:0,behavior:"smooth"}); }catch(e){}
+      }
+      $$(".nav a").forEach(function(a){ a.onclick=function(e){ e.preventDefault(); route(a.dataset.route); }; });
+      $$("#bottomnav a").forEach(function(a){ a.addEventListener("click", function(e){ e.preventDefault(); route(a.dataset.route); }, {passive:false}); });
+
+      var globalKey=$("#globalKey"), btnSaveGlobal=$("#btnSaveGlobal"), btnClearGlobal=$("#btnClearGlobal"), btnShareGlobal=$("#btnShareGlobal");
+      var newKey=$("#newKey"), exp=$("#exp"), btnAdd=$("#btnAdd"), createKeyCard=$("#createKeyCard");
+      var keyList=$("#keyList"), search=$("#search");
+      var sortExpired=$("#sortExpired"), hideGlobal=$("#hideGlobal"), allowSelect=$("#allowSelect"), reduce=$("#reduce");
+      var email=$("#email"), password=$("#password"), btnLogin=$("#btnLogin");
+      var btnSignOut=$("#btnSignOut");
+      var globalKeyCard=$("#globalKeyCard");
+      var loginEmailEl = $("#loginEmail");
+
+      var SETTINGS_PATH = function(uid){ return "auth/settings/"+uid; };
+      function readLocalSettings(){
+        return {
+          reduce: localStorage.getItem("gx:reduce")==="1",
+          sortExpired: localStorage.getItem("gx:sortExp")==="1",
+          hideGlobal: localStorage.getItem("gx:hideGlobal")==="1",
+          allowSelect: localStorage.getItem("gx:allowSelect")==="1",
+          statusFilter: localStorage.getItem("gx:statusFilter")||"all",
+          updatedAt: parseInt(localStorage.getItem("gx:settingsUpdatedAt")||"0",10)||0
+        };
+      }
+      function writeLocalSettings(obj){
+        localStorage.setItem("gx:reduce", obj.reduce?"1":"0");
+        localStorage.setItem("gx:sortExp", obj.sortExpired?"1":"0");
+        localStorage.setItem("gx:hideGlobal", obj.hideGlobal?"1":"0");
+        localStorage.setItem("gx:allowSelect", obj.allowSelect?"1":"0");
+        localStorage.setItem("gx:statusFilter", obj.statusFilter||"all");
+        localStorage.setItem("gx:settingsUpdatedAt", String(obj.updatedAt||Date.now()));
+      }
+      function applySettingsToDOM(obj){
+        reduce.checked=!!obj.reduce; sortExpired.checked=!!obj.sortExpired;
+        hideGlobal.checked=!!obj.hideGlobal; allowSelect.checked=!!obj.allowSelect;
+        document.body.classList.toggle('reduce', reduce.checked);
+        document.body.classList.toggle('allow-select', allowSelect.checked);
+        globalKeyCard.classList.toggle('hide', hideGlobal.checked);
+        setFilterChip(obj.statusFilter||"all");
+      }
+      applySettingsToDOM(readLocalSettings());
+
+      var pushing=false, remoteReady=false;
+      function currentSettings(){
+        return {
+          reduce: reduce.checked, sortExpired: sortExpired.checked,
+          hideGlobal: hideGlobal.checked, allowSelect: allowSelect.checked,
+          statusFilter: getFilter(), updatedAt: Date.now()
+        };
+      }
+      function pushSettings(uid){
+        if(!uid) return;
+        var data=currentSettings(); pushing=true;
+        db.ref(SETTINGS_PATH(uid)).set(data).catch(function(){}).finally?0:0;
+        writeLocalSettings(data);
+      }
+      function startSettingsSync(uid){
+        db.ref(SETTINGS_PATH(uid)).on("value", function(s){
+          var remote = s.val()||{}; var local=readLocalSettings();
+          var rAt=remote.updatedAt||0, lAt=local.updatedAt||0;
+          if(pushing){ remoteReady=true; return; }
+          if(rAt===0 && lAt>0){ pushSettings(uid); remoteReady=true; return; }
+          if(rAt>lAt){ writeLocalSettings(remote); applySettingsToDOM(remote); }
+          else if(rAt<lAt && remoteReady){ pushSettings(uid); }
+          remoteReady=true;
+        });
+      }
+      var syncTimer=null;
+      function scheduleSync(uid){ clearTimeout(syncTimer); syncTimer=setTimeout(function(){ pushSettings(uid); }, 250); }
+      [reduce,sortExpired,hideGlobal,allowSelect].forEach(function(el){
+        el.addEventListener("change", function(){
+          var data=currentSettings(); applySettingsToDOM(data); writeLocalSettings(data);
+          if(isAuthed()) scheduleSync(auth.currentUser.uid);
+          if(el===sortExpired) render();
+        });
+      });
+
+      var cache = {};
+      var selfWriteAt = 0;
+      var globalKeyRef = db.ref("auth/globalKey");
+      var keysRef = db.ref("auth/keys");
+      function startData(){
+        stopData();
+        globalKeyRef.on("value", function(s){ globalKey.value = s.exists()? (s.val()||"") : ""; });
+        keysRef.on("value", function(s){
+          var v = s.val()||{};
+          var serialized = JSON.stringify(v);
+          if(JSON.stringify(cache)!==serialized){
+            cache = v;
+            try{ localStorage.setItem("gx:cacheKeys", serialized); }catch(e){}
+            render();
+            if(Date.now()-selfWriteAt>1200){ toast("Data diperbarui"); }
+          }
+        });
+      }
+      function stopData(){
+        try{ globalKeyRef.off(); keysRef.off(); }catch(e){}
+      }
+      try{ var c = localStorage.getItem("gx:cacheKeys"); if(c){ cache = JSON.parse(c); render(); } }catch(e){}
+
+      function setLoginEmail(){
+        try{
+          var u = auth.currentUser;
+          loginEmailEl.textContent = (u && u.email) ? u.email : "Belum login";
+        }catch(e){}
+      }
+
+      auth.onAuthStateChanged(function(user){
+        if(user && isAuthed()){
+          setLoginEmail();
+          startSettingsSync(user.uid);
+          updateNav(true); startData();
+          route(localStorage.getItem("gx:route") || "dashboard");
+        }else{
+          stopData(); updateNav(false); route("login");
+          setLoginEmail();
+          if(user && !isAuthed()){ auth.signOut().catch(function(){}); toast("Bukan admin"); }
+        }
+        document.body.classList.remove("booting"); var b=$("#boot"); if(b&&b.parentNode){ b.parentNode.removeChild(b); }
+      });
+
+      function updateNav(authed){
+        document.body.classList.toggle("authed", !!authed);
+        document.body.classList.toggle("noauth", !authed);
+        btnSignOut.classList.toggle("hide", !authed);
+        var v = document.getElementById("appVersion"); if(v){ v.textContent = "GxMods Panel • " + APP_VERSION; }
+      }
+
+      $("#togglePass").addEventListener("click", function(){
+        var pw=$("#password"); var t=pw.getAttribute("type")==="password"?"text":"password";
+        pw.setAttribute("type", t); $("#togglePass").textContent=(t==="password"?"Lihat":"Sembunyikan"); pw.focus();
+      });
+      document.addEventListener("keydown", function(e){ if(e.key==="Enter" && ($(".page.show")&&$(".page.show").dataset.page==="login")){ btnLogin.click(); }});
+      btnLogin.addEventListener("click", function(){
+        var em=(email.value||"").trim(); var pw=password.value||"";
+        if(!em||!pw){ toast("Isi email & password"); return; }
+        btnLogin.disabled=true; btnLogin.textContent="Masuk…";
+        auth.signInWithEmailAndPassword(em, pw).then(function(){ toast("Login sukses"); }).catch(function(){ toast("Login gagal"); }).finally?0:0;
+        setTimeout(function(){ btnLogin.disabled=false; btnLogin.textContent="Sign In"; }, 800);
+      });
+      btnSignOut.onclick = function(){ btnSignOut.disabled=true; auth.signOut().then(function(){ toast("Signed out"); route("login"); }).finally?0:0; setTimeout(function(){ btnSignOut.disabled=false; },600); };
+
+      function allowCtx(el){ return !!el && (el.closest('input,textarea,[contenteditable="true"]')); }
+      document.addEventListener('copy',function(e){ if(!document.body.classList.contains('allow-select')&&!allowCtx(document.activeElement)) e.preventDefault(); });
+      document.addEventListener('cut', function(e){ if(!document.body.classList.contains('allow-select')&&!allowCtx(e.target)) e.preventDefault(); });
+      document.addEventListener('contextmenu', function(e){ if(!document.body.classList.contains('allow-select')&&!allowCtx(e.target)) e.preventDefault(); }, {passive:false});
+
+      function getFilter(){ return localStorage.getItem("gx:statusFilter") || "all"; }
+      function setFilterChip(val){
+        localStorage.setItem("gx:statusFilter", val);
+        $$(".chip.filter").forEach(function(c){ c.classList.toggle("active", c.dataset.filter===val); });
+      }
+      document.addEventListener("click",function(e){
+        var f = e.target.closest(".chip.filter"); if(!f) return;
+        var val=f.dataset.filter; setFilterChip(val); render();
+        if(isAuthed()) scheduleSync(auth.currentUser.uid);
+      });
+
+      var modalDateWrap=$("#modalDateWrap"), modalDate=$("#modalDate"), modalSave=$("#modalSave"), modalCancel=$("#modalCancel");
+      var modalKey=null;
+      function openModalSetDate(key, currMs){
+        modalKey=key;
+        var d = currMs? new Date(currMs) : new Date();
+        var pad=function(n){ return String(n).padStart(2,"0"); };
+        modalDate.value = d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+        modalDateWrap.classList.add("show"); modalDateWrap.setAttribute("aria-hidden","false");
+        modalDate.focus();
+      }
+      function closeModalDate(){ modalKey=null; modalDateWrap.classList.remove("show"); modalDateWrap.setAttribute("aria-hidden","true"); }
+      modalCancel.onclick=closeModalDate;
+      modalDateWrap.addEventListener("click",function(e){ if(e.target===modalDateWrap) closeModalDate(); });
+      document.addEventListener("keydown",function(e){ if(e.key==="Escape" && modalDateWrap.classList.contains("show")) closeModalDate(); });
+      modalSave.onclick = function(){
+        if(!modalKey) return closeModalDate();
+        var v=(modalDate.value||"").trim(); if(!v) return closeModalDate();
+        var s=fromInputDate(v); var ms=toEOD(s.Y,s.M,s.D);
+        selfWriteAt=Date.now();
+        db.ref("auth/keys/"+modalKey).update({exp: ms}).then(function(){ toast("Tanggal di-set"); }).finally?0:0;
+        closeModalDate();
+      };
+
+      var modalConfirmWrap=$("#modalConfirmWrap"), confirmMsg=$("#confirmMsg"), confirmOk=$("#confirmOk"), confirmCancel=$("#confirmCancel");
+      var confirmResolver=null;
+      function confirmDialog(msg){
+        if(msg===void 0){ msg="Yakin?"; }
+        confirmMsg.textContent = msg;
+        modalConfirmWrap.classList.add("show"); modalConfirmWrap.setAttribute("aria-hidden","false");
+        return new Promise(function(res){ confirmResolver = function(v){ modalConfirmWrap.classList.remove("show"); modalConfirmWrap.setAttribute("aria-hidden","true"); res(v); }; });
+      }
+      confirmCancel.onclick=function(){ confirmResolver&&confirmResolver(false); };
+      confirmOk.onclick=function(){ confirmResolver&&confirmResolver(true); };
+      modalConfirmWrap.addEventListener("click",function(e){ if(e.target===modalConfirmWrap) confirmResolver&&confirmResolver(false); });
+
+      function calcStats(){
+        var ks = Object.keys(cache||{});
+        var now = Date.now();
+        var total = ks.length, perm = 0, expired = 0, active = 0;
+        ks.forEach(function(k){
+          var e = (cache[k]&&cache[k].exp)||0;
+          if(e===0){ perm++; return; }
+          if(now>e){ expired++; } else { active++; }
+        });
+        return { total:total, active:active, expired:expired, perm:perm };
+      }
+      function setBar(id, val, pct){
+        var valEl = document.getElementById("st-"+id);
+        var barEl = document.getElementById("bar-"+id);
+        if(valEl) valEl.textContent = String(val);
+        if(barEl) barEl.style.setProperty("--w", (pct||0).toFixed(1) + "%");
+      }
+      function updateAnalytics(){
+        var s = calcStats();
+        var denom = Math.max(s.total, 1);
+        setBar("total", s.total, s.total>0 ? 100 : 0);
+        setBar("active", s.active, (s.active/denom)*100);
+        setBar("expired", s.expired, (s.expired/denom)*100);
+        setBar("perm", s.perm, (s.perm/denom)*100);
+      }
+
+      function render(){
+        var ks = Object.keys(cache||{});
+        var now=Date.now();
+        keyList.innerHTML="";
+        var q = (search && search.value || "").trim().toUpperCase();
+        var filt = getFilter();
+        var frag = document.createDocumentFragment();
+        var sorted = ks.sort(function(a,b){
+          if(sortExpired.checked){
+            var ea=(cache[a]&&cache[a].exp||0)&&now>(cache[a].exp);
+            var eb=(cache[b]&&cache[b].exp||0)&&now>(cache[b].exp);
+            if(!!ea !== !!eb) return (eb?1:0) - (ea?1:0);
+          }
+          return a.localeCompare(b);
+        });
+        sorted.forEach(function(k){
+          var expMs = (cache[k]&&cache[k].exp)||0;
+          var expired = expMs && now>expMs;
+          var soon = !expired && expMs && (expMs - now) <= (5*864e5);
+          var permanent = expMs===0;
+          if(filt==="active" && (expired)) return;
+          if(filt==="soon" && !soon) return;
+          if(filt==="expired" && !expired) return;
+          if(filt==="permanent" && !permanent) return;
+          if(q && k.toUpperCase().indexOf(q)===-1) return;
+
+          var row=document.createElement("div"); row.className="item";
+          var head=document.createElement("div"); head.className="row1";
+          var keySpan=document.createElement("strong"); keySpan.className="grow"; keySpan.textContent=k;
+
+          var copyBtn=document.createElement("button"); copyBtn.className="btn small"; copyBtn.textContent="Copy";
+          copyBtn.dataset.key=k; copyBtn.dataset.action="copy";
+          var status=document.createElement("span"); status.className="pill "+(expired?"exp":(soon?"soon":"ok"));
+          status.textContent = expired?"Expired":(soon?"Segera Habis":"Aktif");
+
+          head.appendChild(keySpan); head.appendChild(copyBtn); head.appendChild(status);
+
+          var sub=document.createElement("div"); sub.className="row2 muted";
+          sub.textContent = "Expire: "+fmtDate(expMs);
+
+          var actions=document.createElement("div"); actions.className="row3";
+          function mk(txt,action){ var b=document.createElement("button"); b.className="btn small"; b.textContent=txt; b.dataset.key=k; b.dataset.action=action; return b; }
+          var btnNoExp=mk("No Exp","noexp");
+          var btnDate =mk("Tanggal…","setdate");
+          var btnShare=mk("Share","share");
+          var del=mk("Hapus","del"); del.classList.add("danger");
+          actions.appendChild(btnNoExp); actions.appendChild(btnDate); actions.appendChild(btnShare); actions.appendChild(del);
+
+          row.appendChild(head); row.appendChild(sub); row.appendChild(actions);
+          frag.appendChild(row);
+        });
+        if(!frag.childNodes.length){
+          var empty=document.createElement("div"); empty.className="item"; empty.innerHTML='<span class="muted">Tidak ada hasil.</span>'; frag.appendChild(empty);
+        }
+        keyList.appendChild(frag);
+        updateAnalytics();
+      }
+
+      document.addEventListener("click",function(e){
+        var b=e.target.closest("button[data-action]"); if(!b) return;
+        var k=b.dataset.key, act=b.dataset.action;
+        (function(){
+          try{
+            if(act==="copy"){
+              navigator.clipboard.writeText(k).then(function(){ toast("Disalin"); });
+            } else if(act==="share"){
+              var text="KEY: "+k;
+              if(navigator.share){ navigator.share({title:"GxMods Key", text:text}).catch(function(){}); }
+              else { navigator.clipboard.writeText(text).then(function(){ toast("Disalin (share tidak didukung)"); }); }
+            } else if(act==="noexp"){
+              selfWriteAt=Date.now();
+              db.ref("auth/keys/"+k).update({exp:0}).then(function(){ toast("No Exp"); });
+            } else if(act==="setdate"){
+              openModalSetDate(k, (cache[k]&&cache[k].exp)||0);
+            } else if(act==="del"){
+              confirmDialog("Hapus key: "+k+"?").then(function(ok){
+                if(!ok) return;
+                selfWriteAt=Date.now();
+                db.ref("auth/keys/"+k).remove().then(function(){ toast("Dihapus"); });
+              });
+            }
+          }catch(e){ toast("Gagal"); }
+        })();
+      }, {passive:true});
+
+      btnAdd.onclick = function(){
+        var raw=(newKey.value||"");
+        var k=sanitizeKey(raw);
+        if(!k){ toast("Isi key"); return; }
+        var val=(exp.value||"").trim();
+        var ms=0; if(val){ var s=fromInputDate(val); ms=toEOD(s.Y,s.M,s.D); }
+        selfWriteAt=Date.now();
+        db.ref("auth/keys/"+k).update({exp: ms}).then(function(){ toast("Ditambahkan"); });
+        newKey.value=""; exp.value="";
+      };
+
+      btnSaveGlobal.onclick = function(){ selfWriteAt=Date.now(); db.ref("auth/globalKey").set((globalKey.value||"").trim()).then(function(){ toast("Global key disimpan"); }); };
+      btnClearGlobal.onclick = function(){ selfWriteAt=Date.now(); db.ref("auth/globalKey").set("").then(function(){ globalKey.value=""; toast("Dikosongkan"); }); };
+      btnShareGlobal.onclick = function(){
+        var v=(globalKey.value||"").trim();
+        if(!v){ toast("Global key kosong"); return; }
+        var text="GLOBAL KEY: "+v;
+        if(navigator.share){ navigator.share({title:"GxMods Global Key", text:text}).catch(function(){}); }
+        else { navigator.clipboard.writeText(text).then(function(){ toast("Disalin (share tidak didukung)"); }); }
+      };
+
+      document.addEventListener("click",function(e){
+        var chip=e.target.closest(".chip[data-add]"); if(!chip) return;
+        var add=parseInt(chip.dataset.add||"0",10);
+        if(add===0){ exp.value=""; toast("Tanpa Exp"); return; }
+        var baseDate;
+        if((exp.value||"").trim()){
+          var s=fromInputDate(exp.value.trim());
+          baseDate=new Date(s.Y, s.M-1, s.D);
+        }else{
+          baseDate=new Date();
+        }
+        baseDate.setDate(baseDate.getDate()+add);
+        var pad=function(n){ return String(n).padStart(2,"0"); };
+        exp.value=baseDate.getFullYear()+"-"+pad(baseDate.getMonth()+1)+"-"+pad(baseDate.getDate());
+        toast("+7 hari");
+      });
+
+      function debounce(fn,ms){ var t; return function(){ var a=arguments; clearTimeout(t); t=setTimeout(function(){ fn.apply(null,a); },ms); }; }
+      var liveSearch = debounce(render,200);
+      if(search){ search.addEventListener("input", liveSearch, {passive:true}); search.addEventListener("keyup", liveSearch, {passive:true}); }
+
+      try{ if('deviceMemory' in navigator && navigator.deviceMemory<=2){ document.body.classList.add('lite'); } }catch(e){}
+
+      // Pastikan splash dilepas jika semuanya OK
+      setTimeout(function(){ if(window.__gx_releaseSplash){ window.__gx_releaseSplash(); } }, 100);
+
+    })();
   </script>
 </body>
 </html>
